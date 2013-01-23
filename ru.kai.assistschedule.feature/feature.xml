@@ -35,13 +35,13 @@
          unpack="false"/>
 
    <plugin
-         id="ru.kai.assistschedule.libs"
+         id="ru.kai.assistschedule.ui.libs"
          download-size="0"
          install-size="0"
          version="0.0.0"/>
 
    <plugin
-         id="ru.kai.assistschedule.ui.libs"
+         id="ru.kai.assistschedule.libs"
          download-size="0"
          install-size="0"
          version="0.0.0"/>

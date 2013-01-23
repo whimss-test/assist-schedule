@@ -9,7 +9,7 @@
     <appender name="Kai" class="org.apache.log4j.RollingFileAppender">
         <errorHandler class="org.apache.log4j.helpers.OnlyOnceErrorHandler"/>
 
-        <param name="File" value="${user.home}/.assistantschedule/kai.log"/>
+        <param name="File" value="${user.home}/.assistschedule/kai.log"/>
         <param name="Append" value="true"/>
         <param name="MaxFileSize" value="100MB"/>
         <param name="MaxBackupIndex" value="10"/>
@@ -37,7 +37,7 @@
     <appender name="FullLog" class="org.apache.log4j.RollingFileAppender">
         <errorHandler class="org.apache.log4j.helpers.OnlyOnceErrorHandler"/>
 
-        <param name="File" value="${user.home}/.assistantschedule/assistantschedule.log"/>
+        <param name="File" value="${user.home}/.assistschedule/assistschedule.log"/>
         <param name="Append" value="true"/>
         <param name="MaxFileSize" value="100MB"/>
         <param name="MaxBackupIndex" value="10"/>

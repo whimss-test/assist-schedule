@@ -3,7 +3,6 @@
 
 <product name="Assit Schedule Ui" uid="ru.kai.assistschedule.ui.product" id="ru.kai.assistschedule.ui.product" application="ru.kai.assistschedule.ui.application" version="1.0.0.qualifier" useFeatures="true" includeLaunchers="true">
 
-
    <configIni use="default">
    </configIni>
 
@@ -14,9 +13,7 @@
 
    <windowImages i16="/ru.kai.assistschedule.ui/icons/alt_window_16.gif" i32="/ru.kai.assistschedule.ui/icons/alt_window_32.gif"/>
 
-   <splash
-      location="ru.kai.assistschedule.ui"
-      handlerType="interactive" />
+
    <launcher name="assistschedule">
       <solaris/>
       <win useIco="false">
@@ -24,10 +21,8 @@
       </win>
    </launcher>
 
-
    <vm>
    </vm>
-
 
    <plugins>
    </plugins>

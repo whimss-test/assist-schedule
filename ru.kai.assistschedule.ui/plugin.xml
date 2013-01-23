@@ -207,5 +207,12 @@
          </view>
       </perspectiveExtension>
    </extension>
+   <extension
+         point="org.eclipse.ui.splashHandlers">
+      <splashHandler
+            class="ru.kai.assistschedule.ui.splashHandlers.InteractiveSplashHandler"
+            id="ru.kai.assistschedule.ui.splashHandlers.interactive">
+      </splashHandler>
+   </extension>
 
 </plugin>

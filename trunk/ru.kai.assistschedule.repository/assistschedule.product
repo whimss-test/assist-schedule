@@ -8,13 +8,16 @@
    </configIni>
 
    <launcherArgs>
+      <vmArgs>-Dlog4j.configuration=file:configuration\\log4j.xml</vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
    </launcherArgs>
 
    <windowImages i16="/ru.kai.assistschedule.ui/icons/alt_window_16.gif" i32="/ru.kai.assistschedule.ui/icons/alt_window_32.gif"/>
 
-
-   <launcher>
+   <splash
+      location="ru.kai.assistschedule.ui"
+      handlerType="interactive" />
+   <launcher name="assistschedule">
       <solaris/>
       <win useIco="false">
          <bmp/>
@@ -24,6 +27,7 @@
 
    <vm>
    </vm>
+
 
    <plugins>
    </plugins>

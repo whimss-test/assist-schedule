@@ -18,6 +18,8 @@ import org.slf4j.LoggerFactory;
 
 import ru.kai.assistschedule.core.ExcelWorker;
 import ru.kai.assistschedule.core.GlobalStorage;
+import ru.kai.assistschedule.core.MainCommand;
+import ru.kai.assistschedule.core.cache.FirstLevelCache;
 import ru.kai.assistschedule.ui.internal.views.status.IStatus;
 import ru.kai.assistschedule.ui.internal.views.status.StatusImpl;
 
@@ -123,10 +125,12 @@ public class ActivityPShelf {
 	    fd.setFilterExtensions(filterExt);
 	    if ((GlobalStorage.selectedSchedule = fd.open()) != null) {
 //		schedullePathText.setText(GlobalStorage.selectedSchedule);
-		GlobalStorage.put("selectedSchedule",
-			GlobalStorage.selectedSchedule);
+		GlobalStorage.put("selectedSchedule", GlobalStorage.selectedSchedule);
 		try {
 		    ExcelWorker.openSchedule(GlobalStorage.selectedSchedule);
+		    FirstLevelCache firstLevelCache = new FirstLevelCache();
+		    firstLevelCache.readFromSheet();
+		    MainCommand.setFirstLevelCache(firstLevelCache);
 		} catch (Exception e) {
 		    status.setText(e.getLocalizedMessage());
 		}

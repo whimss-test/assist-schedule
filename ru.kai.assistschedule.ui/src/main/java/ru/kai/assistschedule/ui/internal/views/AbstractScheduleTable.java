@@ -14,11 +14,15 @@ import org.eclipse.nebula.jface.gridviewer.GridTableViewer;
 import org.eclipse.nebula.jface.gridviewer.GridViewerEditor;
 import org.eclipse.nebula.widgets.grid.GridColumn;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Shell;
 
 import ru.kai.assistschedule.core.IScheduleTable;
 import ru.kai.assistschedule.core.cache.ScheduleEntry;
+import ru.kai.assistschedule.ui.internal.widgets.ExcelFilter;
 
 public abstract class AbstractScheduleTable implements IScheduleTable {
 
@@ -70,6 +74,23 @@ public abstract class AbstractScheduleTable implements IScheduleTable {
 	GridColumn column = new GridColumn(v.getGrid(), SWT.NONE);
 	column.setWidth(100);
 	column.setText("Группа");
+	final GridColumn tempColumn = column;
+	column.addSelectionListener(new SelectionListener() {
+		
+		@Override
+		public void widgetSelected(SelectionEvent e) {
+			// TODO Auto-generated method stub
+			System.out.println(e);
+			ExcelFilter filter = new ExcelFilter(tempColumn.getParent(), 
+					SWT.BORDER | SWT.DROP_DOWN);
+		}
+		
+		@Override
+		public void widgetDefaultSelected(SelectionEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+	});
 	
 	column = new GridColumn(v.getGrid(), SWT.NONE);
 	column.setWidth(100);
@@ -138,4 +159,7 @@ public abstract class AbstractScheduleTable implements IScheduleTable {
 	composite.dispose();
     }
     
+    private void createDropDownWindow() {
+    	
+    }
 }

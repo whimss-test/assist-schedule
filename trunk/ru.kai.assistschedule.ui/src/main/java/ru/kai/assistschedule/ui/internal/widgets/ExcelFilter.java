@@ -2,15 +2,28 @@ package ru.kai.assistschedule.ui.internal.widgets;
 
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.nebula.jface.gridviewer.GridTableViewer;
 import org.eclipse.nebula.widgets.grid.GridColumn;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.events.ShellListener;
+import org.eclipse.swt.layout.FormAttachment;
+import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
+
+import ru.kai.assistschedule.ui.model.schedule.sort.DaySorter;
+import ru.kai.assistschedule.ui.model.schedule.sort.GroupSorter;
 
 public class ExcelFilter {
 	
@@ -18,10 +31,17 @@ public class ExcelFilter {
 
 	private Shell columnShell;
 	
+	private GridTableViewer gridTableViewer;
+	
 	public ExcelFilter(GridColumn column) {
+		this(column, null);
+	}
+	
+	public ExcelFilter(GridColumn column, GridTableViewer gridTableViewer) {
 		super();
 		this.column = column;
-		
+		this.gridTableViewer = gridTableViewer;
+
 		final GridColumn dayColumn = column;
 		Shell mainShell = dayColumn.getParent().getShell();
 		// GridColumn column = dayColumn;
@@ -39,11 +59,8 @@ public class ExcelFilter {
 		final Composite composite = new Composite(child, SWT.NONE);
 		composite.setLayoutData(new GridData(GridData.FILL,
 				GridData.FILL, true, true));
-		composite.setLayout(new GridLayout());
-		Label label = new Label(composite, SWT.None);
-		label.setText("Hello Child!");
-		label.setLayoutData(new GridData(GridData.FILL, GridData.FILL,
-				true, true));
+		createView(composite);
+		child.setSize(0, 0);
 		child.open();
 		
 		dayColumn.getDisplay().asyncExec(new Runnable() {
@@ -115,5 +132,83 @@ public class ExcelFilter {
 		});
 	}
 	
+	private void createView(Composite composite) {
+		composite.setLayout(new FormLayout());
+		
+		Button buttonASC = new Button(composite, SWT.FLAT);
+		buttonASC.setText("Прямая сортировка");
+		FormData data = new FormData();
+		data.top = new FormAttachment(0, 0);
+		data.left = new FormAttachment(0, 0);
+		data.right = new FormAttachment(100, 0);
+		buttonASC.setLayoutData(data);
+		buttonASC.addSelectionListener(new SelectionAdapter() {
+			private boolean isDirectSort = false;
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if (gridTableViewer == null) {
+					return;
+				}
+				// TODO Auto-generated method stub
+				if (column.getText().equals("Группа")) {
+					gridTableViewer.setSorter(new GroupSorter(true));
+				} else if (column.getText().equals("День")) {
+					gridTableViewer.setSorter(new DaySorter(true));
+				}
+				column.setSort(SWT.DOWN);
+			}
+			
+		});
+		
+		
+		Button buttonDESC = new Button(composite, SWT.FLAT);
+		buttonDESC.setText("Обратная сортировка");
+		data = new FormData();
+		data.top = new FormAttachment(buttonASC, 10);
+		data.left = new FormAttachment(0, 0);
+		data.right = new FormAttachment(100, 0);
+		buttonDESC.setLayoutData(data);
+		buttonDESC.addSelectionListener(new SelectionAdapter() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if (gridTableViewer == null) {
+					return;
+				}
+				// TODO Auto-generated method stub
+				if (column.getText().equals("Группа")) {
+					gridTableViewer.setSorter(new GroupSorter(false));
+				} else if (column.getText().equals("День")) {
+					gridTableViewer.setSorter(new DaySorter(false));
+				}
+				column.setSort(SWT.UP);
+			}
+			
+		});
+		
+		Label label = new Label(composite, SWT.WRAP);
+		label.setText("Фильтрация элементов в дереве");
+		data = new FormData();
+		data.top = new FormAttachment(buttonDESC, 20);
+		data.left = new FormAttachment(0, 0);
+		data.right = new FormAttachment(100, 0);
+		label.setLayoutData(data);
+		
+		Text textFilter = new Text(composite, SWT.BORDER);
+		textFilter.setToolTipText("Начни фильтровать=)");
+		data = new FormData();
+		data.top = new FormAttachment(label, 10);
+		data.left = new FormAttachment(0, 0);
+		data.right = new FormAttachment(100, 0);
+		textFilter.setLayoutData(data);
+		
+		TreeViewer treeViewerFilteredData = new TreeViewer(composite);
+		data = new FormData();
+		data.top = new FormAttachment(textFilter, 10);
+		data.left = new FormAttachment(0, 0);
+		data.right = new FormAttachment(100, 0);
+		data.bottom = new FormAttachment(100, 0);
+		treeViewerFilteredData.getTree().setLayoutData(data);
+	}
 	
 }

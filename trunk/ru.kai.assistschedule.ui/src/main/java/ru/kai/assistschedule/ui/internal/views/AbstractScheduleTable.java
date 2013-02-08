@@ -96,7 +96,7 @@ public abstract class AbstractScheduleTable implements IScheduleTable {
 			public void widgetSelected(SelectionEvent e) {
 				// TODO Auto-generated method stub
 				super.widgetSelected(e);
-				ExcelFilter filter = new ExcelFilter(groupColumn);
+				ExcelFilter filter = new ExcelFilter(groupColumn, v);
 			}
 			
 		});
@@ -111,7 +111,7 @@ public abstract class AbstractScheduleTable implements IScheduleTable {
 			public void widgetSelected(SelectionEvent e) {
 				// TODO Auto-generated method stub
 				super.widgetSelected(e);
-				ExcelFilter filter = new ExcelFilter(dayColumn);
+				ExcelFilter filter = new ExcelFilter(dayColumn, v);
 			}
 			
 		});

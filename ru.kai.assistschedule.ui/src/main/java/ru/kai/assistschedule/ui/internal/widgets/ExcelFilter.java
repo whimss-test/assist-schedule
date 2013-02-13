@@ -77,7 +77,7 @@ public class ExcelFilter {
 				while (i++ < 11) {
 					child.setSize(windowWidth, i * 25);
 					try {
-						TimeUnit.MILLISECONDS.sleep(10);
+						TimeUnit.MILLISECONDS.sleep(3);
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();

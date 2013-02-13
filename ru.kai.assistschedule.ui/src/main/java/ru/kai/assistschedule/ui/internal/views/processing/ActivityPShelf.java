@@ -22,6 +22,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.slf4j.Logger;
@@ -187,11 +188,19 @@ public class ActivityPShelf {
         }
     }
     
+    /**
+     * Осуществляется поиск преподователей
+     */
     private void fullCheck() {
 	//====================== 1 - я проверка ==========================
+    	
 	status.setText("");
-        if (!ExcelWorker.isScheduleOpened())
-            return;
+        if (!ExcelWorker.isScheduleOpened()) {
+//        	MessageBox box = new MessageBox(parent)	
+        	return;
+        }
+            
+        LOG.debug("Началась 1 - я проверка!");
         GlobalStorage.matrix = ExcelWorker.searchEmptyCellsOfPMI();
         int maxLength = 0;
         for (int i = 0; i < GlobalStorage.matrix.length; i++)
@@ -209,10 +218,11 @@ public class ActivityPShelf {
             }
             status.append(GlobalStorage.matrix[i][0] + "\t" + GlobalStorage.matrix[i][1] + "\t" + GlobalStorage.matrix[i][2] + str + GlobalStorage.matrix[i][3]);
         }
-        status.append("\nНайдено записей: " + GlobalStorage.matrix.length);
-        
+        String foundRecords = String.format("\nНайдено записей: %d", GlobalStorage.matrix.length);
+        printStatus(foundRecords);
         //====================== 2 - я проверка ==========================
         
+        LOG.debug("Началась 2 - я проверка!");
         int suc = 0;
         int season = 0; // autumn as default
         if (_fallBtn.getSelection() == true)
@@ -247,8 +257,15 @@ public class ActivityPShelf {
                 }
                 status.append(GlobalStorage.matrix[i][0] + "\t" + GlobalStorage.matrix[i][1] + "\t" + GlobalStorage.matrix[i][2] + str + GlobalStorage.matrix[i][3] + "\t" + GlobalStorage.matrix[i][4]);
             }
-            status.append("\nНайдено записей: " + GlobalStorage.matrix.length + "\t\tУспешно найдено: " + suc);
+            foundRecords = String.format("\nНайдено записей: %d, из них Успешно найдено: %d", 
+            		GlobalStorage.matrix.length, suc);
+            printStatus(foundRecords);
         }
+    }
+    
+    private void printStatus(String string) {
+    	status.append(string);
+    	LOG.debug(string);
     }
 
     private GridLayout getGridLayout() {

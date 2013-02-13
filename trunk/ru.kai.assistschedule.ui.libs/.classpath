@@ -4,7 +4,7 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry exported="true" kind="lib" path="org.eclipse.nebula.cwt_0.9.0.201301150935.jar"/>
 	<classpathentry exported="true" kind="lib" path="org.eclipse.nebula.widgets.cdatetime_0.14.0.201301150935.jar"/>
-	<classpathentry exported="true" kind="lib" path="org.eclipse.nebula.widgets.grid_1.0.0.201301150935.jar"/>
+	<classpathentry exported="true" kind="lib" path="org.eclipse.nebula.widgets.grid_1.0.0.201301150935.jar" sourcepath="C:/Users/Роман/Dropbox/Public/KAI/Диплом КАИ/home/data/httpd/download.eclipse.org/technology/nebula/snapshot/plugins/org.eclipse.nebula.widgets.grid.source_1.0.0.201210262156.jar"/>
 	<classpathentry exported="true" kind="lib" path="org.eclipse.nebula.widgets.pshelf_1.0.0.201301150935.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

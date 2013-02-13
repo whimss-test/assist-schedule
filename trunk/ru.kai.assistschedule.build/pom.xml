@@ -67,6 +67,7 @@
 		<module>../ru.kai.assistschedule.target</module>
 		<module>../ru.kai.assistschedule.repository</module>
 		<module>../ru.kai.assistschedule.feature</module>
+        <module>../ru.kai.assistschedule.spring.libs</module>
         <module>../ru.kai.assistschedule.libs</module>
 		<module>../ru.kai.assistschedule.ui.libs</module>
 		<module>../ru.kai.assistschedule.ui</module>

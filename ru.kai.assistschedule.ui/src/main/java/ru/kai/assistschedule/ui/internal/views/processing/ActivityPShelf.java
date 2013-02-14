@@ -25,6 +25,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.omg.CORBA._PolicyStub;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -196,7 +197,9 @@ public class ActivityPShelf {
     	
 	status.setText("");
         if (!ExcelWorker.isScheduleOpened()) {
-//        	MessageBox box = new MessageBox(parent)	
+        	MessageBox box = new MessageBox(_shelf.getShell(), SWT.ICON_INFORMATION);
+        	box.setMessage("Необходимо загрузить расписание!");
+        	box.open();
         	return;
         }
             

@@ -1,5 +1,7 @@
 package ru.kai.assistschedule.ui.model.schedule;
 
+import java.util.List;
+
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
@@ -19,8 +21,7 @@ public class ExcelFilterContentProvider implements ITreeContentProvider {
 
 	@Override
 	public Object[] getElements(Object inputElement) {
-		// TODO Auto-generated method stub
-		return new String[]{"one", "two", "three", "four", "five"};
+		return ((List<String>) inputElement).toArray();
 	}
 
 	@Override

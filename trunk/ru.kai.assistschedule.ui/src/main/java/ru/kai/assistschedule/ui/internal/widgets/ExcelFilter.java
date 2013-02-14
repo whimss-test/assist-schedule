@@ -1,6 +1,7 @@
 package ru.kai.assistschedule.ui.internal.widgets;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jface.viewers.TreeViewer;
@@ -12,6 +13,9 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.events.ShellListener;
+import org.eclipse.swt.events.VerifyEvent;
+import org.eclipse.swt.events.VerifyListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -22,13 +26,22 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.TreeItem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import ru.kai.assistschedule.core.cache.FirstLevelCache;
+import ru.kai.assistschedule.ui.internal.views.patterns.AbstractScheduleElementFactory;
 import ru.kai.assistschedule.ui.model.schedule.ExcelFilterContentProvider;
 import ru.kai.assistschedule.ui.model.schedule.ExcelFilterLabelProvider;
+import ru.kai.assistschedule.ui.model.schedule.filter.AllowOnlyMatchScheduleElementFilter;
+import ru.kai.assistschedule.ui.model.schedule.sort.AbstractScheduleSorter;
 import ru.kai.assistschedule.ui.model.schedule.sort.DaySorter;
 import ru.kai.assistschedule.ui.model.schedule.sort.GroupSorter;
 
 public class ExcelFilter {
+	
+	protected final Logger logger = LoggerFactory.getLogger(getClass());
 	
 	private final int windowWidth = 200;
 	
@@ -37,16 +50,26 @@ public class ExcelFilter {
 	private Shell columnShell;
 	
 	private GridTableViewer gridTableViewer;
+
+	private List<String> uniqueScheduleElements;
+
+	private AllowOnlyMatchScheduleElementFilter treeViewerFilter;
 	
 	public ExcelFilter(GridColumn column) {
 		this(column, null);
 	}
 	
 	public ExcelFilter(GridColumn column, GridTableViewer gridTableViewer) {
+		this(column, gridTableViewer, null);
+	}
+	
+	public ExcelFilter(GridColumn column, GridTableViewer gridTableViewer, 
+			 List<String> uniqueScheduleElements) {
 		super();
 		this.column = column;
 		this.gridTableViewer = gridTableViewer;
-
+		this.uniqueScheduleElements = uniqueScheduleElements;
+		
 		final GridColumn dayColumn = column;
 		Shell mainShell = dayColumn.getParent().getShell();
 		// GridColumn column = dayColumn;
@@ -154,12 +177,8 @@ public class ExcelFilter {
 				if (gridTableViewer == null) {
 					return;
 				}
-				// TODO Auto-generated method stub
-				if (column.getText().equals("Группа")) {
-					gridTableViewer.setSorter(new GroupSorter(true));
-				} else if (column.getText().equals("День")) {
-					gridTableViewer.setSorter(new DaySorter(true));
-				}
+				gridTableViewer.setSorter(AbstractScheduleElementFactory
+						.createSorter(column.getText(), true));
 				column.setSort(SWT.DOWN);
 			}
 			
@@ -180,12 +199,8 @@ public class ExcelFilter {
 				if (gridTableViewer == null) {
 					return;
 				}
-				// TODO Auto-generated method stub
-				if (column.getText().equals("Группа")) {
-					gridTableViewer.setSorter(new GroupSorter(false));
-				} else if (column.getText().equals("День")) {
-					gridTableViewer.setSorter(new DaySorter(false));
-				}
+				gridTableViewer.setSorter(AbstractScheduleElementFactory
+						.createSorter(column.getText(), false));
 				column.setSort(SWT.UP);
 			}
 			
@@ -199,8 +214,9 @@ public class ExcelFilter {
 		data.right = new FormAttachment(100, 0);
 		label.setLayoutData(data);
 		
-		Text textFilter = new Text(composite, SWT.BORDER);
+		final Text textFilter = new Text(composite, SWT.BORDER);
 		textFilter.setToolTipText("Начни фильтровать=)");
+		
 		data = new FormData();
 		data.top = new FormAttachment(label, 5);
 		data.left = new FormAttachment(0, 0);
@@ -225,16 +241,99 @@ public class ExcelFilter {
 		data.right = new FormAttachment(cancel, -5);
 		ok.setLayoutData(data);
 		
-		TreeViewer treeViewerFilteredData = new TreeViewer(composite, SWT.CHECK);
+		final TreeViewer treeViewerFilteredData = new TreeViewer(composite, SWT.CHECK);
 		treeViewerFilteredData.setContentProvider(new ExcelFilterContentProvider());
 		treeViewerFilteredData.setLabelProvider(new ExcelFilterLabelProvider());
-		treeViewerFilteredData.setInput(new String[]{"one", "two", "three"});
+		if(null != uniqueScheduleElements) {
+			treeViewerFilteredData.setInput(uniqueScheduleElements);
+		} else {
+			treeViewerFilteredData.setInput(new ArrayList<String>());
+		}
 		data = new FormData();
 		data.top = new FormAttachment(textFilter, 5);
 		data.left = new FormAttachment(0, 0);
 		data.right = new FormAttachment(100, 0);
 		data.bottom = new FormAttachment(ok, -5);
 		treeViewerFilteredData.getTree().setLayoutData(data);
+		
+		
+		//Слушатель на вовод текста по которому будет фильтроваться treeViewer
+		textFilter.addVerifyListener(new VerifyListener() {
+			
+			@Override
+			public void verifyText(VerifyEvent e) {
+				final StringBuilder newText = new StringBuilder(textFilter.getText());
+                newText.replace(e.start, e.end, e.text);
+                if (" ".equals(newText.toString())) {
+                    return;
+                }
+                final TreeViewer treeViewer = treeViewerFilteredData;
+
+                if (0 != treeViewer.getFilters().length) {
+                    if (null != treeViewerFilter) {
+                        treeViewer.removeFilter(treeViewerFilter);
+                    }
+                }
+                
+                treeViewerFilter = new AllowOnlyMatchScheduleElementFilter(newText.toString());
+                treeViewer.getTree().setRedraw(false);
+                treeViewer.addFilter(treeViewerFilter);
+                treeViewer.getTree().getDisplay().asyncExec(new Runnable() {
+
+                    public List<TreeItem> getAllTreeItems(TreeItem[] items) {
+                        List<TreeItem> treeItems = new ArrayList<TreeItem>();
+                        if (0 != items.length) {
+                            for (TreeItem item : items) {
+                                treeItems.add(item);
+                                treeItems.addAll(getAllTreeItems(item.getItems()));
+                            }
+                        }
+                        return treeItems;
+                    }
+
+                    @Override
+                    public void run() {
+                        synchronized (treeViewer) {
+                            boolean isLive = true;
+                            while (isLive) {
+                                if (!treeViewer.isBusy()) {
+
+                                    treeViewer.getTree().setRedraw(false);
+
+                                    if (2 < newText.toString().length()) {
+                                        treeViewer.expandAll();
+                                        List<TreeItem> treeItems =
+                                                getAllTreeItems(treeViewer.getTree().getItems());
+                                        for (TreeItem item : treeItems) {
+                                            String scheduleElementName = String.valueOf(item.getData());
+                                            String patternText = newText.toString().toLowerCase();
+                                            if (scheduleElementName.contains(patternText)) {
+                                                item.setBackground(
+                                                        new Color(treeViewer.getTree().getDisplay(), 220, 255, 255)
+                                                );
+                                            } else {
+                                                item.setBackground(
+                                                        treeViewer.getTree().getDisplay().getSystemColor(
+                                                                SWT.COLOR_WHITE
+                                                        )
+                                                );
+                                            }
+                                        }
+                                    } else {
+                                        treeViewer.collapseAll();
+                                        treeViewer.expandToLevel(2);
+                                    }
+                                    isLive = false;
+                                    treeViewer.getTree().setRedraw(true);
+                                }
+
+                            }
+                        }
+                    }
+                });
+                treeViewer.getTree().setRedraw(true);
+			}
+		});
 		
 	}
 	

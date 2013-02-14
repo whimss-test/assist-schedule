@@ -14,9 +14,11 @@ public class MainCommand {
 		firstLevelCache = cache;
 		if(null != scheduleTableSetting) {
 			scheduleTableSetting.setInput(firstLevelCache.getEntries());
+			scheduleTableSetting.setDataSource(firstLevelCache);
 		}
 		if(null != scheduleTableProcessing) {
 			scheduleTableProcessing.setInput(firstLevelCache.getEntries());
+			scheduleTableProcessing.setDataSource(firstLevelCache);
 		}
 	}
 	
@@ -27,6 +29,7 @@ public class MainCommand {
 		scheduleTableSetting = scheduleTable;
 		if(null != firstLevelCache) {
 			scheduleTableSetting.setInput(firstLevelCache.getEntries());
+			scheduleTableSetting.setDataSource(firstLevelCache);
 		}
 	}
 
@@ -37,6 +40,7 @@ public class MainCommand {
 		scheduleTableProcessing = scheduleTable;
 		if(null != firstLevelCache) {
 			scheduleTableProcessing.setInput(firstLevelCache.getEntries());
+			scheduleTableProcessing.setDataSource(firstLevelCache);
 		}
 	}
 }

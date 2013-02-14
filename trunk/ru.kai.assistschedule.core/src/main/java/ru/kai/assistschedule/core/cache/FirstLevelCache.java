@@ -2,6 +2,8 @@ package ru.kai.assistschedule.core.cache;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.regex.Pattern;
 
 import ru.kai.assistschedule.core.ExcelWorker;
@@ -14,6 +16,28 @@ public class FirstLevelCache {
 
 	private List<ScheduleEntry> elements = new ArrayList<ScheduleEntry>();
 
+	private Set<String> groupNames = new TreeSet<String>();
+	
+	private Set<String> daysOfWeek = new TreeSet<String>();
+
+	private Set<String> times = new TreeSet<String>();
+
+	private Set<String> dates = new TreeSet<String>();
+
+	private Set<String> disciplines = new TreeSet<String>();
+
+	private Set<String> lessonTypes = new TreeSet<String>();
+
+	private Set<String> classRooms = new TreeSet<String>();
+
+	private Set<String> buildings = new TreeSet<String>();
+
+	private Set<String> positions = new TreeSet<String>();
+
+	private Set<String> professors = new TreeSet<String>();
+
+	private Set<String> departments = new TreeSet<String>();
+	
 	public void addElement(){}
 
 	/**Функция чтение с листа xls и вытаскивания записей построчно*/
@@ -30,19 +54,129 @@ public class FirstLevelCache {
 		}
 		int added = 0;	//ДЛЯ дебага
 		int notAdded = 0;	//для дебага вывести в Log
+		String sGroupName; 
+		String sDayOfWeek; 
+		String sTime; 
+		String sDate; 
+		String sDiscipline; 
+		String sLessonType; 
+		String sClassRoom; 
+		String sBuilding; 
+		String sPosition; 
+		String sProfessor; 
+		String sDepartment;
+		
+		
 		for (int i = 1; i < scheduleSheet.getRows(); i++) {
 			Cell[] curE = scheduleSheet.getRow(i);
 			if (!isValidRow(curE)) {
 				notAdded++;//нужно сделать список некорректных записей
 				continue;
 			} else {
-				Time time = convertToEnumTime(ExcelWorker.splitStr(curE[2].getContents())); // конвертируем время
-				LessonType lesType = convertToEnumFormOfClass(ExcelWorker.splitStr(curE[5].getContents())); // форму занятий
-				DaysOfWeek day = convertToDayOfWeek(ExcelWorker.splitStr(curE[1].getContents())); 
-				elements.add(new ScheduleEntry(ExcelWorker.splitStr(curE[0].getContents()), day, time, ExcelWorker.splitStr(curE[3].getContents()), ExcelWorker.splitStr(curE[4].getContents()), lesType, ExcelWorker.splitStr(curE[6].getContents()), ExcelWorker.splitStr(curE[7].getContents()), ExcelWorker.splitStr(curE[8].getContents()), ExcelWorker.splitStr(curE[9].getContents()), ExcelWorker.splitStr(curE[10].getContents())));
+				sGroupName = ExcelWorker.splitStr(curE[0].getContents());
+				sDayOfWeek = ExcelWorker.splitStr(curE[1].getContents()); 
+				sTime = ExcelWorker.splitStr(curE[2].getContents()); 
+				sDate = ExcelWorker.splitStr(curE[3].getContents()); 
+				sDiscipline = ExcelWorker.splitStr(curE[4].getContents()); 
+				sLessonType = ExcelWorker.splitStr(curE[5].getContents()); 
+				sClassRoom = ExcelWorker.splitStr(curE[6].getContents()); 
+				sBuilding = ExcelWorker.splitStr(curE[7].getContents()); 
+				sPosition = ExcelWorker.splitStr(curE[8].getContents()); 
+				sProfessor = ExcelWorker.splitStr(curE[9].getContents()); 
+				sDepartment = ExcelWorker.splitStr(curE[10].getContents());
+						
+				Time time = convertToEnumTime(sTime); // конвертируем время
+				LessonType lesType = convertToEnumFormOfClass(sLessonType); // форму занятий
+				DaysOfWeek day = convertToDayOfWeek(sDayOfWeek); 
+				elements.add(new ScheduleEntry(sGroupName, day, time, sDate, 
+						sDiscipline, lesType, sClassRoom, sBuilding, sPosition, 
+						sProfessor, sDepartment));
+				fillSets(sGroupName, sDayOfWeek, sTime, sDate, sDiscipline, 
+						sLessonType, sClassRoom, sBuilding, sPosition, 
+						sProfessor, sDepartment);
 				added++;
 			}
 		}
+	}
+	
+	public List<ScheduleEntry> getElements() {
+		return elements;
+	}
+
+	public Set<String> getGroupNames() {
+		return groupNames;
+	}
+
+	public Set<String> getDaysOfWeek() {
+		return daysOfWeek;
+	}
+
+	public Set<String> getTimes() {
+		return times;
+	}
+
+	public Set<String> getDates() {
+		return dates;
+	}
+
+	public Set<String> getDisciplines() {
+		return disciplines;
+	}
+
+	public Set<String> getLessonTypes() {
+		return lessonTypes;
+	}
+
+	public Set<String> getClassRooms() {
+		return classRooms;
+	}
+
+	public Set<String> getBuildings() {
+		return buildings;
+	}
+
+	public Set<String> getPositions() {
+		return positions;
+	}
+
+	public Set<String> getProfessors() {
+		return professors;
+	}
+
+	public Set<String> getDepartments() {
+		return departments;
+	}
+
+	/**
+	 * Заполняем списки с уникальными значениями, чтобы использовать их в сортировке.
+	 * 
+	 * @param groupName
+	 * @param dayOfWeek
+	 * @param time
+	 * @param date
+	 * @param discipline
+	 * @param lessonType
+	 * @param classRoom
+	 * @param building
+	 * @param position
+	 * @param professor
+	 * @param department
+	 */
+	private void fillSets(String groupName, String dayOfWeek, String time, 
+			String date, String discipline, String lessonType, 
+			String classRoom, String building, String position, 
+			String professor, String department) {
+		groupNames.add(groupName);
+		daysOfWeek.add(dayOfWeek);
+		times.add(time);
+		dates.add(date);
+		disciplines.add(discipline);
+		lessonTypes.add(lessonType);
+		classRooms.add(classRoom);
+		buildings.add(building);
+		positions.add(position);
+		professors.add(professor);
+		departments.add(department);		
 	}
 
 	/**

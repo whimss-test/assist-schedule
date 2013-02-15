@@ -8,6 +8,11 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.nebula.jface.gridviewer.GridTableViewer;
 import org.eclipse.nebula.widgets.grid.GridColumn;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DragDetectEvent;
+import org.eclipse.swt.events.DragDetectListener;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -16,6 +21,9 @@ import org.eclipse.swt.events.ShellListener;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -23,7 +31,9 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.TreeItem;
@@ -75,6 +85,8 @@ public class ExcelFilter {
 		// GridColumn column = dayColumn;
 		// column.getHeaderRenderer()
 		final Shell child = new Shell(mainShell, SWT.DOUBLE_BUFFERED);
+//		child.setBackground(new Color(child.getDisplay(), new RGB(200, 200, 0)));
+		columnShell = child;
 		child.setLocation(
 				dayColumn.getParent().toDisplay(0, 0).x
 						+ dayColumn.getHeaderRenderer().getBounds().x
@@ -83,10 +95,18 @@ public class ExcelFilter {
 				dayColumn.getParent().toDisplay(0, 0).y
 						+ dayColumn.getHeaderRenderer().getBounds().height);
 		
-		child.setLayout(new GridLayout());
+		child.setLayout(new FormLayout());
+		
 		final Composite composite = new Composite(child, SWT.NONE);
-		composite.setLayoutData(new GridData(GridData.FILL,
-				GridData.FILL, true, true));
+
+//		GridData data = new GridData(GridData.FILL, GridData.FILL, true, true);
+		FormData data = new FormData();
+		data.top = new FormAttachment(0, 0);
+		data.left = new FormAttachment(0, 0);
+		data.bottom = new FormAttachment(100, 0);
+		data.right = new FormAttachment(100, 0);
+		composite.setLayoutData(data);
+		
 		createView(composite);
 		child.setSize(0, 0);
 		child.open();
@@ -223,11 +243,22 @@ public class ExcelFilter {
 		data.right = new FormAttachment(100, 0);
 		textFilter.setLayoutData(data);
 		
+		Label labelResize = new Label(composite, SWT.WRAP);
+		labelResize.setImage(ImageCache.getImage("icons/resize13x13.png"));
+		labelResize.setToolTipText("Изменение размера окна");
+		data = new FormData();
+//		data.width = 13;
+//		data.height = 13;
+		data.right = new FormAttachment(100, 0);
+		data.bottom = new FormAttachment(100, 0);
+		labelResize.setLayoutData(data);
+		resizeWindow(composite, labelResize);
+		
 		
 		Button cancel = new Button(composite, SWT.FLAT);
 		cancel.setText("Отмена");
 		data = new FormData();
-		data.bottom = new FormAttachment(100, -5);
+		data.bottom = new FormAttachment(labelResize, -5);
 //		data.left = new FormAttachment(0, 10);
 		data.right = new FormAttachment(100, -5);
 		cancel.setLayoutData(data);
@@ -236,7 +267,7 @@ public class ExcelFilter {
 		Button ok = new Button(composite, SWT.FLAT);
 		ok.setText("Ок");
 		data = new FormData();
-		data.bottom = new FormAttachment(100, -5);
+		data.bottom = new FormAttachment(labelResize, -5);
 //		data.left = new FormAttachment(0, 0);
 		data.right = new FormAttachment(cancel, -5);
 		ok.setLayoutData(data);
@@ -255,7 +286,6 @@ public class ExcelFilter {
 		data.right = new FormAttachment(100, 0);
 		data.bottom = new FormAttachment(ok, -5);
 		treeViewerFilteredData.getTree().setLayoutData(data);
-		
 		
 		//Слушатель на вовод текста по которому будет фильтроваться treeViewer
 		textFilter.addVerifyListener(new VerifyListener() {
@@ -335,6 +365,54 @@ public class ExcelFilter {
 			}
 		});
 		
+	}
+	
+	private void resizeWindow(final Composite composite, Label labelResize) {
+		final Point[] offset = new Point[1];
+		Listener listener = new Listener() {
+		      public void handleEvent(Event event) {
+		        switch (event.type) {
+		        case SWT.MouseDown:
+		        	logger.debug(String.format("event.x[%d], event.y[%d]", event.x, event.y));
+		          Rectangle rect = composite.getBounds();
+		          if (rect.contains(event.x, event.y)) {
+		            Point pt1 = composite.toDisplay(0, 0);
+		            Point pt2 = columnShell.toDisplay(event.x, event.y);
+		            offset[0] = new Point(pt2.x - pt1.x, pt2.y - pt1.y);
+		          }
+		          logger.debug(String.format("top.x[%d], top.y[%d], width[%d], height[%d]", 
+		        		  columnShell.toDisplay(0, 0).x, columnShell.toDisplay(0, 0).y,
+		        		  columnShell.getBounds().width, columnShell.getBounds().height));
+		          break;
+		        case SWT.MouseMove:
+		          if (offset[0] != null) {
+		            Point pt = offset[0];
+//		            composite.setLocation(event.x - pt.x, event.y - pt.y);
+		            logger.debug(String.format("event.x[%d], event.y[%d]", event.x, event.y));
+		            logger.debug(String.format("pt.x[%d], pt.x[%d]", pt.x, pt.y));
+//		            if(event.x > 100 || event.y > 100) {
+//		            	columnShell.setSize(event.x, event.y);
+//		            }
+		            int x = columnShell.toDisplay(0, 0).x;
+		            int y = columnShell.toDisplay(0, 0).y;
+		            int width = columnShell.getBounds().width;
+		            int height = columnShell.getBounds().height;
+		            logger.debug(String.format("newX[%d], newY[%d]", width + event.x, height + event.y));
+		            columnShell.setRedraw(false);
+		            columnShell.setSize(width + event.x, height + event.y);
+		            columnShell.setRedraw(true);
+		          }
+		          break;
+		        case SWT.MouseUp:
+		          offset[0] = null;
+		          logger.debug(String.format("event.x[%d], event.y[%d]", event.x, event.y));
+		          break;
+		        }
+		      }
+		    };
+		    labelResize.addListener(SWT.MouseDown, listener);
+		    labelResize.addListener(SWT.MouseUp, listener);
+		    labelResize.addListener(SWT.MouseMove, listener);
 	}
 	
 }

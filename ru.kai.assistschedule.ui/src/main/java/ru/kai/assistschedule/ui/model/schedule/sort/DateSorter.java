@@ -13,9 +13,9 @@ public class DateSorter extends AbstractScheduleSorter {
 //		LOGGER.debug(String.format("first[%s], second[%s]",
 //				first.day, second.day));
 		if (isDirectSort) {
-			return first.day.compareTo(second.day);
+			return first.date.compareTo(second.date);
 		} else {
-			return second.day.compareTo(first.day);
+			return second.date.compareTo(first.date);
 		}
 	}
 

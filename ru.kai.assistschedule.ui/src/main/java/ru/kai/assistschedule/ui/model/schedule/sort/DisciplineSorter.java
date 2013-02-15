@@ -13,9 +13,9 @@ public class DisciplineSorter extends AbstractScheduleSorter {
 //		LOGGER.debug(String.format("first[%s], second[%s]",
 //				first.day, second.day));
 		if (isDirectSort) {
-			return first.day.compareTo(second.day);
+			return first.discipline.compareTo(second.discipline);
 		} else {
-			return second.day.compareTo(first.day);
+			return second.discipline.compareTo(first.discipline);
 		}
 	}
 

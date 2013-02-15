@@ -230,7 +230,7 @@ public abstract class AbstractScheduleTable implements IScheduleTable {
 
 		final GridColumn professorColumn = new GridColumn(v.getGrid(), SWT.NONE);
 		professorColumn.setWidth(100);
-		professorColumn.setText("Преподователь");
+		professorColumn.setText("Преподаватель");
 		professorColumn.addSelectionListener(new SelectionAdapter() {
 
 			@Override

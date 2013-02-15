@@ -9,7 +9,7 @@ import ru.kai.assistschedule.core.cache.ScheduleEntry;
 
 public abstract class AbstractScheduleSorter extends ViewerSorter {
 
-	protected final Logger LOGGER = LoggerFactory.getLogger(getClass());
+	protected final Logger logger = LoggerFactory.getLogger(getClass());
 	
 	protected boolean isDirectSort;
 

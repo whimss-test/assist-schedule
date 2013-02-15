@@ -13,9 +13,9 @@ public class PositionSorter extends AbstractScheduleSorter {
 //		LOGGER.debug(String.format("first[%s], second[%s]",
 //				first.day, second.day));
 		if (isDirectSort) {
-			return first.day.compareTo(second.day);
+			return first.doljnost.compareTo(second.doljnost);
 		} else {
-			return second.day.compareTo(first.day);
+			return second.doljnost.compareTo(first.doljnost);
 		}
 	}
 

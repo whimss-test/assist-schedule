@@ -29,7 +29,7 @@ public class GroupSorter extends AbstractScheduleSorter {
 			}
 			return 0;
 		} catch (NumberFormatException e) {
-			LOGGER.debug(String.format("Exception[%s], first[%s], second[%s]",
+			logger.debug(String.format("Exception[%s], first[%s], second[%s]",
 					e, first.groupName, second.groupName));
 			if (isDirectSort) {
 				return first.groupName.compareTo(second.groupName);

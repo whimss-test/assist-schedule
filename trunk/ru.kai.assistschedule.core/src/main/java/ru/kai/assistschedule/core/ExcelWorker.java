@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ru.kai.assistschedule.core.exceptions.SheduleIsNotOpenedException;
+import ru.kai.assistschedule.core.exceptions.ExcelFileIsNotOpenedException;
 
 import jxl.Range;
 import jxl.Sheet;
@@ -109,6 +109,16 @@ public class ExcelWorker {
         if (isLoadOpened())
             sheetOfLoad = workbookLoad.getSheet(index);
     }
+    
+    /**
+     * Получает лист в в нагрузке.
+     * 
+     * @param index - имя листа
+     */
+    public static void selectSheetInLoad(String name) {
+        if (isLoadOpened())
+            sheetOfLoad = workbookLoad.getSheet(name);
+    }
 
     /**
      * Функция возвращает ссылку на лист в расписании. Параметром можно задать
@@ -120,7 +130,7 @@ public class ExcelWorker {
      * @return - лист книги с расписанием.
      */
     public static Sheet getSheetOfSchedule(int number)
-            throws SheduleIsNotOpenedException {
+            throws ExcelFileIsNotOpenedException {
         if (isScheduleOpened()) {
             if (number >= 0 && number < workbookSchedule.getNumberOfSheets()) {
                 selectSheetInSchedule(number);
@@ -130,7 +140,45 @@ public class ExcelWorker {
                 return sheetOfSchedule;
             }
         } else {
-            throw new SheduleIsNotOpenedException(
+            throw new ExcelFileIsNotOpenedException(
+                    "Нет подключения к книге Excel! Сначала нужно подключиться к книге, потом открывать лист.");
+        }
+    }
+ 
+    /**
+     * Возвращает ссылку на лист с нагрузкой из файла нагрузки
+     * @param number - индекс листа
+     * @return лист с нагрузкой
+     * @throws ExcelFileIsNotOpenedException, если книга ещё не открыта
+     */
+    public static Sheet getSheetOfLoad(int number)
+            throws ExcelFileIsNotOpenedException {
+        if (isLoadOpened()) {
+            if (number >= 0 && number < workbookLoad.getNumberOfSheets()) {
+                selectSheetInLoad(number);
+                return sheetOfLoad;
+            } else {
+                selectSheetInLoad(0);
+                return sheetOfLoad;
+            }
+        } else {
+            throw new ExcelFileIsNotOpenedException(
+                    "Нет подключения к книге Excel! Сначала нужно подключиться к книге, потом открывать лист.");
+        }
+    }
+
+    /**
+     * Находит лист с нагрузкой по названию листа
+     * @param name название листа
+     * @return лист с нагрузкой
+     * @throws ExcelFileIsNotOpenedException, если книга не открыта
+     */
+    public static Sheet getSheetOfLoad(String name) throws ExcelFileIsNotOpenedException {
+        if (isLoadOpened()) {
+            selectSheetInLoad(name);
+            return sheetOfLoad;
+        } else {
+            throw new ExcelFileIsNotOpenedException(
                     "Нет подключения к книге Excel! Сначала нужно подключиться к книге, потом открывать лист.");
         }
     }

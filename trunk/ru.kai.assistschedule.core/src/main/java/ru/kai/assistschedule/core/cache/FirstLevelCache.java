@@ -5,15 +5,16 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
-
 import ru.kai.assistschedule.core.ExcelWorker;
-import ru.kai.assistschedule.core.exceptions.SheduleIsNotOpenedException;
-
+import ru.kai.assistschedule.core.cache.load.FormOfClass;
+import ru.kai.assistschedule.core.cache.load.LoadEntry;
+import ru.kai.assistschedule.core.exceptions.ExcelFileIsNotOpenedException;
 import jxl.Cell;
 import jxl.Sheet;
 
 public class FirstLevelCache {
-
+	
+	//Переменные для РАСПИСАНИЯ
 	private List<ScheduleEntry> elements = new ArrayList<ScheduleEntry>();
 
 	private Set<String> groupNames = new TreeSet<String>();
@@ -40,6 +41,98 @@ public class FirstLevelCache {
 	
 	public void addElement(){}
 
+	//Переменные для НАГРУЗКИ
+	private List<LoadEntry> loadEntries = new ArrayList<LoadEntry>();
+
+	private Set<String> NN = new TreeSet<String>();
+	private Set<String> semestr = new TreeSet<String>();
+	private Set<String> disc = new TreeSet<String>();
+	private Set<String> educationForm = new TreeSet<String>();
+	private Set<String> spec_group = new TreeSet<String>();
+	private Set<String> groupCount = new TreeSet<String>();
+	private Set<String> subGroupsCount = new TreeSet<String>();
+	private Set<String> weekCount = new TreeSet<String>();
+	private Set<String> lec_hoursInWeek = new TreeSet<String>();
+	private Set<String> lec_totalHours = new TreeSet<String>();
+	private Set<String> lec_professor = new TreeSet<String>();
+	private Set<String> prac_hoursInWeek = new TreeSet<String>();
+	private Set<String> prac_totalHours = new TreeSet<String>();
+	private Set<String> prac_professor = new TreeSet<String>();
+	private Set<String> lab_hoursInWeek = new TreeSet<String>();
+	private Set<String> lab_totalHours = new TreeSet<String>();
+	private Set<String> lab_professor = new TreeSet<String>();
+	
+	//КОНЕЦ переменных для НАГРУЗКИ
+
+	public void readLoadSheet(){
+		if (!ExcelWorker.isLoadOpened()){
+			return;
+		}
+		Sheet loadSh = null;
+		try {
+			loadSh = ExcelWorker.getSheetOfLoad("Лист1");
+		} catch (ExcelFileIsNotOpenedException e) {
+			// Надо обработать правильно! По сути не должно выскакивать, т.к. проверяется выше в if
+			e.printStackTrace();
+		}
+		int added = 0;
+		int NN;
+		String semestr = null;
+		String disc;
+		String educationForm;
+		String spec_group;
+		int groupCount = 0;
+		int subGroupsCount = 0;
+		int weekCount = 0;
+		FormOfClass lec = null;
+		FormOfClass prac = null;
+		FormOfClass labs = null;
+		
+		for (int i = 4; i < loadSh.getRows(); i++) {
+			Cell[] curE = loadSh.getRow(i);
+			try{
+				NN = Integer.valueOf(ExcelWorker.splitStr(curE[1].getContents())).intValue();
+			}catch(Exception e){
+				continue;
+			}
+			disc = ExcelWorker.splitStr(curE[2].getContents());
+			educationForm = ExcelWorker.splitStr(curE[4].getContents());
+			spec_group = ExcelWorker.splitStr(curE[5].getContents());
+			try{
+				groupCount = Integer.valueOf(ExcelWorker.splitStr(curE[8].getContents())).intValue();
+				subGroupsCount = Integer.valueOf(ExcelWorker.splitStr(curE[9].getContents())).intValue();
+			} catch(Exception e){
+				//FIXME: Не знаю что делать. Надо будет организовать проверку, а пока будем пропускать запись
+				continue;
+			}
+			//Если в обоих семестрах отсутствуют часы лекций, то переходим дальше
+			if((ExcelWorker.splitStr(curE[12].getContents()).equals("0") || ExcelWorker.splitStr(curE[12].getContents()).equals("")) && (ExcelWorker.splitStr(curE[46].getContents()).equals("0") || ExcelWorker.splitStr(curE[46].getContents()).equals(""))){
+				continue;
+			} else if(!ExcelWorker.splitStr(curE[12].getContents()).equals("0") && !ExcelWorker.splitStr(curE[12].getContents()).equals("")){
+				semestr = "autumn";
+				try{
+					weekCount = Integer.valueOf(ExcelWorker.splitStr(curE[11].getContents())).intValue();
+				} catch (Exception e) { continue; }
+					lec = new FormOfClass(Integer.valueOf(ExcelWorker.splitStr(curE[12].getContents())).intValue(), weekCount , ExcelWorker.splitStr(curE[14].getContents()));
+					prac = new FormOfClass(Integer.valueOf(ExcelWorker.splitStr(curE[15].getContents())).intValue(), weekCount, ExcelWorker.splitStr(curE[17].getContents()));
+					labs = new FormOfClass(Integer.valueOf(ExcelWorker.splitStr(curE[18].getContents())).intValue(), weekCount, ExcelWorker.splitStr(curE[20].getContents()));
+			} else if(!ExcelWorker.splitStr(curE[46].getContents()).equals("0") && !ExcelWorker.splitStr(curE[46].getContents()).equals("")){
+				semestr = "spring";
+				try{
+					weekCount = Integer.valueOf(ExcelWorker.splitStr(curE[45].getContents())).intValue();
+				} catch (Exception e) { continue; }
+					lec = new FormOfClass(Integer.valueOf(ExcelWorker.splitStr(curE[46].getContents())).intValue(), weekCount, ExcelWorker.splitStr(curE[48].getContents()));
+					prac = new FormOfClass(Integer.valueOf(ExcelWorker.splitStr(curE[49].getContents())).intValue(), weekCount, ExcelWorker.splitStr(curE[51].getContents()));
+					labs = new FormOfClass(Integer.valueOf(ExcelWorker.splitStr(curE[52].getContents())).intValue(), weekCount, ExcelWorker.splitStr(curE[54].getContents()));
+			}
+			//FIXME: Нужно добавить валидацию данных
+			loadEntries.add(new LoadEntry(NN, semestr, disc, educationForm, spec_group, groupCount, subGroupsCount, weekCount, lec, prac, labs));
+			added = added + 1;
+			fillLoadSets(NN, semestr, disc, educationForm, spec_group, groupCount, subGroupsCount, weekCount, lec, prac, labs);
+		}
+		
+	}
+	
 	/**Функция чтение с листа xls и вытаскивания записей построчно*/
 	public void readFromSheet(){
 		if (!ExcelWorker.isScheduleOpened()){
@@ -48,7 +141,7 @@ public class FirstLevelCache {
 		Sheet scheduleSheet = null;
 		try {
 			scheduleSheet = ExcelWorker.getSheetOfSchedule(0);
-		} catch (SheduleIsNotOpenedException e) {
+		} catch (ExcelFileIsNotOpenedException e) {
 			// Надо обработать правильно! По сути не должно выскакивать, т.к. проверяется выше в if
 			e.printStackTrace();
 		}
@@ -147,6 +240,47 @@ public class FirstLevelCache {
 		return departments;
 	}
 
+	/**
+	 * Заполняем списки с уникальными значениями, чтобы использовать их в сортировке.
+	 * 
+	 * @param NN номер из нагрузки
+	 * @param semestr осень или весна
+	 * @param disc дисциплина
+	 * @param educationForm форма обучения (дневная, вечерка и т.д.)
+	 * @param spec_group специальность и группа
+	 * @param groupCount число груп для расчета часов практик
+	 * @param subGroupsCount число подгруп для расчета часов лаб
+	 * @param weekCount количество недель в семесте
+	 * @param lec мой тип данных, которй содержит 3 поля: часов/нед; всего часов(вычисляяется автоматически) и имя преподавателя
+	 * @param prac то же что и lec
+	 * @param labs то же что и lec
+	 */
+	private void fillLoadSets(int NN, String semestr, String disc, String educationForm, String spec_group, int groupCount, int subGroupsCount, int weekCount, FormOfClass lec, FormOfClass prac, FormOfClass labs){
+		this.NN.add(String.valueOf(NN));
+		this.semestr.add(semestr);
+		this.disc.add(disc);
+		this.educationForm.add(educationForm);
+		this.spec_group.add(spec_group);
+		this.groupCount.add(String.valueOf(groupCount));
+		this.subGroupsCount.add(String.valueOf(subGroupsCount));
+		this.weekCount.add(String.valueOf(weekCount));
+		if(lec != null){
+			this.lec_hoursInWeek.add(String.valueOf(lec.hoursInWeek));
+			this.lec_totalHours.add(String.valueOf(lec.totalHours));
+			this.lec_professor.add(lec.professor);
+		}
+		if(prac != null){
+			this.prac_hoursInWeek.add(String.valueOf(prac.hoursInWeek));
+			this.prac_totalHours.add(String.valueOf(prac.totalHours));
+			this.prac_professor.add(prac.professor);
+		}
+		if(labs != null){
+			this.lab_hoursInWeek.add(String.valueOf(labs.hoursInWeek));
+			this.lab_totalHours.add(String.valueOf(labs.totalHours));
+			this.lab_professor.add(labs.professor);
+		}
+	}
+	
 	/**
 	 * Заполняем списки с уникальными значениями, чтобы использовать их в сортировке.
 	 * 

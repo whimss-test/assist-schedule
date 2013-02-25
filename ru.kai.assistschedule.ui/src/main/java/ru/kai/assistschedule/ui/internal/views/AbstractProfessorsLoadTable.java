@@ -1,5 +1,7 @@
 package ru.kai.assistschedule.ui.internal.views;
 
+import java.util.List;
+
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewerEditor;
 import org.eclipse.jface.viewers.ColumnViewerEditorActivationEvent;
@@ -15,224 +17,140 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 
-import ru.kai.assistschedule.core.calendar.Class;
+import ru.kai.assistschedule.core.IProfessorLoadTable;
+import ru.kai.assistschedule.core.cache.Constants;
+import ru.kai.assistschedule.core.cache.FirstLevelCache;
+import ru.kai.assistschedule.core.cache.load.LoadEntry;
 
-public abstract class AbstractProfessorsLoadTable {
+public abstract class AbstractProfessorsLoadTable implements
+		IProfessorLoadTable {
 
-    private GridTableViewer v;
+	private GridTableViewer v;
 
-    private Composite composite;
+	private Composite composite;
 
-    public AbstractProfessorsLoadTable(Composite parent) {
-	parent.setLayout(new FillLayout());
-	composite = new Composite(parent, SWT.NONE);
-	composite.setLayout(new FillLayout());
-	v = new GridTableViewer(composite, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
-	v.setLabelProvider(getLabelProvider());
-	v.setContentProvider(getContentProvider());
-	v.getGrid().setCellSelectionEnabled(true);
-			
-	v.setCellEditors(new CellEditor[] { new TextCellEditor(v.getGrid()), new TextCellEditor(v.getGrid()) });
-	v.setCellModifier(new ICellModifier() {
+	public AbstractProfessorsLoadTable(Composite parent) {
+		parent.setLayout(new FillLayout());
+		composite = new Composite(parent, SWT.NONE);
+		composite.setLayout(new FillLayout());
+		v = new GridTableViewer(composite, SWT.BORDER | SWT.V_SCROLL
+				| SWT.H_SCROLL);
+		v.setLabelProvider(getLabelProvider());
+		v.setContentProvider(getContentProvider());
+		v.getGrid().setCellSelectionEnabled(true);
 
-		public boolean canModify(Object element, String property) {
-			return true;
-		}
+		v.setCellEditors(new CellEditor[] { new TextCellEditor(v.getGrid()),
+				new TextCellEditor(v.getGrid()) });
+		v.setCellModifier(new ICellModifier() {
 
-		public Object getValue(Object element, String property) {
-			return "Column " + property + " => " + element.toString();
-		}
+			public boolean canModify(Object element, String property) {
+				return true;
+			}
 
-		public void modify(Object element, String property, Object value) {
-			
-		}
-		
-	});
-	
-	v.setColumnProperties(new String[] {"1","2"});
-//	v.setColumnProperties(new String[] {"Группа","Время","Дисциплина","Вид занятий","Преподователь","Кафедра"});
-	
-	ColumnViewerEditorActivationStrategy actSupport = new ColumnViewerEditorActivationStrategy(v) {
-		protected boolean isEditorActivationEvent(ColumnViewerEditorActivationEvent event) {
-			return event.eventType == ColumnViewerEditorActivationEvent.TRAVERSAL
-					|| event.eventType == ColumnViewerEditorActivationEvent.MOUSE_DOUBLE_CLICK_SELECTION
-					|| (event.eventType == ColumnViewerEditorActivationEvent.KEY_PRESSED && event.keyCode == SWT.CR);
-		}
-	};
-	
-	GridViewerEditor.create(v, actSupport, ColumnViewerEditor.TABBING_HORIZONTAL
-			| ColumnViewerEditor.TABBING_MOVE_TO_ROW_NEIGHBOR
-			| ColumnViewerEditor.TABBING_VERTICAL | ColumnViewerEditor.KEYBOARD_ACTIVATION);
-	
-	GridColumn column = new GridColumn(v.getGrid(), SWT.NONE);
-	column.setWidth(100);
-	column.setText("NN");
-	
-	column = new GridColumn(v.getGrid(), SWT.NONE);
-	column.setWidth(100);
-	column.setText("Дисциплина");
-	
-	column = new GridColumn(v.getGrid(), SWT.NONE);
-	column.setWidth(100);
-	column.setText("Факультет");
-	
-	column = new GridColumn(v.getGrid(), SWT.NONE);
-	column.setWidth(100);
-	column.setText("Форма обучения");
-	
-	column = new GridColumn(v.getGrid(), SWT.NONE);
-	column.setWidth(100);
-	column.setText("Специальность");
-	
-	column = new GridColumn(v.getGrid(), SWT.NONE);
-	column.setWidth(100);
-	column.setText("Курс");
-	
-	column = new GridColumn(v.getGrid(), SWT.NONE);
-	column.setWidth(100);
-	column.setText("чис. пот.");
-	
-	column = new GridColumn(v.getGrid(), SWT.NONE);
-	column.setWidth(100);
-	column.setText("чис. гр.");
-	
-	column = new GridColumn(v.getGrid(), SWT.NONE);
-	column.setWidth(100);
-	column.setText("чис. подгр.");
-	
-	column = new GridColumn(v.getGrid(), SWT.NONE);
-	column.setWidth(100);
-	column.setText("кол-во студ.");
-	
-	column = new GridColumn(v.getGrid(), SWT.NONE);
-	column.setWidth(100);
-	column.setText("кол-во нед.");
+			public Object getValue(Object element, String property) {
+				return "Column " + property + " => " + element.toString();
+			}
 
-	column = new GridColumn(v.getGrid(), SWT.NONE);
-	column.setWidth(100);
-	column.setText("лекции");
+			public void modify(Object element, String property, Object value) {
 
-	column = new GridColumn(v.getGrid(), SWT.NONE);
-	column.setWidth(100);
-	column.setText("практ. зан.");
+			}
 
-	column = new GridColumn(v.getGrid(), SWT.NONE);
-	column.setWidth(100);
-	column.setText("лаб. раб.");
+		});
 
-	column = new GridColumn(v.getGrid(), SWT.NONE);
-	column.setWidth(100);
-	column.setText("конс.");
+		v.setColumnProperties(new String[] { "1", "2" });
+		// v.setColumnProperties(new String[]
+		// {"Группа","Время","Дисциплина","Вид занятий","Преподователь","Кафедра"});
 
-	column = new GridColumn(v.getGrid(), SWT.NONE);
-	column.setWidth(100);
-	column.setText("курс. раб.");
+		ColumnViewerEditorActivationStrategy actSupport = new ColumnViewerEditorActivationStrategy(
+				v) {
+			protected boolean isEditorActivationEvent(
+					ColumnViewerEditorActivationEvent event) {
+				return event.eventType == ColumnViewerEditorActivationEvent.TRAVERSAL
+						|| event.eventType == ColumnViewerEditorActivationEvent.MOUSE_DOUBLE_CLICK_SELECTION
+						|| (event.eventType == ColumnViewerEditorActivationEvent.KEY_PRESSED && event.keyCode == SWT.CR);
+			}
+		};
 
-	column = new GridColumn(v.getGrid(), SWT.NONE);
-	column.setWidth(100);
-	column.setText("курс. пр.");
+		GridViewerEditor.create(v, actSupport,
+				ColumnViewerEditor.TABBING_HORIZONTAL
+						| ColumnViewerEditor.TABBING_MOVE_TO_ROW_NEIGHBOR
+						| ColumnViewerEditor.TABBING_VERTICAL
+						| ColumnViewerEditor.KEYBOARD_ACTIVATION);
 
-	column = new GridColumn(v.getGrid(), SWT.NONE);
-	column.setWidth(100);
-	column.setText("дом. зад.");
+		GridColumn column = new GridColumn(v.getGrid(), SWT.NONE);
+		column.setWidth(100);
+		column.setText(Constants.ProfessorLoad.NN);
 
-	column = new GridColumn(v.getGrid(), SWT.NONE);
-	column.setWidth(100);
-	column.setText("контр. раб.");
+		column = new GridColumn(v.getGrid(), SWT.NONE);
+		column.setWidth(100);
+		column.setText(Constants.ProfessorLoad.SEMESTER);
 
-	column = new GridColumn(v.getGrid(), SWT.NONE);
-	column.setWidth(100);
-	column.setText("колл.");
+		column = new GridColumn(v.getGrid(), SWT.NONE);
+		column.setWidth(100);
+		column.setText(Constants.ProfessorLoad.EDUCATION_FORM);
 
-	column = new GridColumn(v.getGrid(), SWT.NONE);
-	column.setWidth(100);
-	column.setText("зачёты");
+		column = new GridColumn(v.getGrid(), SWT.NONE);
+		column.setWidth(100);
+		column.setText(Constants.ProfessorLoad.SPECIALITY_AND_GROUP);
 
-	column = new GridColumn(v.getGrid(), SWT.NONE);
-	column.setWidth(100);
-	column.setText("экзамен");
+		column = new GridColumn(v.getGrid(), SWT.NONE);
+		column.setWidth(100);
+		column.setText(Constants.ProfessorLoad.DISCIPLINE);
 
-	column = new GridColumn(v.getGrid(), SWT.NONE);
-	column.setWidth(100);
-	column.setText("итого за весенн.\\семестр без учёт\\дом. задан.,\\контр.и коллок..");
+		column = new GridColumn(v.getGrid(), SWT.NONE);
+		column.setWidth(100);
+		column.setText(Constants.ProfessorLoad.GROUP_AMOUNT);
 
-	column = new GridColumn(v.getGrid(), SWT.NONE);
-	column.setWidth(100);
-	column.setText("итого за весенн.\\семестр c учёт.\\дом. задан., .\\контри коллок..");
+		column = new GridColumn(v.getGrid(), SWT.NONE);
+		column.setWidth(100);
+		column.setText(Constants.ProfessorLoad.SUBGROUP_AMOUNT);
 
-	column = new GridColumn(v.getGrid(), SWT.NONE);
-	column.setWidth(100);
-	column.setText("итого за год без\\учёт.дом. зад.,\\контр. и коллок.");
+		column = new GridColumn(v.getGrid(), SWT.NONE);
+		column.setWidth(100);
+		column.setText(Constants.ProfessorLoad.WEEK_AMOUNT);
 
-	column = new GridColumn(v.getGrid(), SWT.NONE);
-	column.setWidth(100);
-	column.setText("итого за год с\\учёт. дом. зад.,\\контр. и коллок..");
+		column = new GridColumn(v.getGrid(), SWT.NONE);
+		column.setWidth(100);
+		column.setText(Constants.ProfessorLoad.LECTURES);
 
-	column = new GridColumn(v.getGrid(), SWT.NONE);
-	column.setWidth(100);
-	column.setText("лекции");
+		column = new GridColumn(v.getGrid(), SWT.NONE);
+		column.setWidth(100);
+		column.setText(Constants.ProfessorLoad.PRACTICS);
 
-	column = new GridColumn(v.getGrid(), SWT.NONE);
-	column.setWidth(100);
-	column.setText("практика");
+		column = new GridColumn(v.getGrid(), SWT.NONE);
+		column.setWidth(100);
+		column.setText(Constants.ProfessorLoad.LABS);
 
-	column = new GridColumn(v.getGrid(), SWT.NONE);
-	column.setWidth(100);
-	column.setText("лаб.раб.");
+		v.getGrid().setLinesVisible(true);
+		v.getGrid().setHeaderVisible(true);
+		v.getGrid().setRowHeaderVisible(true);
 
-	column = new GridColumn(v.getGrid(), SWT.NONE);
-	column.setWidth(100);
-	column.setText("конс.");
+		listeners();
+	}
 
-	column = new GridColumn(v.getGrid(), SWT.NONE);
-	column.setWidth(100);
-	column.setText("курс.раб.");
+	protected abstract void listeners();
 
-	column = new GridColumn(v.getGrid(), SWT.NONE);
-	column.setWidth(100);
-	column.setText("курс.пр.");
+	protected abstract IBaseLabelProvider getLabelProvider();
 
-	column = new GridColumn(v.getGrid(), SWT.NONE);
-	column.setWidth(100);
-	column.setText("зачет");
+	protected abstract IContentProvider getContentProvider();
 
-	column = new GridColumn(v.getGrid(), SWT.NONE);
-	column.setWidth(100);
-	column.setText("экзамен");
+	protected FirstLevelCache firstLevelCache;
 
-	column = new GridColumn(v.getGrid(), SWT.NONE);
-	column.setWidth(100);
-	column.setText("итого");
+	public void setFocus() {
+		composite.setFocus();
+	}
 
-	column = new GridColumn(v.getGrid(), SWT.NONE);
-	column.setWidth(100);
-	column.setText("Дом.з.");
+	public void dispose() {
+		composite.dispose();
+	}
 
-	column = new GridColumn(v.getGrid(), SWT.NONE);
-	column.setWidth(100);
-	column.setText("Контр.раб.");
-	
-	v.getGrid().setLinesVisible(true);
-	v.getGrid().setHeaderVisible(true);
-	v.getGrid().setRowHeaderVisible(true);
-	
-	listeners();
-    }
-    
-    protected abstract void listeners();
-    
-    protected abstract Class[] getInput();
+	@Override
+	public void setInput(List<LoadEntry> elements) {
+		v.setInput(elements);
+	}
 
-    protected abstract IBaseLabelProvider getLabelProvider();
-
-    protected abstract IContentProvider getContentProvider();
-    
-    public void setFocus() {
-	composite.setFocus();
-    }
-
-    public void dispose() {
-	composite.dispose();
-    }
-    
+	@Override
+	public void setDataSource(FirstLevelCache firstLevelCache) {
+		this.firstLevelCache = firstLevelCache;
+	}
 }

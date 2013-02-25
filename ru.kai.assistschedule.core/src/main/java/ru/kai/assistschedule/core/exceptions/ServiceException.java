@@ -5,7 +5,12 @@ package ru.kai.assistschedule.core.exceptions;
  */
 public class ServiceException extends Exception {
 
-    public ServiceException(String message) {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3516919991319456463L;
+
+	public ServiceException(String message) {
         super(message);
     }
 

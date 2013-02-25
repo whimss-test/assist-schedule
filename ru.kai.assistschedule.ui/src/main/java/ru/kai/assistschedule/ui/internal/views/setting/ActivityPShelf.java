@@ -30,9 +30,9 @@ public class ActivityPShelf {
     
     private PShelf _shelf;
     
-    private Text schedullePathText;
-
-    private Text loadPathText;
+//    private Text schedullePathText;
+//
+//    private Text loadPathText;
 
     // Получаем экземпляр консоли, для вывода в него вспомогательной информации
     private IStatus status = StatusImpl.getInstance();
@@ -130,7 +130,7 @@ public class ActivityPShelf {
 	    	GlobalStorage.put("selectedSchedule", GlobalStorage.selectedSchedule);
 		try {
 		    ExcelWorker.openSchedule(GlobalStorage.selectedSchedule);
-		    FirstLevelCache firstLevelCache = new FirstLevelCache();
+		    FirstLevelCache firstLevelCache = FirstLevelCache.getInstance();
 		    firstLevelCache.readFromSheet();
 		    MainCommand.setFirstLevelCache(firstLevelCache);
 		} catch (Exception e) {
@@ -152,7 +152,6 @@ public class ActivityPShelf {
      */
     private void openProfessorsLoad() {
 	LOG.debug("OpenLoadOfProffs");
-	LOG.info("OpenLoadOfProffs");
 	try {
 	    /**
 	     * Создаем Диалог На ОТКРЫТИЕ(!) файла, прописываем title, путь по
@@ -166,10 +165,12 @@ public class ActivityPShelf {
 	    fd.setFilterExtensions(filterExt);
 	    if ((GlobalStorage.selectedProffsLoad = fd.open()) != null) {
 //		loadPathText.setText(GlobalStorage.selectedProffsLoad);
-		GlobalStorage.put("selectedProffsLoad",
-			GlobalStorage.selectedProffsLoad);
+		GlobalStorage.put("selectedProffsLoad", GlobalStorage.selectedProffsLoad);
 		try {
 		    ExcelWorker.openLoad(GlobalStorage.selectedProffsLoad);
+		    FirstLevelCache firstLevelCache = FirstLevelCache.getInstance();
+		    firstLevelCache.readLoadSheet();
+		    MainCommand.setFirstLevelCache(firstLevelCache);
 		} catch (Exception e) {
 		    status.setText(e.getLocalizedMessage());
 		}

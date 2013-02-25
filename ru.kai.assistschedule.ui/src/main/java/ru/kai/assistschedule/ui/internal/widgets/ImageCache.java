@@ -47,9 +47,9 @@ public class ImageCache {
                     if (is == null) {
                         try {
                             is = new FileInputStream(fileName);
-                            if (is== null) {
-                                return null;
-                            }
+//                            if (is== null) {
+//                                return null;
+//                            }
                         } catch (FileNotFoundException e) {
                             return null;
                         }

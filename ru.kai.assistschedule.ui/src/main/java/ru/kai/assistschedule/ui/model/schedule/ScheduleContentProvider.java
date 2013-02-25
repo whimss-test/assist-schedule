@@ -24,7 +24,6 @@ public class ScheduleContentProvider implements IStructuredContentProvider {
 
 	@Override
 	public Object[] getElements(Object inputElement) {
-		// TODO Auto-generated method stub
 		return ((List<ScheduleEntry>) inputElement).toArray();
 	}
 

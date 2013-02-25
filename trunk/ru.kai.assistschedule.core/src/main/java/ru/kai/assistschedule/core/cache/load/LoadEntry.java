@@ -21,11 +21,11 @@ public class LoadEntry {
 	
 	public int weekCount;
 	
-	FormOfClass lec = null;
+	public FormOfClass lec = null;
 	
-	FormOfClass prac = null;
+	public FormOfClass prac = null;
 	
-	FormOfClass labs = null;
+	public FormOfClass labs = null;
 
 	public LoadEntry(int anId, String aSemestr, String aDiscipline, String anEducationForm,
 			String aSpec_group, int aGrCount, int aSubGrCount, int aWeekCount,

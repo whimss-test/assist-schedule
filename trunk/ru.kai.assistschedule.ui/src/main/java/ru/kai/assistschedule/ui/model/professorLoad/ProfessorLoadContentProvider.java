@@ -1,9 +1,11 @@
 package ru.kai.assistschedule.ui.model.professorLoad;
 
+import java.util.List;
+
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
-import ru.kai.assistschedule.core.calendar.Class;
+import ru.kai.assistschedule.core.cache.load.LoadEntry;
 
 public class ProfessorLoadContentProvider implements IStructuredContentProvider {
 
@@ -21,8 +23,7 @@ public class ProfessorLoadContentProvider implements IStructuredContentProvider 
 
 	@Override
 	public Object[] getElements(Object inputElement) {
-		// TODO Auto-generated method stub
-		return (Class[]) inputElement;
+		return ((List<LoadEntry>) inputElement).toArray();
 	}
 
 }

@@ -287,10 +287,6 @@ public abstract class AbstractScheduleTable implements IScheduleTable {
 		composite.dispose();
 	}
 
-	private void createDropDownWindow() {
-
-	}
-
 	@Override
 	public void setDataSource(FirstLevelCache firstLevelCache) {
 		this.firstLevelCache = firstLevelCache;

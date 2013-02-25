@@ -5,6 +5,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ru.kai.assistschedule.core.ExcelWorker;
 import ru.kai.assistschedule.core.cache.load.FormOfClass;
 import ru.kai.assistschedule.core.cache.load.LoadEntry;
@@ -13,6 +17,16 @@ import jxl.Cell;
 import jxl.Sheet;
 
 public class FirstLevelCache {
+	
+	protected final Logger logger = LoggerFactory.getLogger(getClass());
+	
+	private static FirstLevelCache instance = new FirstLevelCache();
+	
+	private FirstLevelCache() {	}
+	
+	public static FirstLevelCache getInstance() {
+		return instance;
+	}
 	
 	//Переменные для РАСПИСАНИЯ
 	private List<ScheduleEntry> elements = new ArrayList<ScheduleEntry>();
@@ -65,6 +79,7 @@ public class FirstLevelCache {
 	//КОНЕЦ переменных для НАГРУЗКИ
 
 	public void readLoadSheet(){
+		logger.debug("starting read Professors Load...");
 		if (!ExcelWorker.isLoadOpened()){
 			return;
 		}
@@ -72,6 +87,7 @@ public class FirstLevelCache {
 		try {
 			loadSh = ExcelWorker.getSheetOfLoad("Лист1");
 		} catch (ExcelFileIsNotOpenedException e) {
+			logger.error(e.getMessage());
 			// Надо обработать правильно! По сути не должно выскакивать, т.к. проверяется выше в if
 			e.printStackTrace();
 		}
@@ -130,7 +146,8 @@ public class FirstLevelCache {
 			added = added + 1;
 			fillLoadSets(NN, semestr, disc, educationForm, spec_group, groupCount, subGroupsCount, weekCount, lec, prac, labs);
 		}
-		
+		logger.debug(String.format("Нагрузка прочитано, добавлено %d элементов", 
+				loadEntries.size()));
 	}
 	
 	/**Функция чтение с листа xls и вытаскивания записей построчно*/
@@ -190,6 +207,16 @@ public class FirstLevelCache {
 				added++;
 			}
 		}
+		logger.debug(String.format("Расписание прочитано, добавлено %d элементов", 
+				elements.size()));
+	}
+	
+	/**
+	 * Возвращаем элементы нагрузки
+	 * @return
+	 */
+	public List<LoadEntry> getLoadElements() {
+		return loadEntries;
 	}
 	
 	public List<ScheduleEntry> getElements() {

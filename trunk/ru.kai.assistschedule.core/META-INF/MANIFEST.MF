@@ -11,6 +11,7 @@ Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: ru.kai.assistschedule.core,
  ru.kai.assistschedule.core.cache,
+ ru.kai.assistschedule.core.cache.load,
  ru.kai.assistschedule.core.calendar,
  ru.kai.assistschedule.core.exceptions,
  ru.kai.assistschedule.core.xml

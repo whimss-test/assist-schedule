@@ -24,12 +24,12 @@ public class ActivityPShelf {
     
     private PShelf _shelf;
     
-    private Text schedullePathText;
-
-    private Text loadPathText;
+//    private Text schedullePathText;
+//
+//    private Text loadPathText;
 
     // Получаем экземпляр консоли, для вывода в него вспомогательной информации
-    private IStatus status = StatusImpl.getInstance();
+//    private IStatus status = StatusImpl.getInstance();
     
     public ActivityPShelf(Composite parent) {
 	parent.setLayout(new FillLayout());

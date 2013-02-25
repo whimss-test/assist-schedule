@@ -11,6 +11,8 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 
+import ru.kai.assistschedule.core.cache.load.FormOfClass;
+import ru.kai.assistschedule.core.cache.load.LoadEntry;
 import ru.kai.assistschedule.core.calendar.Class;
 
 public class ProfessorLoadLabelProvider extends LabelProvider implements
@@ -52,26 +54,42 @@ public class ProfessorLoadLabelProvider extends LabelProvider implements
 	@Override
 	public String getColumnText(Object element, int columnIndex) {
 		// Выводим данные в колонках
-		Class classRow = (Class) element;
+		LoadEntry classRow = (LoadEntry) element;
 		
 		switch (columnIndex) {
 			case 0:
-				return classRow.group;
+				return String.valueOf(classRow.id);
 			case 1:
-				return classRow.time.toString();
+				return classRow.semestr;
 			case 2:
-				return classRow.discipline;
+				return classRow.educationForm;
 			case 3:
-				return classRow.lessonType.toString();
+				return classRow.spec_group;
 			case 4:
-				return classRow.lectureRoom;
+				return classRow.discipline;
 			case 5:
-				return classRow.professor;
+				return String.valueOf(classRow.groupCount);
 			case 6:
-				return classRow.department;
+				return String.valueOf(classRow.subGroupCount);
+			case 7:
+				return String.valueOf(classRow.weekCount);
+			case 8:
+				return formOfClass(classRow.lec);
+			case 9:
+				return formOfClass(classRow.prac);
+			case 10:
+				return formOfClass(classRow.labs);
 			default:
 				return "";
 		}
+	}
+	
+	private String formOfClass(FormOfClass formOfClass) {
+		if (null == formOfClass) {
+			return "";
+		}
+		return String.format("%d/%d/%s", formOfClass.hoursInWeek,
+				formOfClass.totalHours, formOfClass.professor);
 	}
 
 }

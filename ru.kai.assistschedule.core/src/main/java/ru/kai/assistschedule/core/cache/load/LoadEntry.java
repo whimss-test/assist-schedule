@@ -39,12 +39,8 @@ public class LoadEntry {
 		this.subGroupCount = aSubGrCount;
 		this.weekCount = aWeekCount;
 		this.lec = aLec;
-		if(aPrac.hoursInWeek > 0){
-			this.prac = aPrac;
-		}
-		if(aLabs.hoursInWeek > 0){
-			this.labs = aLabs;
-		}
+		this.prac = aPrac;
+		this.labs = aLabs;
 	}
 	
 	public int hashCode() {

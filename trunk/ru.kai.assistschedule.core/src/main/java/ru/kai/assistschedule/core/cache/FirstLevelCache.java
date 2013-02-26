@@ -118,7 +118,6 @@ public class FirstLevelCache {
 				groupCount = Integer.valueOf(ExcelWorker.splitStr(curE[8].getContents())).intValue();
 				subGroupsCount = Integer.valueOf(ExcelWorker.splitStr(curE[9].getContents())).intValue();
 			} catch(Exception e){
-				//FIXME: Не знаю что делать. Надо будет организовать проверку, а пока будем пропускать запись
 				continue;
 			}
 			//Если в обоих семестрах отсутствуют часы лекций, то переходим дальше
@@ -129,19 +128,18 @@ public class FirstLevelCache {
 				try{
 					weekCount = Integer.valueOf(ExcelWorker.splitStr(curE[11].getContents())).intValue();
 				} catch (Exception e) { continue; }
-					lec = new FormOfClass(Integer.valueOf(ExcelWorker.splitStr(curE[12].getContents())).intValue(), weekCount , ExcelWorker.splitStr(curE[14].getContents()));
-					prac = new FormOfClass(Integer.valueOf(ExcelWorker.splitStr(curE[15].getContents())).intValue(), weekCount, ExcelWorker.splitStr(curE[17].getContents()));
-					labs = new FormOfClass(Integer.valueOf(ExcelWorker.splitStr(curE[18].getContents())).intValue(), weekCount, ExcelWorker.splitStr(curE[20].getContents()));
+					lec = new FormOfClass(convertToFloat(ExcelWorker.splitStr(curE[12].getContents())), weekCount , ExcelWorker.splitStr(curE[14].getContents()));
+					prac = new FormOfClass(convertToFloat(ExcelWorker.splitStr(curE[15].getContents())), weekCount, ExcelWorker.splitStr(curE[17].getContents()));
+					labs = new FormOfClass(convertToFloat(ExcelWorker.splitStr(curE[18].getContents())), weekCount, ExcelWorker.splitStr(curE[20].getContents()));
 			} else if(!ExcelWorker.splitStr(curE[46].getContents()).equals("0") && !ExcelWorker.splitStr(curE[46].getContents()).equals("")){
 				semestr = "spring";
 				try{
 					weekCount = Integer.valueOf(ExcelWorker.splitStr(curE[45].getContents())).intValue();
 				} catch (Exception e) { continue; }
-					lec = new FormOfClass(Integer.valueOf(ExcelWorker.splitStr(curE[46].getContents())).intValue(), weekCount, ExcelWorker.splitStr(curE[48].getContents()));
-					prac = new FormOfClass(Integer.valueOf(ExcelWorker.splitStr(curE[49].getContents())).intValue(), weekCount, ExcelWorker.splitStr(curE[51].getContents()));
-					labs = new FormOfClass(Integer.valueOf(ExcelWorker.splitStr(curE[52].getContents())).intValue(), weekCount, ExcelWorker.splitStr(curE[54].getContents()));
+					lec = new FormOfClass(convertToFloat(ExcelWorker.splitStr(curE[46].getContents())), weekCount, ExcelWorker.splitStr(curE[48].getContents()));
+					prac = new FormOfClass(convertToFloat(ExcelWorker.splitStr(curE[49].getContents())), weekCount, ExcelWorker.splitStr(curE[51].getContents()));
+					labs = new FormOfClass(convertToFloat(ExcelWorker.splitStr(curE[52].getContents())), weekCount, ExcelWorker.splitStr(curE[54].getContents()));
 			}
-			//FIXME: Нужно добавить валидацию данных
 			loadEntries.add(new LoadEntry(NN, semestr, disc, educationForm, spec_group, groupCount, subGroupsCount, weekCount, lec, prac, labs));
 			added = added + 1;
 			fillLoadSets(NN, semestr, disc, educationForm, spec_group, groupCount, subGroupsCount, weekCount, lec, prac, labs);
@@ -350,6 +348,17 @@ public class FirstLevelCache {
 	/**********************/
 	/**ВНУТРЕННИЕ ФУНКЦИИ**/
 	/**********************/
+
+	/**
+	 * Конвертирует из строки в число типа float, избегая ошибки
+	 * @param sNumber - строка содержащая число
+	 * @return результат конвертации
+	 */
+	private float convertToFloat(String sNumber){
+		sNumber = sNumber.equals("")?"0":sNumber;		//Если пустая строка, то ставим 0
+		sNumber = sNumber.contains(",")?sNumber.replace(",", "."):sNumber;		//Если запятая, то меняем их на точку
+		return Float.valueOf(sNumber).floatValue();
+	}
 	
 	/**
 	 * Конвертирует во внутреннее представление формы занятия

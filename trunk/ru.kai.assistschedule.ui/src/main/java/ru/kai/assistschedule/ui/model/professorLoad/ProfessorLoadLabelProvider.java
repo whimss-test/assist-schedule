@@ -88,7 +88,7 @@ public class ProfessorLoadLabelProvider extends LabelProvider implements
 		if (null == formOfClass) {
 			return "";
 		}
-		return String.format("%d/%d/%s", formOfClass.hoursInWeek,
+		return String.format("%f/%f/%s", formOfClass.hoursInWeek,
 				formOfClass.totalHours, formOfClass.professor);
 	}
 

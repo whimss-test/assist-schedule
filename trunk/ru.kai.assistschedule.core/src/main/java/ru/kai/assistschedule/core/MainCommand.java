@@ -18,9 +18,9 @@ public class MainCommand {
 		if (null == cache) {
 			return;
 		}
-		if (null != firstLevelCache && firstLevelCache.equals(cache)) {
-			return;
-		}
+//		if (null != firstLevelCache && firstLevelCache.equals(cache)) {
+//			return;
+//		}
 		
 		firstLevelCache = cache;
 		if (null != scheduleTableSetting) {

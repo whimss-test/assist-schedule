@@ -105,43 +105,63 @@ public class FirstLevelCache {
 		FormOfClass labs = null;
 		
 		for (int i = 4; i < loadSh.getRows(); i++) {
+			// Получаем строку из файла нагрузки в массив ячеек
 			Cell[] curE = loadSh.getRow(i);
+			// Начало валидации
+			// В первой (не в нулевой!) ячейке должен быть порядковый номер типа int!
 			try{
 				NN = Integer.valueOf(ExcelWorker.splitStr(curE[1].getContents())).intValue();
 			}catch(Exception e){
+				// Если не возможно конвертировать, то строка игнорируется и переходим к следующей
 				continue;
 			}
+			// Дисциплина, форма занятия и названия групп и специальностей записываются в соответствующие переменные
 			disc = ExcelWorker.splitStr(curE[2].getContents());
 			educationForm = ExcelWorker.splitStr(curE[4].getContents());
 			spec_group = ExcelWorker.splitStr(curE[5].getContents());
+			// В 8,9 ячейках должно быть указано количество групп и подгрупп. Пробуем их конвертировать
 			try{
 				groupCount = Integer.valueOf(ExcelWorker.splitStr(curE[8].getContents())).intValue();
 				subGroupsCount = Integer.valueOf(ExcelWorker.splitStr(curE[9].getContents())).intValue();
 			} catch(Exception e){
+				// Если не получается, то строка игнорируется
 				continue;
 			}
-			//Если в обоих семестрах отсутствуют часы лекций, то переходим дальше
+			// Если в обоих семестрах отсутствуют часы лекций, то переходим дальше
 			if((ExcelWorker.splitStr(curE[12].getContents()).equals("0") || ExcelWorker.splitStr(curE[12].getContents()).equals("")) && (ExcelWorker.splitStr(curE[46].getContents()).equals("0") || ExcelWorker.splitStr(curE[46].getContents()).equals(""))){
 				continue;
-			} else if(!ExcelWorker.splitStr(curE[12].getContents()).equals("0") && !ExcelWorker.splitStr(curE[12].getContents()).equals("")){
+			}// Если занятия должны проходить в первом семестре года, то количество часов часов в 12 ячейке д.б. отлично от 0
+			else if(!ExcelWorker.splitStr(curE[12].getContents()).equals("0") && !ExcelWorker.splitStr(curE[12].getContents()).equals("")){
+				// Семестр устанавливается в осень
 				semestr = "autumn";
+				// Конвертируем количество недель в семестре
 				try{
 					weekCount = Integer.valueOf(ExcelWorker.splitStr(curE[11].getContents())).intValue();
-				} catch (Exception e) { continue; }
-					lec = new FormOfClass(convertToFloat(ExcelWorker.splitStr(curE[12].getContents())), weekCount , ExcelWorker.splitStr(curE[14].getContents()));
-					prac = new FormOfClass(convertToFloat(ExcelWorker.splitStr(curE[15].getContents())), weekCount, ExcelWorker.splitStr(curE[17].getContents()));
-					labs = new FormOfClass(convertToFloat(ExcelWorker.splitStr(curE[18].getContents())), weekCount, ExcelWorker.splitStr(curE[20].getContents()));
-			} else if(!ExcelWorker.splitStr(curE[46].getContents()).equals("0") && !ExcelWorker.splitStr(curE[46].getContents()).equals("")){
+				} // Если не удалось, то пропускаем строку
+				catch (Exception e) { continue; }
+				// Создаем виды занятий для предмета: лекции, практики и лабораторные
+				lec = new FormOfClass(convertToFloat(ExcelWorker.splitStr(curE[12].getContents())), weekCount , ExcelWorker.splitStr(curE[14].getContents()));
+				prac = new FormOfClass(convertToFloat(ExcelWorker.splitStr(curE[15].getContents())), weekCount, ExcelWorker.splitStr(curE[17].getContents()));
+				labs = new FormOfClass(convertToFloat(ExcelWorker.splitStr(curE[18].getContents())), weekCount, ExcelWorker.splitStr(curE[20].getContents()));
+			}// Если занятия проходят весной, то количество лекций в 46 позиции д.б. отлично от 0
+			else if(!ExcelWorker.splitStr(curE[46].getContents()).equals("0") && !ExcelWorker.splitStr(curE[46].getContents()).equals("")){
+				// Семестр устанавлевается весна
 				semestr = "spring";
+				// Пытаемся конвертировать количество недель в семестре
 				try{
 					weekCount = Integer.valueOf(ExcelWorker.splitStr(curE[45].getContents())).intValue();
-				} catch (Exception e) { continue; }
-					lec = new FormOfClass(convertToFloat(ExcelWorker.splitStr(curE[46].getContents())), weekCount, ExcelWorker.splitStr(curE[48].getContents()));
-					prac = new FormOfClass(convertToFloat(ExcelWorker.splitStr(curE[49].getContents())), weekCount, ExcelWorker.splitStr(curE[51].getContents()));
-					labs = new FormOfClass(convertToFloat(ExcelWorker.splitStr(curE[52].getContents())), weekCount, ExcelWorker.splitStr(curE[54].getContents()));
+				} // Если не удается, то пропускаем строку
+				catch (Exception e) { continue; }
+				// Создаем виды занятий для предмета: лекции, практики и лабораторные
+				lec = new FormOfClass(convertToFloat(ExcelWorker.splitStr(curE[46].getContents())), weekCount, ExcelWorker.splitStr(curE[48].getContents()));
+				prac = new FormOfClass(convertToFloat(ExcelWorker.splitStr(curE[49].getContents())), weekCount, ExcelWorker.splitStr(curE[51].getContents()));
+				labs = new FormOfClass(convertToFloat(ExcelWorker.splitStr(curE[52].getContents())), weekCount, ExcelWorker.splitStr(curE[54].getContents()));
 			}
+			// Добавляем полученные данные в список занятий нагрузки
 			loadEntries.add(new LoadEntry(NN, semestr, disc, educationForm, spec_group, groupCount, subGroupsCount, weekCount, lec, prac, labs));
+			// Увеличиваем количество добавленных записей
 			added = added + 1;
+			// Заполняем данные для сортировки и фильтрации списка
 			fillLoadSets(NN, semestr, disc, educationForm, spec_group, groupCount, subGroupsCount, weekCount, lec, prac, labs);
 		}
 		logger.debug(String.format("Нагрузка прочитано, добавлено %d элементов", 
@@ -217,7 +237,7 @@ public class FirstLevelCache {
 		return loadEntries;
 	}
 	
-	public List<ScheduleEntry> getElements() {
+	public List<ScheduleEntry> getScheduleElements() {
 		return elements;
 	}
 

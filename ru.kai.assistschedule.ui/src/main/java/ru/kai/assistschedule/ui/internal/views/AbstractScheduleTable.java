@@ -323,7 +323,22 @@ if (null == getExcelFilter(Constants.Schedule.DEPARTMENT)) {
 
 	@Override
 	public void setInput(List<ScheduleEntry> elements) {
-		v.setInput(elements);
+		List<ScheduleEntry> elem = new ArrayList<ScheduleEntry>(elements);
+//		Map<Integer, ScheduleEntry> map = new HashMap<Integer, ScheduleEntry>();
+//		for(Integer i : firstLevelCache.getStack()) {
+//			map.put(i, elements.get(i));
+//		}
+//		for(Integer i : firstLevelCache.getStack()) {
+//			elem.remove(i);
+//		}
+		for(int i = firstLevelCache.getStack().size() - 1; i > 0; i--) {
+			elem.remove(firstLevelCache.getStack().get(i));
+		}
+		
+		v.setInput(elem);
+//		for(Integer i : firstLevelCache.getStack()) {
+//			elements.add(i, map.get(i));
+//		}
 	}
 
 	public void setFocus() {

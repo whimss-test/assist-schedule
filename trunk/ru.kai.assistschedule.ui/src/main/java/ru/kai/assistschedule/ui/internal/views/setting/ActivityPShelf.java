@@ -173,6 +173,7 @@ public class ActivityPShelf {
 		    MainCommand.setFirstLevelCache(firstLevelCache);
 		} catch (Exception e) {
 		    status.setText(e.getLocalizedMessage());
+		    LOG.debug(e.toString());
 		}
 		status.setText("Нагрузка открыта");
 	    }

@@ -5,6 +5,8 @@ import org.eclipse.nebula.widgets.pshelf.PShelfItem;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -40,7 +42,7 @@ public class ActivityPShelf {
     public ActivityPShelf(Composite parent) {
 	parent.setLayout(new FillLayout());
 	_shelf = new PShelf(parent, SWT.NONE);
-
+	
 	// Optionally, change the renderer
 	// shelf.setRenderer(new RedmondShelfRenderer());
 

@@ -214,5 +214,16 @@
             id="ru.kai.assistschedule.ui.splashHandlers.interactive">
       </splashHandler>
    </extension>
+   <extension
+         point="org.eclipse.ui.themes">
+      <theme
+            id="ru.kai.assistschedule.ui.theme1"
+            name="CustomFont">
+         <fontOverride
+               id="ru.kai.assistschedule.ui.fontOverride1"
+               value="PT Serif">
+         </fontOverride>
+      </theme>
+   </extension>
 
 </plugin>

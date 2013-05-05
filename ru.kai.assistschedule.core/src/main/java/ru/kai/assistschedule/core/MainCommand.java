@@ -24,22 +24,20 @@ public class MainCommand {
 		
 		firstLevelCache = cache;
 		if (null != scheduleTableSetting) {
-			scheduleTableSetting.setInput(firstLevelCache.getEntries());
 			scheduleTableSetting.setDataSource(firstLevelCache);
+			scheduleTableSetting.setInput(firstLevelCache.getEntries());
 		}
 		if (null != scheduleTableProcessing) {
-			scheduleTableProcessing.setInput(firstLevelCache.getEntries());
 			scheduleTableProcessing.setDataSource(firstLevelCache);
+			scheduleTableProcessing.setInput(firstLevelCache.getEntries());
 		}
 		if (null != professorLoadTableSetting) {
-			professorLoadTableSetting.setInput(firstLevelCache
-					.getLoadElements());
 			professorLoadTableSetting.setDataSource(firstLevelCache);
+			professorLoadTableSetting.setInput(firstLevelCache.getLoadElements());
 		}
 		if (null != professorLoadTableProcessing) {
-			professorLoadTableProcessing.setInput(firstLevelCache
-					.getLoadElements());
 			professorLoadTableProcessing.setDataSource(firstLevelCache);
+			professorLoadTableProcessing.setInput(firstLevelCache.getLoadElements());
 		}
 	}
 
@@ -49,8 +47,9 @@ public class MainCommand {
 		}
 		scheduleTableSetting = scheduleTable;
 		if (null != firstLevelCache) {
-			scheduleTableSetting.setInput(firstLevelCache.getEntries());
 			scheduleTableSetting.setDataSource(firstLevelCache);
+			scheduleTableSetting.setInput(firstLevelCache.getEntries());
+			
 		}
 	}
 
@@ -60,8 +59,9 @@ public class MainCommand {
 		}
 		scheduleTableProcessing = scheduleTable;
 		if (null != firstLevelCache) {
-			scheduleTableProcessing.setInput(firstLevelCache.getEntries());
 			scheduleTableProcessing.setDataSource(firstLevelCache);
+			scheduleTableProcessing.setInput(firstLevelCache.getEntries());
+			
 		}
 	}
 
@@ -72,8 +72,9 @@ public class MainCommand {
 		}
 		professorLoadTableSetting = professorLoadTable;
 		if (null != firstLevelCache) {
-			professorLoadTableSetting.setInput(firstLevelCache.getLoadElements());
 			professorLoadTableSetting.setDataSource(firstLevelCache);
+			professorLoadTableSetting.setInput(firstLevelCache.getLoadElements());
+			
 		}
 	}
 
@@ -84,8 +85,9 @@ public class MainCommand {
 		}
 		professorLoadTableProcessing = professorLoadTable;
 		if (null != firstLevelCache) {
-			professorLoadTableProcessing.setInput(firstLevelCache.getLoadElements());
 			professorLoadTableProcessing.setDataSource(firstLevelCache);
+			professorLoadTableProcessing.setInput(firstLevelCache.getLoadElements());
+			
 		}
 	}
 

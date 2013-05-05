@@ -1,11 +1,17 @@
 package ru.kai.assistschedule.ui.internal.views;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewerEditor;
 import org.eclipse.jface.viewers.ColumnViewerEditorActivationEvent;
@@ -25,12 +31,15 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.events.ShellListener;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +69,28 @@ public abstract class AbstractScheduleTable implements IScheduleTable {
 		v.setLabelProvider(getLabelProvider());
 		v.setContentProvider(getContentProvider());
 		v.getGrid().setCellSelectionEnabled(true);
-
+		
+		
+		Bundle bundle = Platform.getBundle("ru.kai.assistschedule.ui");
+		URL fileURL = bundle.getEntry("resources/font/PTF55F.TTF");
+		File file = null;
+		try {
+		    file = new File(FileLocator.resolve(fileURL).toURI());
+		} catch (URISyntaxException e1) {
+		    e1.printStackTrace();
+		} catch (IOException e1) {
+		    e1.printStackTrace();
+		}
+		
+		if (!file.exists()) {
+			throw new IllegalStateException(file.toString());
+		}
+		if (!parent.getDisplay().loadFont(file.toString())) {
+			throw new IllegalStateException(file.toString());
+		}
+		
+		v.getGrid().setFont(new Font(parent.getDisplay(), new FontData("PT Serif",10,SWT.NORMAL)));
+		
 		v.setCellEditors(new CellEditor[] { new TextCellEditor(v.getGrid()),
 				new TextCellEditor(v.getGrid()) });
 		v.setCellModifier(new ICellModifier() {
@@ -324,21 +354,12 @@ if (null == getExcelFilter(Constants.Schedule.DEPARTMENT)) {
 	@Override
 	public void setInput(List<ScheduleEntry> elements) {
 		List<ScheduleEntry> elem = new ArrayList<ScheduleEntry>(elements);
-//		Map<Integer, ScheduleEntry> map = new HashMap<Integer, ScheduleEntry>();
-//		for(Integer i : firstLevelCache.getStack()) {
-//			map.put(i, elements.get(i));
-//		}
-//		for(Integer i : firstLevelCache.getStack()) {
-//			elem.remove(i);
-//		}
-		for(int i = firstLevelCache.getStack().size() - 1; i > 0; i--) {
-			elem.remove(firstLevelCache.getStack().get(i));
+
+		for(int i = firstLevelCache.getStack().size() - 1; i >= 0; i--) {
+			elem.remove((int)firstLevelCache.getStack().get(i));
 		}
 		
 		v.setInput(elem);
-//		for(Integer i : firstLevelCache.getStack()) {
-//			elements.add(i, map.get(i));
-//		}
 	}
 
 	public void setFocus() {

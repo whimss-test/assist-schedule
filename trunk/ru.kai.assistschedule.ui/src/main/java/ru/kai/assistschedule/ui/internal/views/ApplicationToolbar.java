@@ -29,6 +29,8 @@ import org.eclipse.ui.internal.registry.PerspectiveDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ru.kai.assistschedule.ui.internal.widgets.ImageCache;
+
 
 public class ApplicationToolbar extends ContributionItem {
 
@@ -84,7 +86,13 @@ public class ApplicationToolbar extends ContributionItem {
 
             final Image image = perspectiveDescriptor.getImageDescriptor().createImage();
             toolItem.setData(KEY_PERSPECTIVE, perspectiveDescriptor);
-            toolItem.setImage(image);
+            if ("ru.kai.assistantschedule.setting.perspective".equals(
+            		((PerspectiveDescriptor)perspectiveDescriptor).getConfigElement().getAttribute("id"))) {
+            	changeImage(toolItem, ((PerspectiveDescriptor)perspectiveDescriptor)
+            			.getConfigElement().getAttribute("icon"));
+            } else {
+            	toolItem.setImage(image);            	
+            }
 
             toolItem.addDisposeListener(new DisposeListener() {
                 public void widgetDisposed(DisposeEvent e) {
@@ -113,6 +121,8 @@ public class ApplicationToolbar extends ContributionItem {
             IPerspectiveDescriptor perspectiveDescriptor = (IPerspectiveDescriptor) e.widget
                     .getData(KEY_PERSPECTIVE);
 
+            changeImage((ToolItem)e.getSource(), ((PerspectiveDescriptor)perspectiveDescriptor).getConfigElement().getAttribute("icon"));
+            
             ICommandService commandService = (ICommandService) PlatformUI.getWorkbench()
                     .getService(ICommandService.class);
 
@@ -137,6 +147,25 @@ public class ApplicationToolbar extends ContributionItem {
 //                StatusManager.getManager().handle(new Status(IStatus.ERROR, ApplicationPlugin.PLUGIN_ID, ex.getMessage(), ex));
             }
         }
+        
     }
 
+    private static void changeImage(final ToolItem item, final String imgPath) {
+    	item.getDisplay().asyncExec(new Runnable() {
+			
+			@Override
+			public void run() {
+				if(null != prevItem && null != prevImgPath) {
+					prevItem.setImage(ImageCache.getImage(prevImgPath));
+		    	}
+		    	item.setImage(ImageCache.getImage(
+		    			imgPath.substring(0, imgPath.length() - 4) + "_selected.png"));
+		    	prevItem = item;
+		    	prevImgPath = imgPath;
+			}
+		});
+    }
+    
+    private static ToolItem prevItem;
+    private static String prevImgPath;
 }

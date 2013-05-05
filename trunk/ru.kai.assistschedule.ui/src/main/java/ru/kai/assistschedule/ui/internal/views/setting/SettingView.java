@@ -1,6 +1,10 @@
 package ru.kai.assistschedule.ui.internal.views.setting;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
 public class SettingView extends ViewPart {
@@ -14,6 +18,7 @@ public class SettingView extends ViewPart {
      * it.
      */
     public void createPartControl(Composite parent) {
+//    	parent.setFont(new Font(parent.getDisplay(), new FontData("PT Serif",10,SWT.ITALIC)));
         shelf = new ActivityPShelf(parent);
     }
 

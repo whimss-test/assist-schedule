@@ -1,6 +1,7 @@
 package ru.kai.assistschedule.ui.internal;
 
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
@@ -26,5 +27,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
         configurer.setShowMenuBar(false);
         configurer.setInitialSize(new Point(1200, 700));
         configurer.setTitle("Помощник Расписания. Работает с таблицами Excel 97-2003.");
+        configurer.setShowProgressIndicator(true);
+        PlatformUI.getWorkbench().getThemeManager().setCurrentTheme("ru.kai.assistschedule.ui.theme1");
     }
 }

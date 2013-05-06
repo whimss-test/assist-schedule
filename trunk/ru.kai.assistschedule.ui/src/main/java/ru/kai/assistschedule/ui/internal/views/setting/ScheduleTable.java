@@ -2,6 +2,7 @@ package ru.kai.assistschedule.ui.internal.views.setting;
 
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.IContentProvider;
+import org.eclipse.nebula.jface.gridviewer.GridTableViewer;
 import org.eclipse.swt.widgets.Composite;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +28,7 @@ public class ScheduleTable extends AbstractScheduleTable {
 	@Override
 	protected void listeners() {
 		// TODO Auto-generated method stub
-
+		
 	}
 
 	@Override

@@ -158,6 +158,9 @@ public class ApplicationToolbar extends ContributionItem {
 				if(null != prevItem && null != prevImgPath) {
 					prevItem.setImage(ImageCache.getImage(prevImgPath));
 		    	}
+				if(item.isDisposed()) {
+					return;
+				}
 		    	item.setImage(ImageCache.getImage(
 		    			imgPath.substring(0, imgPath.length() - 4) + "_selected.png"));
 		    	prevItem = item;

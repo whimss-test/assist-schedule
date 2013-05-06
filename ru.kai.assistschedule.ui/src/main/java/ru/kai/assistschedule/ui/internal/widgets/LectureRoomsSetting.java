@@ -35,41 +35,41 @@ public class LectureRoomsSetting {
 		data.right = new FormAttachment(100, -10);
 		composite.setLayout(new FormLayout());
 		composite.setLayoutData(data);
-		
-		Text roomNumber = new Text(composite, SWT.BORDER);
-		data = new FormData();
-		data.top = new FormAttachment(0, 0);
-		data.left = new FormAttachment(0, 0);
-		roomNumber.setLayoutData(data);
-		
-		Button lecBtn = new Button(composite, SWT.CHECK);
-		lecBtn.setText("лек.");
-		data = new FormData();
-		data.top = new FormAttachment(0, 0);
-		data.left = new FormAttachment(roomNumber, 10);
-		lecBtn.setLayoutData(data);
-
-		Button pracBtn = new Button(composite, SWT.CHECK);
-		pracBtn.setText("пр.");
-		data = new FormData();
-		data.top = new FormAttachment(0, 0);
-		data.left = new FormAttachment(lecBtn, 10);
-		pracBtn.setLayoutData(data);
-
-		Button labBtn = new Button(composite, SWT.CHECK);
-		labBtn.setText("л.р.");
-		data = new FormData();
-		data.top = new FormAttachment(0, 0);
-		data.left = new FormAttachment(pracBtn, 10);
-		labBtn.setLayoutData(data);
 
 		Button addBtn = new Button(composite, SWT.PUSH);
 		addBtn.setText("Добавить");
 		data = new FormData();
 		data.top = new FormAttachment(0, 0);
-		data.left = new FormAttachment(labBtn, 10);
 		data.right = new FormAttachment(100, 0);
 		addBtn.setLayoutData(data);
+
+		Button labBtn = new Button(composite, SWT.CHECK);
+		labBtn.setText("л.р.");
+		data = new FormData();
+		data.top = new FormAttachment(0, 0);
+		data.right = new FormAttachment(addBtn, -10);
+		labBtn.setLayoutData(data);
+		
+		Button pracBtn = new Button(composite, SWT.CHECK);
+		pracBtn.setText("пр.");
+		data = new FormData();
+		data.top = new FormAttachment(0, 0);
+		data.right = new FormAttachment(labBtn, -10);
+		pracBtn.setLayoutData(data);
+
+		Button lecBtn = new Button(composite, SWT.CHECK);
+		lecBtn.setText("лек.");
+		data = new FormData();
+		data.top = new FormAttachment(0, 0);
+		data.right = new FormAttachment(pracBtn, -10);
+		lecBtn.setLayoutData(data);
+		
+		Text roomNumber = new Text(composite, SWT.BORDER);
+		data = new FormData();
+		data.top = new FormAttachment(0, 0);
+		data.left = new FormAttachment(0, 0);
+		data.right = new FormAttachment(lecBtn, -10);
+		roomNumber.setLayoutData(data);
 		
 		Label label = new Label(composite, SWT.NONE);
 		label.setText("Список аудиторий:");

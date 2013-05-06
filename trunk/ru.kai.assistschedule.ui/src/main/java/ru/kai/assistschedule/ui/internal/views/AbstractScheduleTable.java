@@ -47,7 +47,7 @@ import ru.kai.assistschedule.core.IScheduleTable;
 import ru.kai.assistschedule.core.cache.Constants;
 import ru.kai.assistschedule.core.cache.FirstLevelCache;
 import ru.kai.assistschedule.core.cache.ScheduleEntry;
-import ru.kai.assistschedule.ui.internal.views.utils.PopUp;
+import ru.kai.assistschedule.ui.internal.views.utils.Popup;
 import ru.kai.assistschedule.ui.internal.widgets.ExcelFilter;
 
 public abstract class AbstractScheduleTable implements IScheduleTable {
@@ -361,7 +361,8 @@ if (null == getExcelFilter(Constants.Schedule.DEPARTMENT)) {
 		}
 		
 		v.setInput(elem);
-		PopUp popUp = new PopUp(v.getGrid().getShell());
+		
+		Popup.make(v.getGrid().getParent(), "Расписание загружено!", 4000, SWT.COLOR_GREEN).show();
 	}
 
 	public void setFocus() {

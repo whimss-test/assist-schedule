@@ -24,172 +24,191 @@ import ru.kai.assistschedule.core.MainCommand;
 import ru.kai.assistschedule.core.cache.FirstLevelCache;
 import ru.kai.assistschedule.ui.internal.views.status.IStatus;
 import ru.kai.assistschedule.ui.internal.views.status.StatusImpl;
+import ru.kai.assistschedule.ui.internal.widgets.LectureRoomsSetting;
 import ru.kai.assistschedule.ui.internal.widgets.ProgressBarModalWindow;
 
 public class ActivityPShelf {
 
-    protected static final Logger LOG = LoggerFactory.getLogger(ActivityPShelf.class);
-    
-    private PShelf _shelf;
-    
-//    private Text schedullePathText;
-//
-//    private Text loadPathText;
+	protected static final Logger LOG = LoggerFactory
+			.getLogger(ActivityPShelf.class);
 
-    // Получаем экземпляр консоли, для вывода в него вспомогательной информации
-    private IStatus status = StatusImpl.getInstance();
-    
-    public ActivityPShelf(Composite parent) {
-	parent.setLayout(new FillLayout());
-	_shelf = new PShelf(parent, SWT.NONE);
-	
-	// Optionally, change the renderer
-	// shelf.setRenderer(new RedmondShelfRenderer());
+	private PShelf _shelf;
 
-	PShelfItem upload = new PShelfItem(_shelf, SWT.NONE);
-	upload.setText("Загрузка");
-	upload.getBody().setLayout(getGridLayout());
+	// private Text schedullePathText;
+	//
+	// private Text loadPathText;
 
-	Button uploadScheduleBtn = new Button(upload.getBody(), SWT.FLAT);
-	uploadScheduleBtn.setText("Расписание");
-	uploadScheduleBtn.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-	uploadScheduleBtn.addSelectionListener(new SelectionAdapter() {
+	// Получаем экземпляр консоли, для вывода в него вспомогательной информации
+	private IStatus status = StatusImpl.getInstance();
 
-	    @Override
-	    public void widgetSelected(SelectionEvent e) {
-		openShedule();
-	    }
-	    
-	});
-	
+	public ActivityPShelf(final Composite parent) {
+		parent.setLayout(new FillLayout());
+		_shelf = new PShelf(parent, SWT.NONE);
 
-	Button uploadProfessorsLoadBtn = new Button(upload.getBody(), SWT.FLAT);
-	uploadProfessorsLoadBtn.setText("Нагрузка");
-	uploadProfessorsLoadBtn.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-	uploadProfessorsLoadBtn.addSelectionListener(new SelectionAdapter() {
+		// Optionally, change the renderer
+		// shelf.setRenderer(new RedmondShelfRenderer());
 
-	    @Override
-	    public void widgetSelected(SelectionEvent e) {
-		openProfessorsLoad();
-	    }
-	    
-	});
-	
-	PShelfItem download = new PShelfItem(_shelf, SWT.NONE);
-	download.setText("Выгрузка");
-	download.getBody().setLayout(getGridLayout());
+		PShelfItem upload = new PShelfItem(_shelf, SWT.NONE);
+		upload.setText("Загрузка");
+		upload.getBody().setLayout(getGridLayout());
 
-	Button downloadScheduleBtn = new Button(download.getBody(), SWT.FLAT);
-	downloadScheduleBtn.setText("Расписание");
-	downloadScheduleBtn.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-	
-	PShelfItem lectureRooms = new PShelfItem(_shelf, SWT.NONE);
-	lectureRooms.setText("Аудитории");
-	lectureRooms.getBody().setLayout(getGridLayout());
+		Button uploadScheduleBtn = new Button(upload.getBody(), SWT.FLAT);
+		uploadScheduleBtn.setText("Расписание");
+		uploadScheduleBtn.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		uploadScheduleBtn.addSelectionListener(new SelectionAdapter() {
 
-	Button lectureRoomsAutocompleteBtn = new Button(lectureRooms.getBody(),
-		SWT.FLAT);
-	lectureRoomsAutocompleteBtn.setText("Автозаполнение");
-	lectureRoomsAutocompleteBtn.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-    }
-    
-    private GridLayout getGridLayout() {
-	GridLayout layout = new GridLayout();
-	layout.marginLeft = 0;
-	layout.marginRight = 0;
-	layout.marginTop = 0;
-	
-	return layout;
-    }
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				openShedule();
+			}
 
-    /**
-     * Только копируют в schedullePathText
-     * 
-     * @author Дамир
-     */
-    private void openShedule() {
-	LOG.debug("Создаем Диалог На ОТКРЫТИЕ(!) файла, прописываем title, "
-		+ "путь по умолчанию и фильтры. "
-		+ "Получаем String переменную результата и выводим её.");
-	LOG.info("Создаем Диалог На ОТКРЫТИЕ(!) файла, прописываем title, "
-		+ "путь по умолчанию и фильтры. "
-		+ "Получаем String переменную результата и выводим её.");
+		});
 
-	try {
-	    /**
-	     * Создаем Диалог На ОТКРЫТИЕ(!) файла, прописываем title, путь по
-	     * умолчанию и фильтры. Получаем String переменную результата и
-	     * выводим её.
-	     */
-	    FileDialog fd = new FileDialog(_shelf.getShell(), SWT.OPEN);
-	    fd.setText("Открыть расписание");
-	    fd.setFilterPath("C:/");
-	    String[] filterExt = { "*.xls" };
-	    fd.setFilterExtensions(filterExt);
-	    if ((GlobalStorage.selectedSchedule = fd.open()) != null) {
-//		schedullePathText.setText(GlobalStorage.selectedSchedule);
-		ProgressBarModalWindow barModalWindow = new ProgressBarModalWindow(_shelf);
-	    	GlobalStorage.put("selectedSchedule", GlobalStorage.selectedSchedule);
-		try {
-		    ExcelWorker.openSchedule(GlobalStorage.selectedSchedule);
-		    FirstLevelCache firstLevelCache = FirstLevelCache.getInstance();
-		    firstLevelCache.readFromSheet();
-		    MainCommand.setFirstLevelCache(firstLevelCache);
-		} catch (Exception e) {
-		    status.setText(e.getLocalizedMessage());
-		}
-		status.setText("Расписание открыто");
-	    }
-	    LOG.debug("openShedule has finished");
-	} catch (Exception exception) {
-	    exception.getStackTrace();
-	    LOG.error(exception.getMessage());
+		Button uploadProfessorsLoadBtn = new Button(upload.getBody(), SWT.FLAT);
+		uploadProfessorsLoadBtn.setText("Нагрузка");
+		uploadProfessorsLoadBtn.setLayoutData(new GridData(
+				GridData.FILL_HORIZONTAL));
+		uploadProfessorsLoadBtn.addSelectionListener(new SelectionAdapter() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				openProfessorsLoad();
+			}
+
+		});
+
+		PShelfItem download = new PShelfItem(_shelf, SWT.NONE);
+		download.setText("Выгрузка");
+		download.getBody().setLayout(getGridLayout());
+
+		Button downloadScheduleBtn = new Button(download.getBody(), SWT.FLAT);
+		downloadScheduleBtn.setText("Расписание");
+		downloadScheduleBtn
+				.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+
+		PShelfItem lectureRooms = new PShelfItem(_shelf, SWT.NONE);
+		lectureRooms.setText("Аудитории");
+		lectureRooms.getBody().setLayout(getGridLayout());
+
+		Button lectureRoomsAutocompleteBtn = new Button(lectureRooms.getBody(),
+				SWT.FLAT);
+		lectureRoomsAutocompleteBtn.setText("Автозаполнение");
+		lectureRoomsAutocompleteBtn.setLayoutData(new GridData(
+				GridData.FILL_HORIZONTAL));
+
+		Button lectureRoomsSettingBtn = new Button(lectureRooms.getBody(), SWT.FLAT);
+		lectureRoomsSettingBtn.setText("Настройка аудиторий");
+		lectureRoomsSettingBtn.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		lectureRoomsSettingBtn.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				new LectureRoomsSetting(parent);
+			}
+		});
 	}
-    }
 
-    /**
-     * Только копирует строку в loadPathText
-     * 
-     * @author Дамир
-     */
-    private void openProfessorsLoad() {
-	LOG.debug("OpenLoadOfProffs");
-	try {
-	    /**
-	     * Создаем Диалог На ОТКРЫТИЕ(!) файла, прописываем title, путь по
-	     * умолчанию и фильтры. Получаем String переменную результата и
-	     * выводим её.
-	     */
-	    FileDialog fd = new FileDialog(_shelf.getShell(), SWT.OPEN);
-	    fd.setText("Открыть нагрузку");
-	    fd.setFilterPath("C:/");
-	    String[] filterExt = { "*.xls" };
-	    fd.setFilterExtensions(filterExt);
-	    if ((GlobalStorage.selectedProffsLoad = fd.open()) != null) {
-//		loadPathText.setText(GlobalStorage.selectedProffsLoad);
-		GlobalStorage.put("selectedProffsLoad", GlobalStorage.selectedProffsLoad);
-		try {
-		    ExcelWorker.openLoad(GlobalStorage.selectedProffsLoad);
-		    FirstLevelCache firstLevelCache = FirstLevelCache.getInstance();
-		    firstLevelCache.readLoadSheet();
-		    MainCommand.setFirstLevelCache(firstLevelCache);
-		} catch (Exception e) {
-		    status.setText(e.getLocalizedMessage());
-		    LOG.debug(e.toString());
-		}
-		status.setText("Нагрузка открыта");
-	    }
-	} catch (Exception exception) {
-	    LOG.error(exception.getMessage());
+	private GridLayout getGridLayout() {
+		GridLayout layout = new GridLayout();
+		layout.marginLeft = 0;
+		layout.marginRight = 0;
+		layout.marginTop = 0;
+
+		return layout;
 	}
-    }
 
-    public void setFocus() {
-	_shelf.setFocus();
-    }
+	/**
+	 * Только копируют в schedullePathText
+	 * 
+	 * @author Дамир
+	 */
+	private void openShedule() {
+		LOG.debug("Создаем Диалог На ОТКРЫТИЕ(!) файла, прописываем title, "
+				+ "путь по умолчанию и фильтры. "
+				+ "Получаем String переменную результата и выводим её.");
+		LOG.info("Создаем Диалог На ОТКРЫТИЕ(!) файла, прописываем title, "
+				+ "путь по умолчанию и фильтры. "
+				+ "Получаем String переменную результата и выводим её.");
 
-    public void dispose() {
-	_shelf.dispose();
-    }
+		try {
+			/**
+			 * Создаем Диалог На ОТКРЫТИЕ(!) файла, прописываем title, путь по
+			 * умолчанию и фильтры. Получаем String переменную результата и
+			 * выводим её.
+			 */
+			FileDialog fd = new FileDialog(_shelf.getShell(), SWT.OPEN);
+			fd.setText("Открыть расписание");
+			fd.setFilterPath("C:/");
+			String[] filterExt = { "*.xls" };
+			fd.setFilterExtensions(filterExt);
+			if ((GlobalStorage.selectedSchedule = fd.open()) != null) {
+				// schedullePathText.setText(GlobalStorage.selectedSchedule);
+				// ProgressBarModalWindow barModalWindow = new
+				// ProgressBarModalWindow(_shelf);
+				GlobalStorage.put("selectedSchedule",
+						GlobalStorage.selectedSchedule);
+				try {
+					ExcelWorker.openSchedule(GlobalStorage.selectedSchedule);
+					FirstLevelCache firstLevelCache = FirstLevelCache
+							.getInstance();
+					firstLevelCache.readFromSheet();
+					MainCommand.setFirstLevelCache(firstLevelCache);
+				} catch (Exception e) {
+					status.setText(e.getLocalizedMessage());
+				}
+				status.setText("Расписание открыто");
+			}
+			LOG.debug("openShedule has finished");
+		} catch (Exception exception) {
+			exception.getStackTrace();
+			LOG.error(exception.getMessage());
+		}
+	}
+
+	/**
+	 * Только копирует строку в loadPathText
+	 * 
+	 * @author Дамир
+	 */
+	private void openProfessorsLoad() {
+		LOG.debug("OpenLoadOfProffs");
+		try {
+			/**
+			 * Создаем Диалог На ОТКРЫТИЕ(!) файла, прописываем title, путь по
+			 * умолчанию и фильтры. Получаем String переменную результата и
+			 * выводим её.
+			 */
+			FileDialog fd = new FileDialog(_shelf.getShell(), SWT.OPEN);
+			fd.setText("Открыть нагрузку");
+			fd.setFilterPath("C:/");
+			String[] filterExt = { "*.xls" };
+			fd.setFilterExtensions(filterExt);
+			if ((GlobalStorage.selectedProffsLoad = fd.open()) != null) {
+				// loadPathText.setText(GlobalStorage.selectedProffsLoad);
+				GlobalStorage.put("selectedProffsLoad",
+						GlobalStorage.selectedProffsLoad);
+				try {
+					ExcelWorker.openLoad(GlobalStorage.selectedProffsLoad);
+					FirstLevelCache firstLevelCache = FirstLevelCache
+							.getInstance();
+					firstLevelCache.readLoadSheet();
+					MainCommand.setFirstLevelCache(firstLevelCache);
+				} catch (Exception e) {
+					status.setText(e.getLocalizedMessage());
+					LOG.debug(e.toString());
+				}
+				status.setText("Нагрузка открыта");
+			}
+		} catch (Exception exception) {
+			LOG.error(exception.getMessage());
+		}
+	}
+
+	public void setFocus() {
+		_shelf.setFocus();
+	}
+
+	public void dispose() {
+		_shelf.dispose();
+	}
 
 }

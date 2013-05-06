@@ -87,5 +87,85 @@ public class Class {
 		}
 		return true;
 	}
+
+	public boolean isStreamClass(Object obj){
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof Class)) {
+			return false;
+		}
+		Class other = (Class) obj;
+		if (lectureRoom == null) {
+			if (other.lectureRoom != null) {
+				return false;
+			}
+		} else if (!lectureRoom.equals(other.lectureRoom)) {
+			return false;
+		}
+		if (discipline == null) {
+			if (other.discipline != null) {
+				return false;
+			}
+		} else if (!discipline.equals(other.discipline)) {
+			return false;
+		}
+		if (lessonType != other.lessonType) {
+			return false;
+		}
+		if (department == null) {
+			if (other.department != null) {
+				return false;
+			}
+		} else if (!department.equals(other.department)) {
+			return false;
+		}
+		if (professor == null) {
+			if (other.professor != null) {
+				return false;
+			}
+		} else if (!professor.equals(other.professor)) {
+			return false;
+		}
+		if (time != other.time) {
+			return false;
+		}
+		return true;
+	}
+	
+	public boolean isTimeAndClassroomEquals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof Class)) {
+			return false;
+		}
+		Class other = (Class) obj;
+		if (lectureRoom == null) {
+			if (other.lectureRoom != null) {
+				return false;
+			}
+		} else if (!lectureRoom.equals(other.lectureRoom)) {
+			return false;
+		}
+		if (time != other.time) {
+			return false;
+		}
+		return true;
+	}
+
+	public Class getEntryByTimeAndClassroom(Class newClass){
+		if (isTimeAndClassroomEquals(newClass)){
+			return this;
+		} else {
+			return null;
+		}
+	}
 	
 }

@@ -27,6 +27,263 @@ public class SemestrBuilder {
 		GC.setTime(begin);
 	}
 
-	public static void addLesson(){} 
+	public boolean isStreamClass(int day, Class newClass){
+		boolean result = false;
+		for(int i = 0; i < this.semestr.size(); i++){
+			if(semestr.get(i).isStreamClass(day, newClass)){
+				return true;
+			}
+		}
+		return result;
+	} 
+
+	public boolean isStreamClassInEvenWeek(int day, Class newClass){
+		boolean result = false;
+		for(int i = 0; i < this.semestr.size(); i++){
+			if ( (i+1)%2 == 1 ){//Избегаем нечетных недель
+				continue;
+			}
+			if(semestr.get(i).isStreamClass(day, newClass)){
+				return true;
+			}
+		}
+		return result;
+	}
+	
+	public boolean isStreamClassInUnevenWeek(int day, Class newClass){
+		boolean result = false;
+		for(int i = 0; i < this.semestr.size(); i++){
+			if ( (i+1)%2 == 0 ){//Избегаем четных недель
+				continue;
+			}
+			if(semestr.get(i).isStreamClass(day, newClass)){
+				return true;
+			}
+		}
+		return result;
+	} 
+
+	public boolean isStreamClassBeforeTheDate(Calendar dateOfTheDay, int day, Class newClass) {
+		boolean result = false;
+		for(int i = 0; i < this.semestr.size(); i++){
+			if(semestr.get(i).isStreamClassBeforeTheDate(dateOfTheDay, day, newClass)){
+				return true;
+			}
+		}
+		return result;
+	}
+
+	public boolean isStreamClassAfterTheDate(Calendar dateOfTheDay, int day, Class newClass) {
+		boolean result = false;
+		for(int i = 0; i < this.semestr.size(); i++){
+			if(semestr.get(i).isStreamClassAfterTheDate(dateOfTheDay, day, newClass)){
+				return true;
+			}
+		}
+		return result;
+	}
+	
+	public Class getClassByTimeAndClassroom(int day, Class newClass){
+		for(int i = 0; i < this.semestr.size(); i++){
+			Class entry = semestr.get(i).getClassByTimeAndClassroom(day, newClass);
+			if (entry != null){
+				return entry;
+			}
+		}
+		return null;
+	} 
+
+	public Class getClassByTimeAndClassroomInEvenWeek(int day, Class newClass){
+		for(int i = 0; i < this.semestr.size(); i++){
+			if ( (i+1)%2 == 1 ){//Избегаем нечетных недель
+				continue;
+			}
+			Class entry = semestr.get(i).getClassByTimeAndClassroom(day, newClass);
+			if (entry != null){
+				return entry;
+			}
+		}
+		return null;
+	} 
+
+	public Class getClassByTimeAndClassroomInUnevenWeek(int day, Class newClass){
+		for(int i = 0; i < this.semestr.size(); i++){
+			if ( (i+1)%2 == 0 ){//Избегаем четных недель
+				continue;
+			}
+			Class entry = semestr.get(i).getClassByTimeAndClassroom(day, newClass);
+			if (entry != null){
+				return entry;
+			}
+		}
+		return null;
+	} 
+
+	public Class getClassByTimeAndClassroomBeforeTheDate(Calendar dateOfTheDay, int day, Class newClass) {
+		for(int i = 0; i < this.semestr.size(); i++){
+			Class entry = semestr.get(i).getClassByTimeAndClassroomBeforeTheDate(dateOfTheDay, day, newClass);
+			if (entry != null){
+				return entry;
+			}
+		}
+		return null;
+	}
+
+	public Class getClassByTimeAndClassroomAfterTheDate(Calendar dateOfTheDay, int day, Class newClass) {
+		for(int i = 0; i < this.semestr.size(); i++){
+			Class entry = semestr.get(i).getClassByTimeAndClassroomAfterTheDate(dateOfTheDay, day, newClass);
+			if (entry != null){
+				return entry;
+			}
+		}
+		return null;
+	}
+	
+	public boolean contains(int day, Class newClass){
+		boolean result = false;
+		for(int i = 0; i < this.semestr.size(); i++){
+			if(semestr.get(i).contains(day, newClass)){
+				return true;
+			}
+		}
+		return result;
+	} 
+
+	public boolean containsInEvenWeek(int day, Class newClass){
+		boolean result = false;
+		for(int i = 0; i < this.semestr.size(); i++){
+			if ( (i+1)%2 == 1 ){//Избегаем нечетных недель
+				continue;
+			}
+			if (semestr.get(i).contains(day, newClass)){
+				return true;
+			}
+		}
+		return result;
+	} 
+	
+	public boolean containsInUnevenWeek(int day, Class newClass){
+		boolean result = false;
+		for(int i = 0; i < this.semestr.size(); i++){
+			if ( (i+1)%2 == 0 ){//Избегаем четных недель
+				continue;
+			}
+			if (semestr.get(i).contains(day, newClass)){
+				return true;
+			}
+		}
+		return result;
+	} 
+
+	public boolean containsBeforeTheDate(Calendar dateOfTheDay, int day, Class newClass) {
+		boolean result = false;
+		for(int i = 0; i < this.semestr.size(); i++){
+			if (semestr.get(i).containsBeforeTheDate(dateOfTheDay, day, newClass)){
+				return true;
+			}
+		}
+		return result;
+	}
+
+	public boolean containsAfterTheDate(Calendar dateOfTheDay, int day, Class newClass) {
+		boolean result = false;
+		for(int i = 0; i < this.semestr.size(); i++){
+			if (semestr.get(i).containsAfterTheDate(dateOfTheDay, day, newClass)){
+				return true;
+			}
+		}
+		return result;
+	}
+	
+	public void addToAllSemestr(int day, Class newClass){
+		for(int i = 0; i < this.semestr.size(); i++){
+			semestr.get(i).addToAllSemestr(day, newClass);
+		}
+	}
+
+	public void addToEvenWeeksOfSemestr(int day, Class newClass){
+		for(int i = 0; i < this.semestr.size(); i++){
+			if ( (i+1)%2 == 1 ){//Избегаем нечетных недель
+				continue;
+			}
+			semestr.get(i).addToAllSemestr(day, newClass);
+		}
+	}
+
+	public void addToUnevenWeeksOfSemestr(int day, Class newClass){
+		for(int i = 0; i < this.semestr.size(); i++){
+			if ( (i+1)%2 == 0 ){//Избегаем четных недель
+				continue;
+			}
+			semestr.get(i).addToAllSemestr(day, newClass);
+		}
+	}
+	
+	public void addBeforeTheDate(Calendar dateOfTheDay, int day, Class newClass) {
+		for(int i = 0; i < this.semestr.size(); i++){
+			semestr.get(i).addBeforeTheDate(dateOfTheDay, day, newClass);
+		}
+	}
+
+	public void addAfterTheDate(Calendar dateOfTheDay, int day, Class newClass) {
+		for(int i = 0; i < this.semestr.size(); i++){
+			semestr.get(i).addAfterTheDate(dateOfTheDay, day, newClass);
+		}
+	}
+	
+	public void addGroupToStream(int day, Class newClass){
+		for(int i = 0; i < this.semestr.size(); i++){
+			semestr.get(i).addGroupToStream(day, newClass);
+		}
+	}
+
+	public void addGroupToStreamInEvenWeek(int day, Class newClass){
+		for(int i = 0; i < this.semestr.size(); i++){
+			if ( (i+1)%2 == 1 ){//Избегаем нечетных недель
+				continue;
+			}
+			semestr.get(i).addGroupToStream(day, newClass);
+		}
+	}
+
+	public void addGroupToStreamInUnevenWeek(int day, Class newClass){
+		for(int i = 0; i < this.semestr.size(); i++){
+			if ( (i+1)%2 == 0 ){//Избегаем четных недель
+				continue;
+			}
+			semestr.get(i).addGroupToStream(day, newClass);
+		}
+	}
+
+	public void addGroupToStreamBeforeTheDate(Calendar dateOfTheDay, int day, Class newClass) {
+		for(int i = 0; i < this.semestr.size(); i++){
+			semestr.get(i).addGroupToStreamBeforeTheDate(dateOfTheDay, day, newClass);
+		}
+	}
+
+	public void addGroupToStreamAfterTheDate(Calendar dateOfTheDay, int day, Class newClass) {
+		for(int i = 0; i < this.semestr.size(); i++){
+			semestr.get(i).addGroupToStreamAfterTheDate(dateOfTheDay, day, newClass);
+		}
+	}
+
+	public boolean isDatesAreEqual(Calendar dateOfTheDay, int day, Class newClass) {
+		boolean result = false;
+		for(int i = 0; i < this.semestr.size(); i++){
+			if(semestr.get(i).isDateAreEqual(dateOfTheDay, day, newClass)){
+				return true;
+			}
+		}
+		return result;
+	}
+
+	public Calendar getDateOfClassBegining(Calendar dateOfTheDay, int day, Class newClass) {
+		for(int i = 0; i < this.semestr.size(); i++){
+			Calendar entry = semestr.get(i).getDateOfClassBegining(dateOfTheDay, day, newClass);
+			if (entry != null)
+				return entry;
+		}
+		return null;
+	}
 
 }

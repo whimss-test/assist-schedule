@@ -53,13 +53,16 @@ import ru.kai.assistschedule.ui.internal.widgets.ExcelFilter;
 public abstract class AbstractScheduleTable implements IScheduleTable {
 
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
-	
+
 	private GridTableViewer v;
 
 	private Composite composite;
-	
-	private Map<String, ExcelFilter> excelFilterWindows = 
-			new HashMap<String, ExcelFilter>();
+
+	/**
+	 * Сохраняемые настройки окна фильтра
+	 */
+	private Map<String, List<Object>> excelFilterPreferences = 
+			new HashMap<String, List<Object>>();
 
 	public AbstractScheduleTable(Composite parent) {
 		parent.setLayout(new FillLayout());
@@ -70,28 +73,29 @@ public abstract class AbstractScheduleTable implements IScheduleTable {
 		v.setLabelProvider(getLabelProvider());
 		v.setContentProvider(getContentProvider());
 		v.getGrid().setCellSelectionEnabled(true);
-		
-		
+
 		Bundle bundle = Platform.getBundle("ru.kai.assistschedule.ui");
 		URL fileURL = bundle.getEntry("resources/font/PTF55F.TTF");
 		File file = null;
 		try {
-		    file = new File(FileLocator.resolve(fileURL).toURI());
+			file = new File(FileLocator.resolve(fileURL).toURI());
 		} catch (URISyntaxException e1) {
-		    e1.printStackTrace();
+			e1.printStackTrace();
 		} catch (IOException e1) {
-		    e1.printStackTrace();
+			e1.printStackTrace();
 		}
-		
+
 		if (!file.exists()) {
 			throw new IllegalStateException(file.toString());
 		}
 		if (!parent.getDisplay().loadFont(file.toString())) {
 			throw new IllegalStateException(file.toString());
 		}
-		
-		v.getGrid().setFont(new Font(parent.getDisplay(), new FontData("PT Serif",10,SWT.NORMAL)));
-		
+
+		v.getGrid().setFont(
+				new Font(parent.getDisplay(), new FontData("PT Serif", 10,
+						SWT.NORMAL)));
+
 		v.setCellEditors(new CellEditor[] { new TextCellEditor(v.getGrid()),
 				new TextCellEditor(v.getGrid()) });
 		v.setCellModifier(new ICellModifier() {
@@ -139,14 +143,12 @@ public abstract class AbstractScheduleTable implements IScheduleTable {
 			public void widgetSelected(SelectionEvent e) {
 				// TODO Auto-generated method stub
 				super.widgetSelected(e);
-				if (null == getExcelFilter(Constants.Schedule.GROUP)) {
-					setExcelFilter(groupColumn, new ArrayList<String>(firstLevelCache.getGroupNames()));
-				}
-				getExcelFilter(Constants.Schedule.GROUP).show();
+				makeExcelFilter(groupColumn,
+						new ArrayList<String>(firstLevelCache.getGroupNames()))
+						.show();
 			}
-			
+
 		});
-		
 
 		final GridColumn dayColumn = new GridColumn(v.getGrid(), SWT.NONE);
 		dayColumn.setWidth(100);
@@ -157,15 +159,13 @@ public abstract class AbstractScheduleTable implements IScheduleTable {
 			public void widgetSelected(SelectionEvent e) {
 				// TODO Auto-generated method stub
 				super.widgetSelected(e);
-				if (null == getExcelFilter(Constants.Schedule.DAY_OF_WEEK)) {
-					setExcelFilter(dayColumn, new ArrayList<String>(firstLevelCache.getDaysOfWeek()));
-								
-				}
-				getExcelFilter(Constants.Schedule.DAY_OF_WEEK).show();
+				makeExcelFilter(dayColumn,
+						new ArrayList<String>(firstLevelCache.getDaysOfWeek()))
+						.show();
 			}
-			
+
 		});
-		
+
 		final GridColumn timeColumn = new GridColumn(v.getGrid(), SWT.NONE);
 		timeColumn.setWidth(100);
 		timeColumn.setText(Constants.Schedule.TIME);
@@ -175,15 +175,13 @@ public abstract class AbstractScheduleTable implements IScheduleTable {
 			public void widgetSelected(SelectionEvent e) {
 				// TODO Auto-generated method stub
 				super.widgetSelected(e);
-if (null == getExcelFilter(Constants.Schedule.TIME)) {
-	setExcelFilter(timeColumn, new ArrayList<String>(firstLevelCache.getTimes()));
-				
-				}
-				getExcelFilter(Constants.Schedule.TIME).show();
+				makeExcelFilter(timeColumn,
+						new ArrayList<String>(firstLevelCache.getTimes()))
+						.show();
 			}
-			
+
 		});
-		
+
 		final GridColumn dateColumn = new GridColumn(v.getGrid(), SWT.NONE);
 		dateColumn.setWidth(100);
 		dateColumn.setText(Constants.Schedule.DATE);
@@ -193,16 +191,15 @@ if (null == getExcelFilter(Constants.Schedule.TIME)) {
 			public void widgetSelected(SelectionEvent e) {
 				// TODO Auto-generated method stub
 				super.widgetSelected(e);
-if (null == getExcelFilter(Constants.Schedule.DATE)) {
-	setExcelFilter(dateColumn, new ArrayList<String>(firstLevelCache.getDates()));
-					
-				}
-				getExcelFilter(Constants.Schedule.DATE).show();
+				makeExcelFilter(dateColumn,
+						new ArrayList<String>(firstLevelCache.getDates()))
+						.show();
 			}
-			
+
 		});
 
-		final GridColumn disciplineColumn = new GridColumn(v.getGrid(), SWT.NONE);
+		final GridColumn disciplineColumn = new GridColumn(v.getGrid(),
+				SWT.NONE);
 		disciplineColumn.setWidth(100);
 		disciplineColumn.setText(Constants.Schedule.DISCIPLINE);
 		disciplineColumn.addSelectionListener(new SelectionAdapter() {
@@ -211,16 +208,15 @@ if (null == getExcelFilter(Constants.Schedule.DATE)) {
 			public void widgetSelected(SelectionEvent e) {
 				// TODO Auto-generated method stub
 				super.widgetSelected(e);
-if (null == getExcelFilter(Constants.Schedule.DISCIPLINE)) {
-	setExcelFilter(disciplineColumn, new ArrayList<String>(firstLevelCache.getDisciplines()));
-					
-				}
-				getExcelFilter(Constants.Schedule.DISCIPLINE).show();
+				makeExcelFilter(disciplineColumn,
+						new ArrayList<String>(firstLevelCache.getDisciplines()))
+						.show();
 			}
-			
+
 		});
 
-		final GridColumn lessonTypeColumn = new GridColumn(v.getGrid(), SWT.NONE);
+		final GridColumn lessonTypeColumn = new GridColumn(v.getGrid(),
+				SWT.NONE);
 		lessonTypeColumn.setWidth(100);
 		lessonTypeColumn.setText(Constants.Schedule.LESSON_TYPE);
 		lessonTypeColumn.addSelectionListener(new SelectionAdapter() {
@@ -229,13 +225,11 @@ if (null == getExcelFilter(Constants.Schedule.DISCIPLINE)) {
 			public void widgetSelected(SelectionEvent e) {
 				// TODO Auto-generated method stub
 				super.widgetSelected(e);
-if (null == getExcelFilter(Constants.Schedule.LESSON_TYPE)) {
-	setExcelFilter(lessonTypeColumn, new ArrayList<String>(firstLevelCache.getLessonTypes()));
-					
-				}
-				getExcelFilter(Constants.Schedule.LESSON_TYPE).show();
+				makeExcelFilter(lessonTypeColumn,
+						new ArrayList<String>(firstLevelCache.getLessonTypes()))
+						.show();
 			}
-			
+
 		});
 
 		final GridColumn classRoomColumn = new GridColumn(v.getGrid(), SWT.NONE);
@@ -247,13 +241,11 @@ if (null == getExcelFilter(Constants.Schedule.LESSON_TYPE)) {
 			public void widgetSelected(SelectionEvent e) {
 				// TODO Auto-generated method stub
 				super.widgetSelected(e);
-if (null == getExcelFilter(Constants.Schedule.CLASSROOM)) {
-	setExcelFilter(classRoomColumn, new ArrayList<String>(firstLevelCache.getClassRooms()));
-				
-				}
-				getExcelFilter(Constants.Schedule.CLASSROOM).show();
+				makeExcelFilter(classRoomColumn,
+						new ArrayList<String>(firstLevelCache.getClassRooms()))
+						.show();
 			}
-			
+
 		});
 
 		final GridColumn buildingColumn = new GridColumn(v.getGrid(), SWT.NONE);
@@ -265,13 +257,11 @@ if (null == getExcelFilter(Constants.Schedule.CLASSROOM)) {
 			public void widgetSelected(SelectionEvent e) {
 				// TODO Auto-generated method stub
 				super.widgetSelected(e);
-if (null == getExcelFilter(Constants.Schedule.BUILDING)) {
-	setExcelFilter(buildingColumn, new ArrayList<String>(firstLevelCache.getBuildings()));
-				
-				}
-				getExcelFilter(Constants.Schedule.BUILDING).show();
+				makeExcelFilter(buildingColumn,
+						new ArrayList<String>(firstLevelCache.getBuildings()))
+						.show();
 			}
-			
+
 		});
 
 		final GridColumn positionColumn = new GridColumn(v.getGrid(), SWT.NONE);
@@ -283,13 +273,11 @@ if (null == getExcelFilter(Constants.Schedule.BUILDING)) {
 			public void widgetSelected(SelectionEvent e) {
 				// TODO Auto-generated method stub
 				super.widgetSelected(e);
-if (null == getExcelFilter(Constants.Schedule.POSITION)) {
-	setExcelFilter(positionColumn, new ArrayList<String>(firstLevelCache.getPositions()));
-			
-				}
-				getExcelFilter(Constants.Schedule.POSITION).show();
+				makeExcelFilter(positionColumn,
+						new ArrayList<String>(firstLevelCache.getPositions()))
+						.show();
 			}
-			
+
 		});
 
 		final GridColumn professorColumn = new GridColumn(v.getGrid(), SWT.NONE);
@@ -301,16 +289,15 @@ if (null == getExcelFilter(Constants.Schedule.POSITION)) {
 			public void widgetSelected(SelectionEvent e) {
 				// TODO Auto-generated method stub
 				super.widgetSelected(e);
-if (null == getExcelFilter(Constants.Schedule.PROFESSOR)) {
-	setExcelFilter(professorColumn, new ArrayList<String>(firstLevelCache.getProfessors()));
-					
-				}
-				getExcelFilter(Constants.Schedule.PROFESSOR).show();
+				makeExcelFilter(professorColumn,
+						new ArrayList<String>(firstLevelCache.getProfessors()))
+						.show();
 			}
-			
+
 		});
 
-		final GridColumn departmentColumn = new GridColumn(v.getGrid(), SWT.NONE);
+		final GridColumn departmentColumn = new GridColumn(v.getGrid(),
+				SWT.NONE);
 		departmentColumn.setWidth(100);
 		departmentColumn.setText(Constants.Schedule.DEPARTMENT);
 		departmentColumn.addSelectionListener(new SelectionAdapter() {
@@ -319,13 +306,11 @@ if (null == getExcelFilter(Constants.Schedule.PROFESSOR)) {
 			public void widgetSelected(SelectionEvent e) {
 				// TODO Auto-generated method stub
 				super.widgetSelected(e);
-if (null == getExcelFilter(Constants.Schedule.DEPARTMENT)) {
-	setExcelFilter(departmentColumn, new ArrayList<String>(firstLevelCache.getDepartments()));
-				
-				}
-				getExcelFilter(Constants.Schedule.DEPARTMENT).show();
+				makeExcelFilter(departmentColumn,
+						new ArrayList<String>(firstLevelCache.getDepartments()))
+						.show();
 			}
-			
+
 		});
 
 		// v.setInput(getInput());
@@ -335,13 +320,18 @@ if (null == getExcelFilter(Constants.Schedule.DEPARTMENT)) {
 
 		listeners();
 	}
-	
-	private void setExcelFilter(GridColumn column, List<String> list) {
-		excelFilterWindows.put(column.getText(), new ExcelFilter(column, v, list));
+
+	private ExcelFilter makeExcelFilter(GridColumn column, List<String> list) {
+		return new ExcelFilter(column, v, list);
 	}
-	
-	private ExcelFilter getExcelFilter(String columnName) {
-		return excelFilterWindows.get(columnName);
+
+	/**
+	 * Ссылка на настройки фильтра по названию колонки
+	 * @param columnName
+	 * @return
+	 */
+	private List<Object> getExcelFilter(String columnName) {
+		return excelFilterPreferences.get(columnName);
 	}
 
 	protected abstract void listeners();
@@ -349,20 +339,21 @@ if (null == getExcelFilter(Constants.Schedule.DEPARTMENT)) {
 	protected abstract IBaseLabelProvider getLabelProvider();
 
 	protected abstract IContentProvider getContentProvider();
-	
+
 	protected FirstLevelCache firstLevelCache;
 
 	@Override
 	public void setInput(List<ScheduleEntry> elements) {
 		List<ScheduleEntry> elem = new ArrayList<ScheduleEntry>(elements);
 
-		for(int i = firstLevelCache.getStack().size() - 1; i >= 0; i--) {
-			elem.remove((int)firstLevelCache.getStack().get(i));
+		for (int i = firstLevelCache.getStack().size() - 1; i >= 0; i--) {
+			elem.remove((int) firstLevelCache.getStack().get(i));
 		}
-		
+
 		v.setInput(elem);
-		
-		Popup.make(v.getGrid().getParent(), "Расписание загружено!", 4000, SWT.COLOR_GREEN).show();
+
+		Popup.make(v.getGrid().getParent(), "Расписание загружено!", 4000,
+				SWT.COLOR_GREEN).show();
 	}
 
 	public void setFocus() {

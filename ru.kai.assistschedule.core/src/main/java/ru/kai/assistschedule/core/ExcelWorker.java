@@ -1378,5 +1378,31 @@ public class ExcelWorker {
 			return null;
 	}
 
+	/**
+	 * 
+	 * @param AddedEntry
+	 * @param newEntry
+	 * @param console
+	 */
+	private static void errorAnalysis(Class AddedEntry, Class newEntry, Text console){
+		String errorMsg = " Группы: " + AddedEntry.group + " и " + newEntry.group;
+		if( !AddedEntry.discipline.equals(newEntry.discipline) ){
+			errorMsg += " Не совпадение дисциплин!\n";
+			errorMsg += "Существующая запись: " + AddedEntry.discipline + "\n";
+			errorMsg += "Добавляемая  запись: " + newEntry.discipline + "\n\n";
+		} else if( !AddedEntry.professor.equals(newEntry.professor) ){
+			errorMsg += " Не совпадение преподавателя!\n";
+			errorMsg += "Существующая запись: " + AddedEntry.professor + "\n";
+			errorMsg += "Добавляемая  запись: " + newEntry.professor + "\n\n";
+		} else if( !AddedEntry.lessonType.equals(newEntry.lessonType) ){
+			errorMsg += " Не совпадает форма занятий!\n\n";
+		} else if( !AddedEntry.department.equals(newEntry.department) ){
+			errorMsg += " Не совпадает кафедра!\n";
+			errorMsg += "Существующая запись: " + AddedEntry.department + "\n";
+			errorMsg += "Добавляемая  запись: " + newEntry.department + "\n\n";
+		}
+		console.append(errorMsg);
+	}
+
     
 }

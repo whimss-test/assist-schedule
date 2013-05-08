@@ -49,13 +49,13 @@ public class Popup {
 		// define a region that looks like a key hole
 	    Region region = new Region();
 //	    region.add(new int[] { 0, 0, 0, 60, 60, 60, 60, 0 });
-	    region.add(circle(20, 220, 180));
-	    region.add(circle(20, 20, 180));
+	    region.add(circle(20, 220, 100));
+	    region.add(circle(20, 20, 100));
 	    region.add(circle(20, 220, 20));
 	    region.add(circle(20, 20, 20));
 //	    region.subtract(circle(90, 100, 100));
-	    region.add(new int[] { 20, 0, 20, 200, 220, 200, 220, 0 });
-	    region.add(new int[] { 0, 20, 0, 180, 240, 180, 240, 20 });
+	    region.add(new int[] { 20, 0, 20, 120, 220, 120, 220, 0 });
+	    region.add(new int[] { 0, 20, 0, 100, 240, 100, 240, 20 });
 
 //	    region.subtract(circle(20, 67, 50));
 //	    region.subtract(new int[] { 67, 50, 55, 105, 79, 105 });
@@ -132,7 +132,7 @@ public class Popup {
 	    labelClosePopup.pack();
 	    
 	    shell.setLocation(parent.getShell().toDisplay(0, 0).x + parent.getShell().getBounds().width - 260, 
-	    		parent.getShell().toDisplay(0, 0).y + parent.getShell().getBounds().height - 240);
+	    		parent.getShell().toDisplay(0, 0).y + parent.getShell().getBounds().height - 240 + 80);
 	    shell.setAlpha(0);
 	    
 	    new Thread(new Runnable() {
@@ -181,7 +181,7 @@ public class Popup {
 			            break; 
 			        }
 			        try {
-						TimeUnit.MILLISECONDS.sleep(50);
+						TimeUnit.MILLISECONDS.sleep(10);
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -206,7 +206,7 @@ public class Popup {
 			            break; 
 			        }
 			        try {
-						TimeUnit.MILLISECONDS.sleep(50);
+						TimeUnit.MILLISECONDS.sleep(10);
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();

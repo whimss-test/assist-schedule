@@ -1,7 +1,7 @@
 /**
  * 
  */
-package ru.kai.assistschedule.ui.internal.views.status;
+package ru.kai.assistschedule.core.external.interfaces;
 
 import org.eclipse.swt.graphics.Font;
 
@@ -17,7 +17,7 @@ public interface IStatus {
    public void setFont(Font font);
    
    public void append(String string);
-   
-   public void appendLink(String link);
 
+   public void appendLink(String link);
+   
 }

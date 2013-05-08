@@ -7,10 +7,6 @@ public class SheduleIsNotOpenedException extends Exception {
 		super();
 	}
 
-	public SheduleIsNotOpenedException(String message, Throwable arg0, boolean arg1, boolean arg2) {
-		super(message, arg0, arg1, arg2);
-	}
-
 	public SheduleIsNotOpenedException(String message, Throwable arg0) {
 		super(message, arg0);
 	}

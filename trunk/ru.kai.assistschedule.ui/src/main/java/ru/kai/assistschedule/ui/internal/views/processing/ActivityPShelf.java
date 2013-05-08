@@ -37,255 +37,277 @@ import ru.kai.assistschedule.ui.internal.views.status.StatusImpl;
 
 public class ActivityPShelf {
 
-    protected static final Logger LOG = LoggerFactory
-	    .getLogger(ActivityPShelf.class);
+	protected static final Logger LOG = LoggerFactory
+			.getLogger(ActivityPShelf.class);
 
-    private PShelf _shelf;
+	private PShelf _shelf;
 
-//    private Text schedullePathText;
-//
-//    private Text loadPathText;
+	// private Text schedullePathText;
+	//
+	// private Text loadPathText;
 
-    // Получаем экземпляр консоли, для вывода в него вспомогательной информации
-    private IStatus status = StatusImpl.getInstance();
+	// Получаем экземпляр консоли, для вывода в него вспомогательной информации
+	private IStatus status = StatusImpl.getInstance();
 
-    private Button _findProfessorsBtn;
-    
-    private Button _fallBtn;
+	private Button _findProfessorsBtn;
 
-    private Button _springBtn;
-    
-    private Combo _matchesPercentagesCombo;
-    
-    private Button _generateScheduleBtn;
-    
-    private final CDateTime _fromCdt;
-    
-    private final CDateTime _toCdt;
-    
-    public ActivityPShelf(Composite parent) {
-	parent.setLayout(new FillLayout());
-	_shelf = new PShelf(parent, SWT.NONE);
+	private Button _fallBtn;
 
-	// Optionally, change the renderer
-	// shelf.setRenderer(new RedmondShelfRenderer());
+	private Button _springBtn;
 
-	PShelfItem professorsShelf = new PShelfItem(_shelf, SWT.NONE);
-	professorsShelf.setText("Преподователи");
-	professorsShelf.getBody().setLayout(getGridLayout());
+	private Combo _matchesPercentagesCombo;
 
-	// Create the first Group
-	Group semesterGroup = new Group(professorsShelf.getBody(),
-		SWT.SHADOW_IN);
-	semesterGroup.setText("Семестр");
-	semesterGroup.setLayout(new RowLayout(SWT.VERTICAL));
-	semesterGroup.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-	_fallBtn = new Button(semesterGroup, SWT.RADIO);
-	_fallBtn.setText("Осень");
-	_fallBtn.setSelection(true);
-	
-	_springBtn = new Button(semesterGroup, SWT.RADIO);
-	_springBtn.setText("Весна");
+	private Button _generateScheduleBtn;
 
-	String matchesPercentages[] = { "50", "75", "100" };
-	Group matchesPercentagesGroup = new Group(professorsShelf.getBody(),
-		SWT.SHADOW_IN);
-	matchesPercentagesGroup.setText("Процент совпадения");
-	matchesPercentagesGroup.setLayout(new GridLayout());
-	matchesPercentagesGroup.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-	_matchesPercentagesCombo = new Combo(matchesPercentagesGroup,
-		SWT.DROP_DOWN | SWT.READ_ONLY);
-	_matchesPercentagesCombo.setItems(matchesPercentages);
-	_matchesPercentagesCombo.select(2);
-	_matchesPercentagesCombo.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-	
-	_findProfessorsBtn = new Button(professorsShelf.getBody(),
-		SWT.FLAT);
-	_findProfessorsBtn.setText("Поиск преподователей");
-	_findProfessorsBtn.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+	private final CDateTime _fromCdt;
 
-	//==============================================================
+	private final CDateTime _toCdt;
 
-	PShelfItem scheduleSheld = new PShelfItem(_shelf, SWT.NONE);
-	scheduleSheld.setText("Расписание");
-	scheduleSheld.getBody().setLayout(getGridLayout());
+	public ActivityPShelf(Composite parent) {
+		parent.setLayout(new FillLayout());
+		_shelf = new PShelf(parent, SWT.NONE);
 
-	Group fromDateGroup = new Group(scheduleSheld.getBody(),
-		SWT.SHADOW_IN);
-	fromDateGroup.setText("Дата начала");
-	fromDateGroup.setLayout(new GridLayout());
-	fromDateGroup.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-	_fromCdt = new CDateTime(fromDateGroup, CDT.BORDER | CDT.DROP_DOWN);
-	_fromCdt.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		// Optionally, change the renderer
+		// shelf.setRenderer(new RedmondShelfRenderer());
 
-	Group toDateGroup = new Group(scheduleSheld.getBody(),
-		SWT.SHADOW_IN);
-	toDateGroup.setText("Дата окончания");
-	toDateGroup.setLayout(new GridLayout());
-	toDateGroup.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-	_toCdt = new CDateTime(toDateGroup, CDT.BORDER | CDT.DROP_DOWN);
-	_toCdt.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-	
-	_generateScheduleBtn = new Button(scheduleSheld.getBody(), SWT.FLAT);
-	_generateScheduleBtn.setText("Сформировать расписание");
-	_generateScheduleBtn.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-        _generateScheduleBtn.setEnabled(false);
-	
-        listeners();
-    }
-    
-    private void listeners() {
-        /**
-         * Назначение обработок кнопкам
-         */
-	_findProfessorsBtn.addSelectionListener(new SelectionAdapter() {
-            public void widgetSelected(SelectionEvent arg0) {
-        	fullCheck(); 
-            }
-        });
-	
-	_fromCdt.addSelectionListener(new SelectionAdapter() {
+		PShelfItem professorsShelf = new PShelfItem(_shelf, SWT.NONE);
+		professorsShelf.setText("Преподователи");
+		professorsShelf.getBody().setLayout(getGridLayout());
 
-	    @Override
-	    public void widgetSelected(SelectionEvent e) {
-		GlobalStorage.beginingOfSemestr = _fromCdt.getSelection();
-                checkToEnableGenerateScheduleBtn();
-	    }
-	    
-	});
+		// Create the first Group
+		Group semesterGroup = new Group(professorsShelf.getBody(),
+				SWT.SHADOW_IN);
+		semesterGroup.setText("Семестр");
+		semesterGroup.setLayout(new RowLayout(SWT.VERTICAL));
+		semesterGroup.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		_fallBtn = new Button(semesterGroup, SWT.RADIO);
+		_fallBtn.setText("Осень");
+		_fallBtn.setSelection(true);
 
-	_toCdt.addSelectionListener(new SelectionAdapter() {
+		_springBtn = new Button(semesterGroup, SWT.RADIO);
+		_springBtn.setText("Весна");
 
-	    @Override
-	    public void widgetSelected(SelectionEvent e) {
-		GlobalStorage.endOfSemestr = _toCdt.getSelection();
-		checkToEnableGenerateScheduleBtn();
-	    }
-	    
-	});
+		String matchesPercentages[] = { "50", "75", "100" };
+		Group matchesPercentagesGroup = new Group(professorsShelf.getBody(),
+				SWT.SHADOW_IN);
+		matchesPercentagesGroup.setText("Процент совпадения");
+		matchesPercentagesGroup.setLayout(new GridLayout());
+		matchesPercentagesGroup.setLayoutData(new GridData(
+				GridData.FILL_HORIZONTAL));
+		_matchesPercentagesCombo = new Combo(matchesPercentagesGroup,
+				SWT.DROP_DOWN | SWT.READ_ONLY);
+		_matchesPercentagesCombo.setItems(matchesPercentages);
+		_matchesPercentagesCombo.select(2);
+		_matchesPercentagesCombo.setLayoutData(new GridData(SWT.FILL, SWT.FILL,
+				true, true));
 
-        _generateScheduleBtn.addSelectionListener(new SelectionAdapter() {
-            public void widgetSelected(SelectionEvent arg0) {
-                SemestrBuilder SB = new SemestrBuilder(GlobalStorage.beginingOfSemestr, GlobalStorage.endOfSemestr);
-                //@ FIXME: Функцию нужно переписать. Поэтому закомментил 
-                //try {
-                //    ExcelWorker.GenerateSchedule(SB);
-                //} catch (ScheduleIsNotOpenedException e) {
-                //    status.setText("Расписание не открыто! Обработка отменена...");
-                //}
-            }
-        });
+		_findProfessorsBtn = new Button(professorsShelf.getBody(), SWT.FLAT);
+		_findProfessorsBtn.setText("Поиск преподователей");
+		_findProfessorsBtn
+				.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
-    }
-    
-    private void checkToEnableGenerateScheduleBtn() {
-	if (GlobalStorage.beginingOfSemestr != null 
-        	&& GlobalStorage.endOfSemestr != null 
-        	&& (GlobalStorage.beginingOfSemestr.before(GlobalStorage.endOfSemestr) 
-        		|| GlobalStorage.beginingOfSemestr.equals(GlobalStorage.endOfSemestr))) {
-            _generateScheduleBtn.setEnabled(true);
-        } else {
-            _generateScheduleBtn.setEnabled(false);            
-        }
-    }
-    
-    /**
-     * Осуществляется поиск преподователей
-     */
-    private void fullCheck() {
-	//====================== 1 - я проверка ==========================
-    	
-	status.setText("");
-        if (!ExcelWorker.isScheduleOpened()) {
-        	MessageBox box = new MessageBox(_shelf.getShell(), SWT.ICON_INFORMATION);
-        	box.setMessage("Необходимо загрузить расписание!");
-        	box.open();
-        	return;
-        }
-            
-        LOG.debug("Началась 1 - я проверка!");
-        GlobalStorage.matrix = ExcelWorker.searchEmptyCellsOfPMI();
-        int maxLength = 0;
-        for (int i = 0; i < GlobalStorage.matrix.length; i++)
-            if (GlobalStorage.matrix[i][2].length() > maxLength)
-                maxLength = GlobalStorage.matrix[i][2].length();
-        String str;
-        for (str = ""; str.length() != (maxLength / 8); str += "\t") {
-        }
-        status.setFont(new Font(_shelf.getDisplay(), new FontData("Courier", 10, SWT.BOLD)));
-        status.append("Строка: Группа: Предмет:" + str + "Форма:" + "\n");
-        status.setFont(new Font(_shelf.getDisplay(), new FontData("Courier", 10, SWT.NORMAL)));
-        for (int i = 0; i < GlobalStorage.matrix.length; i++) {
-            status.append(i == 0 ? "" : "\n");
-            for (str = ""; (GlobalStorage.matrix[i][2].length() / 8 + str.length()) != (maxLength / 8 + 1); str += "\t") {
-            }
-            status.append(GlobalStorage.matrix[i][0] + "\t" + GlobalStorage.matrix[i][1] + "\t" + GlobalStorage.matrix[i][2] + str + GlobalStorage.matrix[i][3]);
-        }
-        String foundRecords = String.format("\nНайдено записей: %d", GlobalStorage.matrix.length);
-        printStatus(foundRecords);
-        //====================== 2 - я проверка ==========================
-        
-        LOG.debug("Началась 2 - я проверка!");
-        int suc = 0;
-        int season = 0; // autumn as default
-        if (_fallBtn.getSelection() == true)
-            season = 0; // autumn
-        else if (_springBtn.getSelection() == true)
-            season = 1; // spring
-        if (ExcelWorker.isLoadOpened()) {
-            int percent = 100;
-            if (_matchesPercentagesCombo.getSelectionIndex() == 0)
-                percent = 50;
-            else if (_matchesPercentagesCombo.getSelectionIndex() == 1)
-                percent = 75;
-            else if (_matchesPercentagesCombo.getSelectionIndex() == 2)
-                percent = 100;
-            GlobalStorage.matrix = ExcelWorker.openGeneralLoad(GlobalStorage.matrix, season, percent);
-            if (GlobalStorage.matrix == null)
-                return;
-            status.setText("");
-            maxLength = 0;
-            for (int i = 0; i < GlobalStorage.matrix.length; i++)
-                if (GlobalStorage.matrix[i][2].length() > maxLength)
-                    maxLength = GlobalStorage.matrix[i][2].length();
+		// ==============================================================
 
-            for (str = ""; str.length() != (maxLength / 8); str += "\t") {
-            }
-            status.append("Строка: Группа: Предмет:" + str + "Форма:  Найдено:" + "\n");
-            for (int i = 0; i < GlobalStorage.matrix.length; i++) {
-                if (GlobalStorage.matrix[i][4] != null)
-                    suc++;
-                status.append(i == 0 ? "" : "\n");
-                for (str = ""; (GlobalStorage.matrix[i][2].length() / 8 + str.length()) != (maxLength / 8 + 1); str += "\t") {
-                }
-                status.append(GlobalStorage.matrix[i][0] + "\t" + GlobalStorage.matrix[i][1] + "\t" + GlobalStorage.matrix[i][2] + str + GlobalStorage.matrix[i][3] + "\t" + GlobalStorage.matrix[i][4]);
-            }
-            foundRecords = String.format("\nНайдено записей: %d, из них Успешно найдено: %d", 
-            		GlobalStorage.matrix.length, suc);
-            printStatus(foundRecords);
-        }
-    }
-    
-    private void printStatus(String string) {
-    	status.append(string);
-    	LOG.debug(string);
-    }
+		PShelfItem scheduleSheld = new PShelfItem(_shelf, SWT.NONE);
+		scheduleSheld.setText("Расписание");
+		scheduleSheld.getBody().setLayout(getGridLayout());
 
-    private GridLayout getGridLayout() {
-	GridLayout layout = new GridLayout();
-	layout.marginLeft = 0;
-	layout.marginRight = 0;
-	layout.marginTop = 0;
+		Group fromDateGroup = new Group(scheduleSheld.getBody(), SWT.SHADOW_IN);
+		fromDateGroup.setText("Дата начала");
+		fromDateGroup.setLayout(new GridLayout());
+		fromDateGroup.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		_fromCdt = new CDateTime(fromDateGroup, CDT.BORDER | CDT.DROP_DOWN);
+		_fromCdt.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-	return layout;
-    }
+		Group toDateGroup = new Group(scheduleSheld.getBody(), SWT.SHADOW_IN);
+		toDateGroup.setText("Дата окончания");
+		toDateGroup.setLayout(new GridLayout());
+		toDateGroup.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		_toCdt = new CDateTime(toDateGroup, CDT.BORDER | CDT.DROP_DOWN);
+		_toCdt.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-    public void setFocus() {
-	_shelf.setFocus();
-    }
+		_generateScheduleBtn = new Button(scheduleSheld.getBody(), SWT.FLAT);
+		_generateScheduleBtn.setText("Сформировать расписание");
+		_generateScheduleBtn.setLayoutData(new GridData(
+				GridData.FILL_HORIZONTAL));
+		_generateScheduleBtn.setEnabled(false);
 
-    public void dispose() {
-	_shelf.dispose();
-    }
+		listeners();
+	}
+
+	private void listeners() {
+		/**
+		 * Назначение обработок кнопкам
+		 */
+		_findProfessorsBtn.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent arg0) {
+				fullCheck();
+			}
+		});
+
+		_fromCdt.addSelectionListener(new SelectionAdapter() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				GlobalStorage.beginingOfSemestr = _fromCdt.getSelection();
+				checkToEnableGenerateScheduleBtn();
+			}
+
+		});
+
+		_toCdt.addSelectionListener(new SelectionAdapter() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				GlobalStorage.endOfSemestr = _toCdt.getSelection();
+				checkToEnableGenerateScheduleBtn();
+			}
+
+		});
+
+		_generateScheduleBtn.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent arg0) {
+				SemestrBuilder SB = new SemestrBuilder(
+						GlobalStorage.beginingOfSemestr,
+						GlobalStorage.endOfSemestr);
+				// @ FIXME: Функцию нужно переписать. Поэтому закомментил
+				// try {
+				// ExcelWorker.GenerateSchedule(SB);
+				// } catch (ScheduleIsNotOpenedException e) {
+				// status.setText("Расписание не открыто! Обработка отменена...");
+				// }
+			}
+		});
+
+	}
+
+	private void checkToEnableGenerateScheduleBtn() {
+		if (GlobalStorage.beginingOfSemestr != null
+				&& GlobalStorage.endOfSemestr != null
+				&& (GlobalStorage.beginingOfSemestr
+						.before(GlobalStorage.endOfSemestr) || GlobalStorage.beginingOfSemestr
+						.equals(GlobalStorage.endOfSemestr))) {
+			_generateScheduleBtn.setEnabled(true);
+		} else {
+			_generateScheduleBtn.setEnabled(false);
+		}
+	}
+
+	/**
+	 * Осуществляется поиск преподователей
+	 */
+	private void fullCheck() {
+		// ====================== 1 - я проверка ==========================
+
+		status.setText("");
+		if (!ExcelWorker.isScheduleOpened()) {
+			MessageBox box = new MessageBox(_shelf.getShell(),
+					SWT.ICON_INFORMATION);
+			box.setMessage("Необходимо загрузить расписание!");
+			box.open();
+			return;
+		}
+
+		LOG.debug("Началась 1 - я проверка!");
+		GlobalStorage.matrix = ExcelWorker.searchEmptyCellsOfPMI();
+		int maxLength = 0;
+		for (int i = 0; i < GlobalStorage.matrix.length; i++)
+			if (GlobalStorage.matrix[i][2].length() > maxLength)
+				maxLength = GlobalStorage.matrix[i][2].length();
+		String str;
+		for (str = ""; str.length() != (maxLength / 8); str += "\t") {
+		}
+		status.setFont(new Font(_shelf.getDisplay(), new FontData("Courier",
+				10, SWT.BOLD)));
+		status.append("Строка: Группа: Предмет:" + str + "Форма:" + "\n");
+		status.setFont(new Font(_shelf.getDisplay(), new FontData("Courier",
+				10, SWT.NORMAL)));
+		for (int i = 0; i < GlobalStorage.matrix.length; i++) {
+			status.append(i == 0 ? "" : "\n");
+			for (str = ""; (GlobalStorage.matrix[i][2].length() / 8 + str
+					.length()) != (maxLength / 8 + 1); str += "\t") {
+			}
+			status.append(GlobalStorage.matrix[i][0] + "\t"
+					+ GlobalStorage.matrix[i][1] + "\t"
+					+ GlobalStorage.matrix[i][2] + str
+					+ GlobalStorage.matrix[i][3]);
+		}
+		String foundRecords = String.format("\nНайдено записей: %d",
+				GlobalStorage.matrix.length);
+		printStatus(foundRecords);
+		// ====================== 2 - я проверка ==========================
+
+		LOG.debug("Началась 2 - я проверка!");
+		int suc = 0;
+		int season = 0; // autumn as default
+		if (_fallBtn.getSelection() == true)
+			season = 0; // autumn
+		else if (_springBtn.getSelection() == true)
+			season = 1; // spring
+		if (ExcelWorker.isLoadOpened()) {
+			int percent = 100;
+			if (_matchesPercentagesCombo.getSelectionIndex() == 0)
+				percent = 50;
+			else if (_matchesPercentagesCombo.getSelectionIndex() == 1)
+				percent = 75;
+			else if (_matchesPercentagesCombo.getSelectionIndex() == 2)
+				percent = 100;
+			GlobalStorage.matrix = ExcelWorker.openGeneralLoad(
+					GlobalStorage.matrix, season, percent);
+			if (GlobalStorage.matrix == null)
+				return;
+			status.setText("");
+			maxLength = 0;
+			for (int i = 0; i < GlobalStorage.matrix.length; i++)
+				if (GlobalStorage.matrix[i][2].length() > maxLength)
+					maxLength = GlobalStorage.matrix[i][2].length();
+
+			for (str = ""; str.length() != (maxLength / 8); str += "\t") {
+			}
+			status.append("Строка: Группа: Предмет:" + str + "Форма:  Найдено:"
+					+ "\n");
+			for (int i = 0; i < GlobalStorage.matrix.length; i++) {
+				if (GlobalStorage.matrix[i][4] != null)
+					suc++;
+				status.append(i == 0 ? "" : "\n");
+				for (str = ""; (GlobalStorage.matrix[i][2].length() / 8 + str
+						.length()) != (maxLength / 8 + 1); str += "\t") {
+				}
+				status.append(GlobalStorage.matrix[i][0] + "\t"
+						+ GlobalStorage.matrix[i][1] + "\t"
+						+ GlobalStorage.matrix[i][2] + str
+						+ GlobalStorage.matrix[i][3] + "\t"
+						+ GlobalStorage.matrix[i][4]);
+				LOG.debug("link_" + i);
+				status.appendLink("link_" + i);
+			}
+			foundRecords = String.format(
+					"\nНайдено записей: %d, из них Успешно найдено: %d",
+					GlobalStorage.matrix.length, suc);
+			printStatus(foundRecords);
+		}
+	}
+
+	private void printStatus(String string) {
+		status.append(string);
+		LOG.debug(string);
+	}
+
+	private GridLayout getGridLayout() {
+		GridLayout layout = new GridLayout();
+		layout.marginLeft = 0;
+		layout.marginRight = 0;
+		layout.marginTop = 0;
+
+		return layout;
+	}
+
+	public void setFocus() {
+		_shelf.setFocus();
+	}
+
+	public void dispose() {
+		_shelf.dispose();
+	}
 
 }

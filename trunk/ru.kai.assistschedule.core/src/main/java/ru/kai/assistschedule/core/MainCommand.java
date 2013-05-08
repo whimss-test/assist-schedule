@@ -91,4 +91,9 @@ public class MainCommand {
 		}
 	}
 
+
+	public static FirstLevelCache getFirstLevelCache() {
+		return firstLevelCache;
+	}
+
 }

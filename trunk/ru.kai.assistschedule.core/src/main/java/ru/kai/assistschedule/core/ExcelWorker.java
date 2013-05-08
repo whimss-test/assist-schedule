@@ -20,6 +20,7 @@ import ru.kai.assistschedule.core.cache.Time;
 import ru.kai.assistschedule.core.calendar.SemestrBuilder;
 import ru.kai.assistschedule.core.exceptions.ExcelFileIsNotOpenedException;
 import ru.kai.assistschedule.core.exceptions.SheduleIsNotOpenedException;
+import ru.kai.assistschedule.core.external.interfaces.IStatus;
 
 import jxl.Cell;
 import jxl.Range;
@@ -694,7 +695,7 @@ public class ExcelWorker {
 	/**
 	 * Функция проверяет совпадения и добавляет в каждую неделю
 	 */
-	public static void AddInEveryWeek(Text console, SemestrBuilder SB) throws SheduleIsNotOpenedException{
+	public static void AddInEveryWeek(IStatus console, SemestrBuilder SB) throws SheduleIsNotOpenedException{
 		if (!isScheduleOpened()) // Если не открыто расписание
 			throw new SheduleIsNotOpenedException();
 		selectSheetInSchedule(0); // Открываем лист с расписанием(обычно это первый лист)
@@ -747,7 +748,7 @@ public class ExcelWorker {
 		console.append("Не добавлено занятий на кафедре ПМИ: " + kafPMIclasses + "\n");
 	}
 	
-	public static void AddInEvenWeek(Text console, SemestrBuilder SB) throws SheduleIsNotOpenedException{
+	public static void AddInEvenWeek(IStatus console, SemestrBuilder SB) throws SheduleIsNotOpenedException{
 		if (!isScheduleOpened()) // Если не открыто расписание
 			throw new SheduleIsNotOpenedException();
 		selectSheetInSchedule(0); // Открываем лист с расписанием(обычно это первый лист)
@@ -799,7 +800,7 @@ public class ExcelWorker {
 		console.append("Не добавлено занятий на кафедре ПМИ: " + kafPMIclasses + "\n");
 	}
 	
-	public static void AddInUnevenWeek(Text console, SemestrBuilder SB) throws SheduleIsNotOpenedException{
+	public static void AddInUnevenWeek(IStatus console, SemestrBuilder SB) throws SheduleIsNotOpenedException{
 		if (!isScheduleOpened()) // Если не открыто расписание
 			throw new SheduleIsNotOpenedException();
 		selectSheetInSchedule(0); // Открываем лист с расписанием(обычно это первый лист)
@@ -851,7 +852,7 @@ public class ExcelWorker {
 		console.append("Не добавлено занятий на кафедре ПМИ: " + kafPMIclasses + "\n");
 	}
 
-	public static void AddBefore(Text console, SemestrBuilder SB) throws SheduleIsNotOpenedException{
+	public static void AddBefore(IStatus console, SemestrBuilder SB) throws SheduleIsNotOpenedException{
 		if (!isScheduleOpened()) // Если не открыто расписание
 			throw new SheduleIsNotOpenedException();
 		selectSheetInSchedule(0); // Открываем лист с расписанием(обычно это первый лист)
@@ -914,7 +915,7 @@ public class ExcelWorker {
 		console.append("Не добавлено занятий на кафедре ПМИ: " + kafPMIclasses + "\n");
 	}
 
-	public static void AddAfter(Text console, SemestrBuilder SB) throws SheduleIsNotOpenedException{
+	public static void AddAfter(IStatus console, SemestrBuilder SB) throws SheduleIsNotOpenedException{
 		if (!isScheduleOpened()) // Если не открыто расписание
 			throw new SheduleIsNotOpenedException();
 		selectSheetInSchedule(0); // Открываем лист с расписанием(обычно это первый лист)
@@ -985,7 +986,7 @@ public class ExcelWorker {
 		console.append("Не добавлено занятий на кафедре ПМИ: " + kafPMIclasses + "\n");
 	}
 
-	public static void AddByDates(Text console, SemestrBuilder SB) throws SheduleIsNotOpenedException{
+	public static void AddByDates(IStatus console, SemestrBuilder SB) throws SheduleIsNotOpenedException{
 		if (!isScheduleOpened()) // Если не открыто расписание
 			throw new SheduleIsNotOpenedException();
 		selectSheetInSchedule(0); // Открываем лист с расписанием(обычно это первый лист)
@@ -1384,7 +1385,7 @@ public class ExcelWorker {
 	 * @param newEntry
 	 * @param console
 	 */
-	private static void errorAnalysis(Class AddedEntry, Class newEntry, Text console){
+	private static void errorAnalysis(Class AddedEntry, Class newEntry, IStatus console){
 		String errorMsg = " Группы: " + AddedEntry.group + " и " + newEntry.group;
 		if( !AddedEntry.discipline.equals(newEntry.discipline) ){
 			errorMsg += " Не совпадение дисциплин!\n";

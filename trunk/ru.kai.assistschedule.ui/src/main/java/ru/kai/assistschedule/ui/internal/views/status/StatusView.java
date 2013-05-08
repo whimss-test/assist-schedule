@@ -6,6 +6,7 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -18,7 +19,7 @@ public class StatusView extends ViewPart {
 
     public static final String ID = "ru.kai.assistantschedule.status.view";
 
-    public static Text t2;
+    public static StyledText t2;
 
     // private TableViewer viewer;
 
@@ -65,9 +66,10 @@ public class StatusView extends ViewPart {
      * it.
      */
     public void createPartControl(Composite parent) {
-
-        t2 = new Text(parent, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
+    	t2 = new StyledText(parent, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
+//        t2 = new Text(parent, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
         t2.setEditable(false);
+        t2.setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_WHITE));
         t2.setLayoutData(new GridData(GridData.FILL_BOTH));
 
         // viewer =

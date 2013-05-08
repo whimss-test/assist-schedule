@@ -16,12 +16,14 @@ import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewerEditor;
 import org.eclipse.jface.viewers.ColumnViewerEditorActivationEvent;
 import org.eclipse.jface.viewers.ColumnViewerEditorActivationStrategy;
+import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.nebula.jface.gridviewer.GridTableViewer;
 import org.eclipse.nebula.jface.gridviewer.GridViewerEditor;
+import org.eclipse.nebula.widgets.grid.Grid;
 import org.eclipse.nebula.widgets.grid.GridColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
@@ -49,11 +51,19 @@ import ru.kai.assistschedule.core.cache.FirstLevelCache;
 import ru.kai.assistschedule.core.cache.ScheduleEntry;
 import ru.kai.assistschedule.ui.internal.views.utils.Popup;
 import ru.kai.assistschedule.ui.internal.widgets.ExcelFilter;
+import ru.kai.assistschedule.ui.model.ScheduleEntryCellModifier;
 
 public abstract class AbstractScheduleTable implements IScheduleTable {
 
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
+	public static final String[] PROPS = { Constants.Schedule.GROUP, 
+		Constants.Schedule.DAY_OF_WEEK, Constants.Schedule.TIME, 
+		Constants.Schedule.DATE, Constants.Schedule.DISCIPLINE, 
+		Constants.Schedule.LESSON_TYPE, Constants.Schedule.CLASSROOM,
+		Constants.Schedule.BUILDING, Constants.Schedule.POSITION,
+		Constants.Schedule.PROFESSOR, Constants.Schedule.DEPARTMENT };
+	
 	private GridTableViewer v;
 
 	private Composite composite;
@@ -95,28 +105,6 @@ public abstract class AbstractScheduleTable implements IScheduleTable {
 		v.getGrid().setFont(
 				new Font(parent.getDisplay(), new FontData("PT Serif", 10,
 						SWT.NORMAL)));
-
-		v.setCellEditors(new CellEditor[] { new TextCellEditor(v.getGrid()),
-				new TextCellEditor(v.getGrid()) });
-		v.setCellModifier(new ICellModifier() {
-
-			public boolean canModify(Object element, String property) {
-				return true;
-			}
-
-			public Object getValue(Object element, String property) {
-				return "Column " + property + " => " + element.toString();
-			}
-
-			public void modify(Object element, String property, Object value) {
-
-			}
-
-		});
-
-		v.setColumnProperties(new String[] { "1", "2" });
-		// v.setColumnProperties(new String[]
-		// {"Группа","Время","Дисциплина","Вид занятий","Преподователь","Кафедра"});
 
 		ColumnViewerEditorActivationStrategy actSupport = new ColumnViewerEditorActivationStrategy(
 				v) {
@@ -317,7 +305,25 @@ public abstract class AbstractScheduleTable implements IScheduleTable {
 		v.getGrid().setLinesVisible(true);
 		v.getGrid().setHeaderVisible(true);
 		v.getGrid().setRowHeaderVisible(true);
+		
+		Grid grid = v.getGrid();
+		CellEditor[] editors = new CellEditor[11];
+	    editors[0] = new TextCellEditor(grid);
+	    editors[1] = new ComboBoxCellEditor(grid, new String[]{"пн","вт","ср","чт","пт","сб"}, SWT.READ_ONLY);
+	    editors[2] = new ComboBoxCellEditor(grid, new String[]{"8:00","9:40","11:30","13:10","15:00","16:40", "18:15", "19:45"}, SWT.READ_ONLY);
+	    editors[3] = new TextCellEditor(grid);
+	    editors[4] = new TextCellEditor(grid);
+	    editors[5] = new ComboBoxCellEditor(grid, new String[]{"лек","пр","л.р.","и.з.",""}, SWT.READ_ONLY);
+	    editors[6] = new TextCellEditor(grid);
+	    editors[7] = new TextCellEditor(grid);
+	    editors[8] = new TextCellEditor(grid);
+	    editors[9] = new TextCellEditor(grid);
+	    editors[10] = new TextCellEditor(grid);
 
+		v.setColumnProperties(PROPS);
+	    v.setCellModifier(new ScheduleEntryCellModifier(v));
+	    v.setCellEditors(editors);
+		
 		listeners();
 	}
 

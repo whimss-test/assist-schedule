@@ -3,6 +3,8 @@
  */
 package ru.kai.assistschedule.ui.internal.views.status;
 
+import java.util.List;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.graphics.Font;
@@ -40,6 +42,19 @@ public class StatusImpl implements IStatus {
                         if (style != null && style.underline && style.underlineStyle == SWT.UNDERLINE_LINK) {
                             System.out.println("Click on a Link");
                         }
+                        int start = 0, i = 0, end = 0;
+                        while(!StatusView.t2.getTextRange((start = offset-(i++)), 1).equals(" ")) {
+                        	
+                        }
+//                        start--;
+                        end = start;
+                        i=1;
+                        while(!StatusView.t2.getTextRange((end = start+(i++)), 1).equals(" ")) {
+                        	
+                        }
+                        end--;
+                        System.out.println(String.format("start %d, end %d", start, end));
+                        System.out.println("Click on a Link - " + StatusView.t2.getText(start, end));
                     } catch (IllegalArgumentException e) {
                         // no character under event.x, event.y
                     }
@@ -74,12 +89,15 @@ public class StatusImpl implements IStatus {
     }
 
     @Override
-	public void appendLink(String link) {
-    	System.out.println("appendLink: " + link);
-    	append(" "+link+" ");
-		// TODO Auto-generated method stub
-    	int[] ranges = {StatusView.t2.getText().indexOf(link), link.length()};
-        StyleRange[] styles = {linkStyle};
+	public void appendLinks(List<String> links) {
+    	int[] ranges = new int[2*links.size()];
+    	StyleRange[] styles = new StyleRange[links.size()];
+    	for(int i = 0; i < links.size(); i++) {
+    		int n = i*2; 
+    		ranges[n] = StatusView.t2.getText().indexOf(links.get(i));
+    		ranges[n+1] = links.get(i).length();
+    		styles[i] = linkStyle;
+    	}
         StatusView.t2.setStyleRanges(ranges, styles);
 	}
 

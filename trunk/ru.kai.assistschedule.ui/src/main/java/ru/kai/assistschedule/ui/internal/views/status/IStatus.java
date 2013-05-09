@@ -3,6 +3,8 @@
  */
 package ru.kai.assistschedule.ui.internal.views.status;
 
+import java.util.List;
+
 import org.eclipse.swt.graphics.Font;
 
 
@@ -18,6 +20,6 @@ public interface IStatus {
    
    public void append(String string);
    
-   public void appendLink(String link);
+   public void appendLinks(List<String> links);
 
 }

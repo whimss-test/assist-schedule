@@ -1,6 +1,8 @@
 package ru.kai.assistschedule.ui.internal.views.processing;
 
+import java.util.ArrayList;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import org.apache.log4j.varia.FallbackErrorHandler;
 import org.eclipse.nebula.widgets.cdatetime.CDT;
@@ -215,23 +217,29 @@ public class ActivityPShelf {
 			if (GlobalStorage.matrix[i][2].length() > maxLength)
 				maxLength = GlobalStorage.matrix[i][2].length();
 		String str;
-		for (str = ""; str.length() != (maxLength / 8); str += "\t") {
-		}
-		status.setFont(new Font(_shelf.getDisplay(), new FontData("Courier",
-				10, SWT.BOLD)));
-		status.append("Строка: Группа: Предмет:" + str + "Форма:" + "\n");
-		status.setFont(new Font(_shelf.getDisplay(), new FontData("Courier",
-				10, SWT.NORMAL)));
+//		for (str = ""; str.length() != (maxLength / 8); str += "\t") {
+//		}
+//		status.setFont(new Font(_shelf.getDisplay(), new FontData("Courier",
+//				10, SWT.BOLD)));
+		status.append(String.format("%-15s %-15s %-30.30s %15s\n", 
+				"Строка:", "Группа:", "Предмет:", "Форма:"));
+//		status.setFont(new Font(_shelf.getDisplay(), new FontData("Courier",
+//				10, SWT.NORMAL)));
+		
+		List<String> links = new ArrayList<String>(GlobalStorage.matrix.length);
 		for (int i = 0; i < GlobalStorage.matrix.length; i++) {
 			status.append(i == 0 ? "" : "\n");
-			for (str = ""; (GlobalStorage.matrix[i][2].length() / 8 + str
-					.length()) != (maxLength / 8 + 1); str += "\t") {
-			}
-			status.append(GlobalStorage.matrix[i][0] + "\t"
-					+ GlobalStorage.matrix[i][1] + "\t"
-					+ GlobalStorage.matrix[i][2] + str
-					+ GlobalStorage.matrix[i][3]);
+//			for (str = ""; (GlobalStorage.matrix[i][2].length() / 8 + str
+//					.length()) != (maxLength / 8 + 1); str += "\t") {
+//			}
+			status.append(String.format("%-15s %-15s %-30.30s %15s", GlobalStorage.matrix[i][0], GlobalStorage.matrix[i][1],
+					GlobalStorage.matrix[i][2], GlobalStorage.matrix[i][3]));
+
+			String link = "link_" + i;
+			links.add(link);
+			status.append(" "+link+" ");
 		}
+		status.appendLinks(links);
 		String foundRecords = String.format("\nНайдено записей: %d",
 				GlobalStorage.matrix.length);
 		printStatus(foundRecords);
@@ -279,7 +287,7 @@ public class ActivityPShelf {
 						+ GlobalStorage.matrix[i][3] + "\t"
 						+ GlobalStorage.matrix[i][4]);
 				LOG.debug("link_" + i);
-				status.appendLink("link_" + i);
+//				status.appendLink("link_" + i);
 			}
 			foundRecords = String.format(
 					"\nНайдено записей: %d, из них Успешно найдено: %d",

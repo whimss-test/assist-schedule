@@ -5,13 +5,14 @@ import java.util.UUID;
 
 /**
  * Аудитория, необходим для окна настройки аудитории
+ * 
  * @author Роман
- *
+ * 
  */
 public class LectureRoom {
 
 	private UUID id;
-	
+
 	/** Аудитория */
 	private String name;
 
@@ -45,6 +46,37 @@ public class LectureRoom {
 
 	public void setLessonTypes(List<LessonType> lessonTypes) {
 		this.lessonTypes = lessonTypes;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append(name);
+		builder.append(" ");
+		for (LessonType type : lessonTypes) {
+			switch (type) {
+			case LEC:
+				builder.append("лек");
+				break;
+			case PRAC:
+				builder.append("пр");
+				break;
+			case LABS:
+				builder.append("л.р.");
+				break;
+			case IZ:
+				builder.append("и.з.");
+				break;
+			case OTHER:
+				builder.append("");
+				break;
+			default:
+				builder.append("");
+				break;
+			}
+			builder.append(" ");
+		}
+		return builder.substring(0, builder.length() - 1);
 	}
 
 }

@@ -42,7 +42,7 @@ public class DOMSerializer {
 	public void serializeNode(Node node, Writer writer, String indentLevel) throws IOException {
 		// Determine action based on node type
 		switch (node.getNodeType()) {
-		case Node.DOCUMENT_NODE: writer.write("<?xml version='1.0' encoding='windows-1251'?>");
+		case Node.DOCUMENT_NODE: writer.write("<?xml version='1.0' encoding='utf-8'?>");
         writer.write(lineSeparator);
         // recurse on each child
         NodeList nodes = node.getChildNodes();

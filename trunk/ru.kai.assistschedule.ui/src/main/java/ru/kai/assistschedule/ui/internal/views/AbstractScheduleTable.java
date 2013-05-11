@@ -358,7 +358,7 @@ public abstract class AbstractScheduleTable implements IScheduleTable {
 
 		v.setInput(elem);
 
-		Popup.make(v.getGrid().getParent(), "Расписание загружено!", 4000,
+		Popup.make(v.getGrid().getParent(), "Расписание загружено!", 3000,
 				SWT.COLOR_GREEN).show();
 	}
 

@@ -7,7 +7,7 @@
    </configIni>
 
    <launcherArgs>
-      <vmArgs>-Dlog4j.configuration=file:D:\log4j.xml</vmArgs>
+      <vmArgs>-Dlog4j.configuration=file:D:\log4j.xml -Dsettings=file:D:\settings.xml</vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
    </launcherArgs>
 

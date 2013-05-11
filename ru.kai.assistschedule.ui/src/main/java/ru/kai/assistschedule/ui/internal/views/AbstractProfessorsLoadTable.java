@@ -21,6 +21,7 @@ import ru.kai.assistschedule.core.IProfessorLoadTable;
 import ru.kai.assistschedule.core.cache.Constants;
 import ru.kai.assistschedule.core.cache.FirstLevelCache;
 import ru.kai.assistschedule.core.cache.load.LoadEntry;
+import ru.kai.assistschedule.ui.internal.views.utils.Popup;
 
 public abstract class AbstractProfessorsLoadTable implements
 		IProfessorLoadTable {
@@ -147,6 +148,8 @@ public abstract class AbstractProfessorsLoadTable implements
 	@Override
 	public void setInput(List<LoadEntry> elements) {
 		v.setInput(elements);
+		Popup.make(v.getGrid().getParent(), "Нагрузка загружена!", 3000,
+				SWT.COLOR_GREEN).show();
 	}
 
 	@Override

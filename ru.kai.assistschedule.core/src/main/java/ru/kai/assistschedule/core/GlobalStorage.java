@@ -44,7 +44,7 @@ public class GlobalStorage {
 	public static String[][] matrix;
 	public static Date beginingOfSemestr, endOfSemestr;
 
-	private static List<LectureRoom> lectureRooms = new ArrayList<LectureRoom>();
+	public static List<LectureRoom> lectureRooms = new ArrayList<LectureRoom>();
 	
 	public static List<LectureRoom> getLectureRooms() {
 		return lectureRooms;

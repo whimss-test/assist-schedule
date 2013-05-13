@@ -7,6 +7,96 @@ import java.util.List;
 public class Week {
 
 	public List<Day> days = new ArrayList<Day>();
+
+	public boolean maybeStreamClass(int day, Class newClass) {
+		boolean result = false;
+		for(int i = 0; i < this.days.size(); i++){
+			if(days.get(i).maybeStreamClass(day, newClass)){
+				return true;
+			}
+		}
+		return result;
+	}
+
+	public boolean maybeStreamClassBeforeTheDate(Calendar dateOfTheDay, int day, Class newClass) {
+		boolean result = false;
+		for(int i = 0; i < this.days.size(); i++){
+			if(days.get(i).maybeStreamClassBeforeTheDate(dateOfTheDay, day, newClass)){
+				return true;
+			}
+		}
+		return result;
+	}
+	
+	public boolean maybeStreamClassAfterTheDate(Calendar dateOfTheDay, int day, Class newClass) {
+		boolean result = false;
+		for(int i = 0; i < this.days.size(); i++){
+			if(days.get(i).maybeStreamClassAfterTheDate(dateOfTheDay, day, newClass)){
+				return true;
+			}
+		}
+		return result;
+	}
+	
+	public Class getMaybeStreamClass(int day, Class newClass) {
+		for(int i = 0; i < this.days.size(); i++){
+			Class entry = days.get(i).getMaybeStreamClass(day, newClass);
+			if(entry != null){
+				return entry;
+			}
+		}
+		return null;
+	}
+
+	public Class getMaybeStreamClassBeforeTheDate(Calendar dateOfTheDay, int day, Class newClass) {
+		for(int i = 0; i < this.days.size(); i++){
+			Class entry = days.get(i).getMaybeStreamClassBeforeTheDate(dateOfTheDay, day, newClass);
+			if(entry != null){
+				return entry;
+			}
+		}
+		return null;
+	}
+	
+	public Class getMaybeStreamClassAfterTheDate(Calendar dateOfTheDay, int day, Class newClass) {
+		for(int i = 0; i < this.days.size(); i++){
+			Class entry = days.get(i).getMaybeStreamClassAfterTheDate(dateOfTheDay, day, newClass);
+			if(entry != null){
+				return entry;
+			}
+		}
+		return null;
+	}
+	
+	public List<String> findEmptyClassRoom(int day, Class newClass) {
+		for(int i = 0; i < this.days.size(); i++){
+			List<String> emptyClassrooms = days.get(i).findEmptyClassRoom(day, newClass);
+			if(emptyClassrooms != null){
+				return emptyClassrooms;
+			}
+		}
+		return null;
+	}
+	
+	public List<String> findEmptyClassRoomBeforeTheDate(Calendar dateOfTheDay, int day, Class newClass) {
+		for(int i = 0; i < this.days.size(); i++){
+			List<String> emptyClassrooms = days.get(i).findEmptyClassRoomBeforeTheDate(dateOfTheDay, day, newClass);
+			if(emptyClassrooms != null){
+				return emptyClassrooms;
+			}
+		}
+		return null;
+	}
+	
+	public List<String> findEmptyClassRoomAfterTheDate(Calendar dateOfTheDay, int day, Class newClass) {
+		for(int i = 0; i < this.days.size(); i++){
+			List<String> emptyClassrooms = days.get(i).findEmptyClassRoomAfterTheDate(dateOfTheDay, day, newClass);
+			if(emptyClassrooms != null){
+				return emptyClassrooms;
+			}
+		}
+		return null;
+	}
 	
 	public boolean isStreamClass(int day, Class newClass){
 		boolean result = false;

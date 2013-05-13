@@ -88,6 +88,46 @@ public class Class {
 		return true;
 	}
 
+	public boolean maybeStreamClass(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof Class)) {
+			return false;
+		}
+		Class other = (Class) obj;
+		if (discipline == null) {
+			if (other.discipline != null) {
+				return false;
+			}
+		} else if (!discipline.equals(other.discipline)) {
+			return false;
+		}
+		if (lessonType != other.lessonType) {
+			return false;
+		}
+//		if (kafedra == null) {
+//			if (other.kafedra != null) {
+//				return false;
+//			}
+//		} else if (!kafedra.equals(other.kafedra)) {
+//			return false;
+//		}
+		if (professor == null) {
+			if (other.professor != null) {
+				return false;
+			}
+		} else if (!professor.equals(other.professor) && !(professor.isEmpty() || other.professor.isEmpty()) ) {
+			return false;
+		}
+		if (time != other.time) {
+			return false;
+		}
+		return true;	}
+	
 	public boolean isStreamClass(Object obj){
 		if (this == obj) {
 			return true;

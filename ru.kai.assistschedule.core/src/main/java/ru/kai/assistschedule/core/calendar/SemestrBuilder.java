@@ -27,6 +27,174 @@ public class SemestrBuilder {
 		GC.setTime(begin);
 	}
 
+	public boolean maybeStreamClass(int day, Class newClass) {
+		boolean result = false;
+		for(int i = 0; i < this.semestr.size(); i++){
+			if(semestr.get(i).maybeStreamClass(day, newClass)){
+				return true;
+			}
+		}
+		return result;
+	}
+
+	public boolean maybeStreamClassInEvenWeek(int day, Class newClass) {
+		boolean result = false;
+		for(int i = 0; i < this.semestr.size(); i++){
+			if ( (i+1)%2 == 1 ){//Избегаем нечетных недель
+				continue;
+			}
+			if(semestr.get(i).maybeStreamClass(day, newClass)){
+				return true;
+			}
+		}
+		return result;
+	}
+
+	public boolean maybeStreamClassInUnevenWeek(int day, Class newClass) {
+		boolean result = false;
+		for(int i = 0; i < this.semestr.size(); i++){
+			if ( (i+1)%2 == 0 ){//Избегаем четных недель
+				continue;
+			}
+			if(semestr.get(i).maybeStreamClass(day, newClass)){
+				return true;
+			}
+		}
+		return result;
+	}
+	
+	public boolean maybeStreamClassBeforeTheDate(Calendar dateOfTheDay, int day, Class newClass) {
+		boolean result = false;
+		for(int i = 0; i < this.semestr.size(); i++){
+			if(semestr.get(i).maybeStreamClassBeforeTheDate(dateOfTheDay, day, newClass)){
+				return true;
+			}
+		}
+		return result;
+	}
+	
+	public boolean maybeStreamClassAfterTheDate(Calendar dateOfTheDay, int day, Class newClass) {
+		boolean result = false;
+		for(int i = 0; i < this.semestr.size(); i++){
+			if(semestr.get(i).maybeStreamClassAfterTheDate(dateOfTheDay, day, newClass)){
+				return true;
+			}
+		}
+		return result;
+	}
+	
+	public Class getMaybeStreamClass(int day, Class newClass) {
+		for(int i = 0; i < this.semestr.size(); i++){
+			Class entry = semestr.get(i).getMaybeStreamClass(day, newClass);
+			if (entry != null){
+				return entry;
+			}
+		}
+		return null;
+	}
+	
+	public Class getMaybeStreamClassInEvenWeek(int day, Class newClass) {
+		for(int i = 0; i < this.semestr.size(); i++){
+			if ( (i+1)%2 == 1 ){//Избегаем нечетных недель
+				continue;
+			}
+			Class entry = semestr.get(i).getMaybeStreamClass(day, newClass);
+			if (entry != null){
+				return entry;
+			}
+		}
+		return null;
+	}
+	
+	public Class getMaybeStreamClassInUnevenWeek(int day, Class newClass) {
+		for(int i = 0; i < this.semestr.size(); i++){
+			if ( (i+1)%2 == 0 ){//Избегаем четных недель
+				continue;
+			}
+			Class entry = semestr.get(i).getMaybeStreamClass(day, newClass);
+			if (entry != null){
+				return entry;
+			}
+		}
+		return null;
+	}
+	
+	public Class getMaybeStreamClassBeforeTheDate(Calendar dateOfTheDay, int day, Class newClass) {
+		for(int i = 0; i < this.semestr.size(); i++){
+			Class entry = semestr.get(i).getMaybeStreamClassBeforeTheDate(dateOfTheDay, day, newClass);
+			if (entry != null){
+				return entry;
+			}
+		}
+		return null;
+	}
+	
+	public Class getMaybeStreamClassAfterTheDate(Calendar dateOfTheDay, int day, Class newClass) {
+		for(int i = 0; i < this.semestr.size(); i++){
+			Class entry = semestr.get(i).getMaybeStreamClassAfterTheDate(dateOfTheDay, day, newClass);
+			if (entry != null){
+				return entry;
+			}
+		}
+		return null;
+	}
+
+	public List<String> findEmptyClassRoom(int day, Class newClass) {
+		for(int i = 0; i < this.semestr.size(); i++){
+			List<String> emptyClassrooms = semestr.get(i).findEmptyClassRoom(day, newClass);
+			if (emptyClassrooms != null){
+				return emptyClassrooms;
+			}
+		}
+		return null;
+	}
+	
+	public List<String> findEmptyClassRoomInEvenWeek(int day, Class newClass) {
+		for(int i = 0; i < this.semestr.size(); i++){
+			if ( (i+1)%2 == 1 ){//Избегаем нечетных недель
+				continue;
+			}
+			List<String> emptyClassrooms = semestr.get(i).findEmptyClassRoom(day, newClass);
+			if (emptyClassrooms != null){
+				return emptyClassrooms;
+			}
+		}
+		return null;
+	}
+	
+	public List<String> findEmptyClassRoomInUnevenWeek(int day, Class newClass) {
+		for(int i = 0; i < this.semestr.size(); i++){
+			if ( (i+1)%2 == 0 ){//Избегаем четных недель
+				continue;
+			}
+			List<String> emptyClassrooms = semestr.get(i).findEmptyClassRoom(day, newClass);
+			if (emptyClassrooms != null){
+				return emptyClassrooms;
+			}
+		}
+		return null;
+	}
+	
+	public List<String> findEmptyClassRoomBeforeTheDate(Calendar dateOfTheDay, int day, Class newClass) {
+		for(int i = 0; i < this.semestr.size(); i++){
+			List<String> emptyClassrooms = semestr.get(i).findEmptyClassRoomBeforeTheDate(dateOfTheDay, day, newClass);
+			if (emptyClassrooms != null){
+				return emptyClassrooms;
+			}
+		}
+		return null;
+	}
+	
+	public List<String> findEmptyClassRoomAfterTheDate(Calendar dateOfTheDay, int day, Class newClass) {
+		for(int i = 0; i < this.semestr.size(); i++){
+			List<String> emptyClassrooms = semestr.get(i).findEmptyClassRoomAfterTheDate(dateOfTheDay, day, newClass);
+			if (emptyClassrooms != null){
+				return emptyClassrooms;
+			}
+		}
+		return null;
+	}
+	
 	public boolean isStreamClass(int day, Class newClass){
 		boolean result = false;
 		for(int i = 0; i < this.semestr.size(); i++){

@@ -5,6 +5,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+
+import ru.kai.assistschedule.core.GlobalStorage;
 import ru.kai.assistschedule.core.cache.LessonType;
 import ru.kai.assistschedule.core.cache.Time;
 
@@ -84,6 +86,97 @@ public class Day {
 		return result;
 	}
 
+	public boolean maybeStreamClass(int day, Class newClass) {
+		boolean result = false;
+		if (DayOfWeek != day){
+			return result;
+		}
+		for(int i = 0; i < this.classes.size(); i++){
+			if(classes.get(i).maybeStreamClass(newClass)){
+				return true;
+			}
+		}
+		return result;
+	}
+
+	public Class getMaybeStreamClass(int day, Class newClass) {
+		if (DayOfWeek != day){
+			return null;
+		}
+		for(int i = 0; i < this.classes.size(); i++){
+			if(classes.get(i).maybeStreamClass(newClass)){
+				return classes.get(i);
+			}
+		}
+		return null;
+	}
+	
+	public List<String> findEmptyClassRoom(int day, Class newClass) {
+		if (DayOfWeek != day){
+			return null;
+		}
+		List<String> emptyClassrooms = new ArrayList<String>();
+		for (int j = 0; j < GlobalStorage.lectureRooms.size(); j++){
+			int i;
+			for(i = 0; i < this.classes.size(); i++){
+				if ( classes.get(i).time.equals(newClass.time) && classes.get(i).lectureRoom.equals(GlobalStorage.lectureRooms.get(j).getName()) &&
+						GlobalStorage.lectureRooms.get(j).getLessonTypes().contains(newClass.lessonType)){
+					break;
+				}
+			}
+			if (i == classes.size()){
+				emptyClassrooms.add(GlobalStorage.lectureRooms.get(j).getName());
+			}
+		}
+		return emptyClassrooms;
+	}
+	
+	public List<String> findEmptyClassRoomBeforeTheDate(Calendar dateOfTheDay, int day, Class newClass) {
+		if (this.dateOfTheDay.after(dateOfTheDay)){
+			return null;
+		}
+		if (DayOfWeek != day){
+			return null;
+		}
+		List<String> emptyClassrooms = new ArrayList<String>();
+		for (int j = 0; j < GlobalStorage.lectureRooms.size(); j++){
+			int i;
+			for(i = 0; i < this.classes.size(); i++){
+				if ( classes.get(i).time.equals(newClass.time) && classes.get(i).lectureRoom.equals(GlobalStorage.lectureRooms.get(j).getName()) &&
+						GlobalStorage.lectureRooms.get(j).getLessonTypes().contains(newClass.lessonType)){
+					break;
+				}
+			}
+			if (i == classes.size()){
+				emptyClassrooms.add(GlobalStorage.lectureRooms.get(j).getName());
+			}
+		}
+		return emptyClassrooms;
+	}
+	
+	public List<String> findEmptyClassRoomAfterTheDate(Calendar dateOfTheDay, int day, Class newClass) {
+		if (this.dateOfTheDay.before(dateOfTheDay)){
+			return null;
+		}
+		if (DayOfWeek != day){
+			return null;
+		}
+		List<String> emptyClassrooms = new ArrayList<String>();
+		for (int j = 0; j < GlobalStorage.lectureRooms.size(); j++){
+			int i;
+			for(i = 0; i < this.classes.size(); i++){
+				if ( classes.get(i).time.equals(newClass.time) && classes.get(i).lectureRoom.equals(GlobalStorage.lectureRooms.get(j).getName()) &&
+						GlobalStorage.lectureRooms.get(j).getLessonTypes().contains(newClass.lessonType)){
+					break;
+				}
+			}
+			if (i == classes.size()){
+				emptyClassrooms.add(GlobalStorage.lectureRooms.get(j).getName());
+			}
+		}
+		return emptyClassrooms;
+	}
+
 	/**
 	 * Функция проверяет является ли это занятие потоковым на основе совпадения дисциплины,
 	 * формы занятия, преподавателя и кафедры
@@ -113,6 +206,38 @@ public class Day {
 		}
 		for(int i = 0; i < this.classes.size(); i++){
 			if(classes.get(i).isStreamClass(newClass)){
+				return true;
+			}
+		}
+		return result;
+	}
+	
+	public boolean maybeStreamClassBeforeTheDate(Calendar dateOfTheDay, int day, Class newClass) {
+		boolean result = false;
+		if (this.dateOfTheDay.after(dateOfTheDay)){
+			return result;
+		}
+		if (DayOfWeek != day){
+			return result;
+		}
+		for(int i = 0; i < this.classes.size(); i++){
+			if(classes.get(i).maybeStreamClass(newClass)){
+				return true;
+			}
+		}
+		return result;
+	}
+	
+	public boolean maybeStreamClassAfterTheDate(Calendar dateOfTheDay, int day, Class newClass) {
+		boolean result = false;
+		if (this.dateOfTheDay.before(dateOfTheDay)){
+			return result;
+		}
+		if (DayOfWeek != day){
+			return result;
+		}
+		for(int i = 0; i < this.classes.size(); i++){
+			if(classes.get(i).maybeStreamClass(newClass)){
 				return true;
 			}
 		}
@@ -250,6 +375,36 @@ public class Day {
 		return null;
 	}
 	
+	public Class getMaybeStreamClassBeforeTheDate(Calendar dateOfTheDay, int day, Class newClass) {
+		if (this.dateOfTheDay.after(dateOfTheDay)){
+			return null;
+		}
+		if (DayOfWeek != day){
+			return null;
+		}
+		for(int i = 0; i < this.classes.size(); i++){
+			if(classes.get(i).maybeStreamClass(newClass)){
+				return classes.get(i);
+			}
+		}
+		return null;
+	}
+	
+	public Class getMaybeStreamClassAfterTheDate(Calendar dateOfTheDay, int day, Class newClass) {
+		if (this.dateOfTheDay.before(dateOfTheDay)){
+			return null;
+		}
+		if (DayOfWeek != day){
+			return null;
+		}
+		for(int i = 0; i < this.classes.size(); i++){
+			if(classes.get(i).maybeStreamClass(newClass)){
+				return classes.get(i);
+			}
+		}
+		return null;
+	}
+	
 	public Class getClassByTimeAndClassroomAfterTheDate(Calendar dateOfTheDay, int day, Class newClass) {
 		if (this.dateOfTheDay.before(dateOfTheDay)){
 			return null;
@@ -264,7 +419,6 @@ public class Day {
 		}
 		return null;
 	}
-
 
 	public boolean isDateAreEqual(Calendar dateOfTheDay, int day, Class newClass) {
 		boolean result = false;

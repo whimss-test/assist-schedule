@@ -3,6 +3,8 @@ package ru.kai.assistschedule.ui.observer;
 import java.util.HashSet;
 import java.util.Set;
 
+import ru.kai.assistschedule.ui.internal.views.processing.ScheduleTable;
+
 /**
  * User: Роман
  * Date: 21.06.12
@@ -15,6 +17,27 @@ public abstract class AbstractNotificationCenter {
      */
     private Set<ModelObserver> _modelObservers = new HashSet<ModelObserver>();
 
+    /**
+     * Содержит модели за которыми можно наблюдать
+     */
+    private Set<IViewModel> _models = new HashSet<IViewModel>();
+    
+    public Set<ModelObserver> getObservers() {
+		return _modelObservers;
+	}
+
+	public Set<IViewModel> getModels() {
+		return _models;
+	}
+
+	public void addModel(IViewModel model) {
+    	_models.add(model);
+    }
+
+    public void removeModel(IViewModel model) {
+    	_models.remove(model);
+    }
+    
     /**
      * Добавляем наблюдателя в общий список.
      *

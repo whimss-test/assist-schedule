@@ -24,7 +24,14 @@ public class ProfessorFilter extends ViewerFilter {
 	@Override
 	public boolean select(Viewer viewer, Object parentElement, Object element) {
 		ScheduleEntry classRow = (ScheduleEntry) element;
-		if(set.contains(classRow.prepodavatel)) {
+		
+		if(null != classRow.prepodavatel && classRow.prepodavatel.contains(",")) {
+			for(String p: set) {
+				if(classRow.prepodavatel.contains(p)) {
+					return true;
+				}
+			}
+		} else if(set.contains(classRow.prepodavatel)) {
 			return true;
 		}
 		return false;

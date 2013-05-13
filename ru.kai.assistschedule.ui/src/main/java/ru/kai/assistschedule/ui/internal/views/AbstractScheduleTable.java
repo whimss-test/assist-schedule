@@ -54,10 +54,12 @@ import ru.kai.assistschedule.core.IScheduleTable;
 import ru.kai.assistschedule.core.cache.Constants;
 import ru.kai.assistschedule.core.cache.FirstLevelCache;
 import ru.kai.assistschedule.core.cache.ScheduleEntry;
+import ru.kai.assistschedule.ui.internal.views.processing.ActivityPShelf;
 import ru.kai.assistschedule.ui.internal.views.status.StatusImpl;
 import ru.kai.assistschedule.ui.internal.views.utils.Popup;
 import ru.kai.assistschedule.ui.internal.widgets.ExcelFilter;
 import ru.kai.assistschedule.ui.model.ScheduleEntryCellModifier;
+import ru.kai.assistschedule.ui.observer.AddProfessorInScheduleEntry;
 import ru.kai.assistschedule.ui.observer.IViewModel;
 import ru.kai.assistschedule.ui.observer.LinkToScheduleEntry;
 import ru.kai.assistschedule.ui.observer.ModelObserver;
@@ -102,7 +104,6 @@ public abstract class AbstractScheduleTable implements IScheduleTable, ModelObse
 
 	@Override
 	public void update(IViewModel model, Notification notice) {
-		// TODO Auto-generated method stub
 		if(notice instanceof LinkToScheduleEntry) {
 			List<ScheduleEntry> list = (List<ScheduleEntry>) v.getInput();
 			IStructuredSelection selection;
@@ -114,17 +115,45 @@ public abstract class AbstractScheduleTable implements IScheduleTable, ModelObse
 				}
 			}
 		}
+		if(notice instanceof AddProfessorInScheduleEntry) {
+			List<ScheduleEntry> list = firstLevelCache.getEntries();
+			
+			IStructuredSelection selection;
+			for(ScheduleEntry entry: list) {
+				if(entry.id == ((AddProfessorInScheduleEntry) notice).id) {
+//					System.out.println(entry + " - AddProfessorInScheduleEntry");
+					entry.prepodavatel = ((AddProfessorInScheduleEntry) notice).professor;
+					v.update(entry, null);
+					break;
+				}
+			}
+		}
 	}
 
 	@Override
 	public boolean containsSender(IViewModel sender) {
 		return registeredModels.contains(sender);
 	}
+	
+	/**
+     * Связываем модель с данным контроллером. После добавления, контроллер будет
+     * слушать все изменения модели и сообщать о них представлениям. Он также отвечает
+     * за изменения модели, при совершении каких-либо действий пользователем.
+     *
+     * @param aModel модель для добавления
+     */
+    public void addModel(IViewModel aModel) {
+        registeredModels.add(aModel);
+        /*
+         * контроллер наблюдает за моделью
+         */
+        NotificationCenter.getDefaultCenter().addObserver((ModelObserver) this);
+    }
 
 	public AbstractScheduleTable(Composite parent) {
 		parent.setLayout(new FillLayout());
-		registeredModels.add((IViewModel)StatusImpl.getInstance());
-		NotificationCenter.getDefaultCenter().addObserver(this);
+		
+		
 		composite = new Composite(parent, SWT.NONE);
 		composite.setLayout(new FillLayout());
 		v = new GridTableViewer(composite, SWT.BORDER | SWT.V_SCROLL

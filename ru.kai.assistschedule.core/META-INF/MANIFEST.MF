@@ -15,4 +15,5 @@ Export-Package: ru.kai.assistschedule.core,
  ru.kai.assistschedule.core.cache.load,
  ru.kai.assistschedule.core.calendar,
  ru.kai.assistschedule.core.exceptions,
+ ru.kai.assistschedule.core.external.interfaces,
  ru.kai.assistschedule.core.xml

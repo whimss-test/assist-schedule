@@ -22,6 +22,8 @@ import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.IContentProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.nebula.jface.gridviewer.GridTableViewer;
 import org.eclipse.nebula.jface.gridviewer.GridViewerEditor;
@@ -52,11 +54,17 @@ import ru.kai.assistschedule.core.IScheduleTable;
 import ru.kai.assistschedule.core.cache.Constants;
 import ru.kai.assistschedule.core.cache.FirstLevelCache;
 import ru.kai.assistschedule.core.cache.ScheduleEntry;
+import ru.kai.assistschedule.ui.internal.views.status.StatusImpl;
 import ru.kai.assistschedule.ui.internal.views.utils.Popup;
 import ru.kai.assistschedule.ui.internal.widgets.ExcelFilter;
 import ru.kai.assistschedule.ui.model.ScheduleEntryCellModifier;
+import ru.kai.assistschedule.ui.observer.IViewModel;
+import ru.kai.assistschedule.ui.observer.LinkToScheduleEntry;
+import ru.kai.assistschedule.ui.observer.ModelObserver;
+import ru.kai.assistschedule.ui.observer.Notification;
+import ru.kai.assistschedule.ui.observer.NotificationCenter;
 
-public abstract class AbstractScheduleTable implements IScheduleTable {
+public abstract class AbstractScheduleTable implements IScheduleTable, ModelObserver {
 
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -86,9 +94,37 @@ public abstract class AbstractScheduleTable implements IScheduleTable {
 	 * Храним ссылки на колонки таблицы
 	 */
 	private Map<String, GridColumn> columns = new HashMap<String, GridColumn>();
+	
+	/**
+     * Содержит все зарегистрированные модели для данного контроллера.
+     */
+    protected Set<IViewModel> registeredModels = new HashSet<IViewModel>();;
+
+	@Override
+	public void update(IViewModel model, Notification notice) {
+		// TODO Auto-generated method stub
+		if(notice instanceof LinkToScheduleEntry) {
+			List<ScheduleEntry> list = (List<ScheduleEntry>) v.getInput();
+			IStructuredSelection selection;
+			for(ScheduleEntry entry: list) {
+				if(entry.id == ((LinkToScheduleEntry) notice).id) {
+					selection = new StructuredSelection(entry);
+					v.setSelection(selection, true);
+					break;
+				}
+			}
+		}
+	}
+
+	@Override
+	public boolean containsSender(IViewModel sender) {
+		return registeredModels.contains(sender);
+	}
 
 	public AbstractScheduleTable(Composite parent) {
 		parent.setLayout(new FillLayout());
+		registeredModels.add((IViewModel)StatusImpl.getInstance());
+		NotificationCenter.getDefaultCenter().addObserver(this);
 		composite = new Composite(parent, SWT.NONE);
 		composite.setLayout(new FillLayout());
 		v = new GridTableViewer(composite, SWT.BORDER | SWT.V_SCROLL

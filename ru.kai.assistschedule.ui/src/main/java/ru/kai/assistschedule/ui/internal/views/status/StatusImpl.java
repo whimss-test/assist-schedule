@@ -13,6 +13,9 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 import ru.kai.assistschedule.ui.internal.views.status.StatusView;
+import ru.kai.assistschedule.ui.observer.IViewModel;
+import ru.kai.assistschedule.ui.observer.LinkToScheduleEntry;
+import ru.kai.assistschedule.ui.observer.NotificationCenter;
 
 
 /**
@@ -20,13 +23,16 @@ import ru.kai.assistschedule.ui.internal.views.status.StatusView;
  * @author Роман
  *
  */
-public class StatusImpl implements IStatus {
+public class StatusImpl implements IStatus, IViewModel {
     
+	protected NotificationCenter _notificationCenter;
+	
     private static IStatus instance;
     
     private StyleRange linkStyle;
     
     private StatusImpl() {
+    	_notificationCenter = NotificationCenter.getDefaultCenter();
     	linkStyle = new StyleRange();
     	linkStyle.underline = true;
     	linkStyle.underlineStyle = SWT.UNDERLINE_LINK;
@@ -51,7 +57,11 @@ public class StatusImpl implements IStatus {
                     while(!StatusView.t2.getTextRange((end = start+(i++)), 1).equals(" ")) {}
                     end--;
                     System.out.println(String.format("start %d, end %d", start, end));
-                    System.out.println("Click on a Link - " + StatusView.t2.getText(start, end));
+                    String link = StatusView.t2.getText(start, end);
+                    link = link.replace(" ", "");
+                    link = link.substring(9, link.length());
+                    System.out.println("Click on a Link - " + link + " Cell number: " + link);
+                    _notificationCenter.postNotification(StatusImpl.this, new LinkToScheduleEntry(link));
                 } catch (IllegalArgumentException e) {
                     // no character under event.x, event.y
                 }

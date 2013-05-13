@@ -296,8 +296,8 @@ public class ActivityPShelf {
 						GlobalStorage.matrix[i][0], GlobalStorage.matrix[i][1],
 						GlobalStorage.matrix[i][2], GlobalStorage.matrix[i][3],
 						GlobalStorage.matrix[i][4]));
-				LOG.debug("link_" + i);
-				String link = "link_" + i;
+
+				String link = "Показать_" + GlobalStorage.matrix[i][0];
 				links.add(link);
 				status.append(" "+link+" ");
 			}

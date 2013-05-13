@@ -1,8 +1,20 @@
 package ru.kai.assistschedule.ui.internal.views.patterns;
 
+import java.util.Set;
+
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.widgets.TreeItem;
 
+import ru.kai.assistschedule.ui.model.schedule.filter.BuildingFilter;
+import ru.kai.assistschedule.ui.model.schedule.filter.ClassRoomFilter;
+import ru.kai.assistschedule.ui.model.schedule.filter.DateFilter;
+import ru.kai.assistschedule.ui.model.schedule.filter.DayFilter;
+import ru.kai.assistschedule.ui.model.schedule.filter.DepartmentFilter;
+import ru.kai.assistschedule.ui.model.schedule.filter.DisciplineFilter;
+import ru.kai.assistschedule.ui.model.schedule.filter.GroupNameFilter;
+import ru.kai.assistschedule.ui.model.schedule.filter.LessonTypeFilter;
+import ru.kai.assistschedule.ui.model.schedule.filter.PositionFilter;
+import ru.kai.assistschedule.ui.model.schedule.filter.ProfessorFilter;
 import ru.kai.assistschedule.ui.model.schedule.filter.TimeFilter;
 import ru.kai.assistschedule.ui.model.schedule.sort.AbstractScheduleSorter;
 import ru.kai.assistschedule.ui.model.schedule.sort.BuildingSorter;
@@ -47,29 +59,29 @@ public abstract class AbstractScheduleElementFactory {
 		}
 	}
 	
-	public static ViewerFilter createFilter(String columnName, Object[] items) {
+	public static ViewerFilter createFilter(String columnName, Set<String> selected) {
 		if (columnName.equals("Группа")) {
-//			return new GroupSorter(isDirectSort);
+			return new GroupNameFilter(selected);
 		} else if (columnName.equals("День недели")) {
-//			return new DaySorter(isDirectSort);
+			return new DayFilter(selected);
 		} else if (columnName.equals("Время")) {
-			return new TimeFilter(items);
+			return new TimeFilter(selected);
 		} else if (columnName.equals("Дата")) {
-//			return new DateSorter(isDirectSort);
+			return new DateFilter(selected);
 		} else if (columnName.equals("Дисциплина")) {
-//			return new DisciplineSorter(isDirectSort);
+			return new DisciplineFilter(selected);
 		} else if (columnName.equals("Вид занятий")) {
-//			return new LessonTypeSorter(isDirectSort);
+			return new LessonTypeFilter(selected);
 		} else if (columnName.equals("Аудитория")) {
-//			return new ClassRoomSorter(isDirectSort);
+			return new ClassRoomFilter(selected);
 		} else if (columnName.equals("Здание")) {
-//			return new BuildingSorter(isDirectSort);
+			return new BuildingFilter(selected);
 		} else if (columnName.equals("Должность")) {
-//			return new PositionSorter(isDirectSort);
+			return new PositionFilter(selected);
 		} else if (columnName.equals("Преподаватель")) {
-//			return new ProfessorSorter(isDirectSort);
+			return new ProfessorFilter(selected);
 		} else if (columnName.equals("Кафедра")) {
-//			return new DepartmentSorter(isDirectSort);
+			return new DepartmentFilter(selected);
 		}
 		return null;
 	}

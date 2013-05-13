@@ -35,30 +35,25 @@ public class StatusImpl implements IStatus {
             public void handleEvent(Event event) {
                 // It is up to the application to determine when and how a link should be activated.
                 // In this snippet links are activated on mouse down when the control key is held down
-                if ((event.stateMask & SWT.MOD1) != 0) {
-                    try {
-                        int offset = StatusView.t2.getOffsetAtLocation(new Point(event.x, event.y));
-                        StyleRange style = StatusView.t2.getStyleRangeAtOffset(offset);
-                        if (style != null && style.underline && style.underlineStyle == SWT.UNDERLINE_LINK) {
-                            System.out.println("Click on a Link");
-                        }
-                        int start = 0, i = 0, end = 0;
-                        while(!StatusView.t2.getTextRange((start = offset-(i++)), 1).equals(" ")) {
-                        	
-                        }
-//                        start--;
-                        end = start;
-                        i=1;
-                        while(!StatusView.t2.getTextRange((end = start+(i++)), 1).equals(" ")) {
-                        	
-                        }
-                        end--;
-                        System.out.println(String.format("start %d, end %d", start, end));
-                        System.out.println("Click on a Link - " + StatusView.t2.getText(start, end));
-                    } catch (IllegalArgumentException e) {
-                        // no character under event.x, event.y
+//                if ((event.stateMask & SWT.MOD1) != 0) {
+//                    
+//                }
+                try {
+                    int offset = StatusView.t2.getOffsetAtLocation(new Point(event.x, event.y));
+                    StyleRange style = StatusView.t2.getStyleRangeAtOffset(offset);
+                    if (style != null && style.underline && style.underlineStyle == SWT.UNDERLINE_LINK) {
+                        System.out.println("Click on a Link");
                     }
-
+                    int start = 0, i = 0, end = 0;
+                    while(!StatusView.t2.getTextRange((start = offset-(i++)), 1).equals(" ")) {}
+                    end = start;
+                    i=1;
+                    while(!StatusView.t2.getTextRange((end = start+(i++)), 1).equals(" ")) {}
+                    end--;
+                    System.out.println(String.format("start %d, end %d", start, end));
+                    System.out.println("Click on a Link - " + StatusView.t2.getText(start, end));
+                } catch (IllegalArgumentException e) {
+                    // no character under event.x, event.y
                 }
             }
         });

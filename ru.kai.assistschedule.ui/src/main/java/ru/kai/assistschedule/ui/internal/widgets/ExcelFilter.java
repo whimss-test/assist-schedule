@@ -1,7 +1,9 @@
 package ru.kai.assistschedule.ui.internal.widgets;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
@@ -12,6 +14,8 @@ import org.eclipse.nebula.widgets.grid.GridColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DragDetectEvent;
 import org.eclipse.swt.events.DragDetectListener;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
@@ -64,16 +68,16 @@ public class ExcelFilter {
 
 	private GridColumn column;
 
-	private Shell columnShell;
-
 	private GridTableViewer gridTableViewer;
 
-	private List<String> uniqueScheduleElements;
+	private List<String> uniqueScheduleElements = new ArrayList<String>();
 
 	private AllowOnlyMatchScheduleElementFilter treeViewerFilter;
 
 	public volatile ViewerFilter currentFilter;
 
+	private Set<String> selected;
+	
 	private synchronized void setCurrentFilter(ViewerFilter currentFilter) {
 		this.currentFilter = currentFilter;
 	}
@@ -83,36 +87,55 @@ public class ExcelFilter {
 	}
 
 	public ExcelFilter(GridColumn column, GridTableViewer gridTableViewer) {
-		this(column, gridTableViewer, null);
+		this(column, gridTableViewer, null, null);
 	}
 
 	public ExcelFilter(GridColumn column, GridTableViewer gridTableViewer,
-			List<String> uniqueScheduleElements) {
+			Set<String> uniqueScheduleElements, final Set<String> selected) {
 		this.column = column;
 		this.gridTableViewer = gridTableViewer;
-		this.uniqueScheduleElements = uniqueScheduleElements;
+		this.selected = selected;
+		addDataToUniqueElements(uniqueScheduleElements);
 
-		final GridColumn dayColumn = column;
-		Shell mainShell = dayColumn.getParent().getShell();
-		child = new Shell(mainShell, SWT.DOUBLE_BUFFERED);
-		columnShell = child;
-		child.setLocation(
-				dayColumn.getParent().toDisplay(0, 0).x
-						+ dayColumn.getHeaderRenderer().getBounds().x
-						+ dayColumn.getHeaderRenderer().getBounds().width
-						- windowWidth, dayColumn.getParent().toDisplay(0, 0).y
-						+ dayColumn.getHeaderRenderer().getBounds().height);
+		shell = new Shell(column.getParent().getShell(), SWT.DOUBLE_BUFFERED);
 
-		final Composite composite = new Composite(child, SWT.DOUBLE_BUFFERED);
+		final Composite composite = new Composite(shell, SWT.DOUBLE_BUFFERED);
 
 		createView(composite);
 		listeners();
+		
+//		treeViewerFilteredData.setCheckedElements(selected.toArray());
+		
+		shell.setSize(0, 0);
+		shell.setVisible(false);
+	}
+	
+	private void addDataToUniqueElements(Set<String> unique) {
+		uniqueScheduleElements.add("(Выделить все)");
+		for(String s: unique) {
+			if(s.isEmpty()) { continue; }
+			uniqueScheduleElements.add(s);
+		}
+		uniqueScheduleElements.add("(Пустые)");
 	}
 
+	private boolean isNotOpened = true;
 	public void show() {
-		columnShell.setSize(0, 0);
-		columnShell.open();
-
+		if(shell.isVisible()) {
+			return;
+		}
+		shell.setLocation(
+				column.getParent().toDisplay(0, 0).x
+						+ column.getHeaderRenderer().getBounds().x
+						+ column.getHeaderRenderer().getBounds().width
+						- windowWidth, column.getParent().toDisplay(0, 0).y
+						+ column.getHeaderRenderer().getBounds().height);
+		shell.setVisible(true);
+		if(isNotOpened) {
+			shell.open();
+			treeViewerFilteredData.setCheckedElements(selected.toArray());
+			isNotOpened = false;
+		}
 		column.getDisplay().asyncExec(new Runnable() {
 
 			@Override
@@ -120,7 +143,7 @@ public class ExcelFilter {
 				// TODO Auto-generated method stub
 				int i = 1;
 				while (i++ < 11) {
-					columnShell.setSize(windowWidth, i * 25);
+					shell.setSize(windowWidth, i * 25);
 					try {
 						TimeUnit.MILLISECONDS.sleep(3);
 					} catch (InterruptedException e) {
@@ -128,6 +151,7 @@ public class ExcelFilter {
 						e.printStackTrace();
 					}
 				}
+				shell.setActive();
 			}
 		});
 	}
@@ -140,7 +164,7 @@ public class ExcelFilter {
 				// TODO Auto-generated method stub
 				int i = 10;
 				while (i-- > 0) {
-					columnShell.setSize(windowWidth, i * 25);
+					shell.setSize(windowWidth, i * 25);
 					try {
 						TimeUnit.MILLISECONDS.sleep(10);
 					} catch (InterruptedException e) {
@@ -148,7 +172,8 @@ public class ExcelFilter {
 						e.printStackTrace();
 					}
 				}
-				columnShell.close();
+				shell.setVisible(false);
+//				columnShell.close();
 			}
 		});
 
@@ -156,7 +181,22 @@ public class ExcelFilter {
 
 	private void listeners() {
 		
-		child.addShellListener(new ShellListener() {
+		shell.addFocusListener(new FocusListener() {
+			
+			@Override
+			public void focusLost(FocusEvent e) {
+				System.out.println("focusLost");
+			}
+			
+			@Override
+			public void focusGained(FocusEvent e) {
+				System.out.println("focusGained");
+			}
+		});
+		/**
+		 * 
+		 */
+		shell.addShellListener(new ShellListener() {
 
 			@Override
 			public void shellIconified(ShellEvent e) {
@@ -190,6 +230,9 @@ public class ExcelFilter {
 			}
 		});
 		
+		/**
+		 * 
+		 */
 		buttonASC.addSelectionListener(new SelectionAdapter() {
 			private boolean isDirectSort = false;
 
@@ -205,6 +248,9 @@ public class ExcelFilter {
 
 		});
 
+		/**
+		 * 
+		 */
 		buttonDESC.addSelectionListener(new SelectionAdapter() {
 
 			@Override
@@ -219,41 +265,58 @@ public class ExcelFilter {
 
 		});
 
+		/**
+		 * 
+		 */
 		ok.addSelectionListener(new SelectionAdapter() {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				final Object[] checkedObj = treeViewerFilteredData
-						.getCheckedElements();
-				final String columnName = column.getText();
-				new Thread(new Runnable() {
-					public void run() {
-
-						final ViewerFilter currentViewerFilter = currentFilter;
-						gridTableViewer.getGrid().getDisplay()
-								.asyncExec(new Runnable() {
-									public void run() {
-										currentFilter = AbstractScheduleElementFactory
-												.createFilter(columnName,
-														checkedObj);
-										for (ViewerFilter filter : gridTableViewer
-												.getFilters()) {
-											if (filter instanceof TimeFilter) {
-												gridTableViewer.remove(filter);
-												logger.debug("remove filter "
-														+ filter);
-												break;
-											}
-										}
-										gridTableViewer
-												.setFilters(new ViewerFilter[] { currentFilter });
-										gridTableViewer.refresh();
-										logger.debug("table was filtered "
-												+ currentFilter);
-									}
-								});
+				final Object[] checkedObj = treeViewerFilteredData.getCheckedElements();
+				selected = new HashSet<String>();
+				String s;
+				for(Object o: checkedObj) {
+					s = String.valueOf(o);
+					if("(Выделить все)".equals(s)) {
+						continue;
 					}
-				}).start();
+					if("(Пустые)".equals(s)) {
+						selected.add("");
+					}
+					selected.add(s);
+				}
+				final String columnName = column.getText();
+				
+				
+		new Thread(new Runnable() {
+			public void run() {
+				final ViewerFilter currentViewerFilter = currentFilter;
+				gridTableViewer.getGrid().getDisplay().asyncExec(new Runnable() {
+					public void run() {
+						currentFilter = AbstractScheduleElementFactory.createFilter(columnName, selected);
+						
+						ViewerFilter[] filters = gridTableViewer.getFilters();
+						for(ViewerFilter f: filters) {
+							if(currentFilter.getClass().isInstance(f)) {
+								gridTableViewer.removeFilter(f);
+								break;
+							}
+						}
+						gridTableViewer.addFilter(currentFilter);
+//						for (ViewerFilter filter : gridTableViewer.getFilters()) {
+//							if (filter instanceof TimeFilter) {
+//								gridTableViewer.remove(filter);
+//								logger.debug("remove filter " + filter);
+//								break;
+//							}
+//						}
+//						gridTableViewer.setFilters(new ViewerFilter[] { currentFilter });
+						gridTableViewer.refresh();
+						logger.debug("table was filtered " + currentFilter);
+					}
+				});
+			}
+		}).start();
 				hide();
 			}
 
@@ -356,7 +419,7 @@ public class ExcelFilter {
 
 	}
 
-	private final Shell child;
+	private final Shell shell;
 	
 	private Button buttonASC;
 
@@ -371,7 +434,7 @@ public class ExcelFilter {
 	private CheckboxTreeViewer treeViewerFilteredData;
 
 	private void createView(Composite composite) {
-		child.setLayout(new FormLayout());
+		shell.setLayout(new FormLayout());
 		
 		FormData data = new FormData();
 		data.top = new FormAttachment(0, 10);
@@ -458,7 +521,7 @@ public class ExcelFilter {
 		data.right = new FormAttachment(100, 0);
 		textFilter.setLayoutData(data);
 
-		Label labelResize = new Label(child, SWT.DOUBLE_BUFFERED);
+		Label labelResize = new Label(shell, SWT.DOUBLE_BUFFERED);
 		labelResize.setImage(ImageCache.getImage("icons/resize13x13.png"));
 		labelResize.setToolTipText("Изменение размера окна");
 		data = new FormData();
@@ -514,7 +577,7 @@ public class ExcelFilter {
 					int y1 = event.y + 10;
 					if (rect.contains(x1, y1)) {
 						Point pt1 = composite.toDisplay(0, 0);
-						Point pt2 = child.toDisplay(event.x, event.y);
+						Point pt2 = shell.toDisplay(event.x, event.y);
 						offset[0] = new Point(pt2.x - pt1.x, pt2.y - pt1.y);
 						logger.debug(String.format("event.x[%d], event.y[%d]",
 								offset[0].x, offset[0].y));
@@ -537,15 +600,15 @@ public class ExcelFilter {
 						// if(event.x > 100 || event.y > 100) {
 						// columnShell.setSize(event.x, event.y);
 						// }
-						int x = child.toDisplay(0, 0).x;
-						int y = child.toDisplay(0, 0).y;
-						int width = child.getBounds().width;
-						int height = child.getBounds().height;
+						int x = shell.toDisplay(0, 0).x;
+						int y = shell.toDisplay(0, 0).y;
+						int width = shell.getBounds().width;
+						int height = shell.getBounds().height;
 						// logger.debug(String.format("newX[%d], newY[%d]",
 						// width + event.x, height + event.y));
-						child.setRedraw(false);
-						child.setSize(width + event.x - 10, height + event.y - 10);
-						child.setRedraw(true);
+						shell.setRedraw(false);
+						shell.setSize(width + event.x - 10, height + event.y - 10);
+						shell.setRedraw(true);
 					}
 					break;
 				case SWT.MouseUp:

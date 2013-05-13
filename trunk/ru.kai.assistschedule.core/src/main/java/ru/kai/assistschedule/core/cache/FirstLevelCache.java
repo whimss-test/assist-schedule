@@ -1,6 +1,7 @@
 package ru.kai.assistschedule.core.cache;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -281,14 +282,22 @@ public class FirstLevelCache {
 			LessonType lesType = convertToEnumFormOfClass(sLessonType); // форму
 																		// занятий
 			DaysOfWeek day = convertToDayOfWeek(sDayOfWeek);
-			elements.add(new ScheduleEntry(sGroupName, day, time, sDate,
+			
+			ScheduleEntry entry = new ScheduleEntry(sGroupName, day, time, sDate,
 					sDiscipline, lesType, sClassRoom, sBuilding, sPosition,
-					sProfessor, sDepartment));
-			fillSets(sGroupName, sDayOfWeek, sTime, sDate, sDiscipline,
-					sLessonType, sClassRoom, sBuilding, sPosition, sProfessor,
-					sDepartment);
+					sProfessor, sDepartment);
+			entry.id = (i + 1);
+			
+			elements.add(entry);
+			if(i != 1) {
+				fillSets(sGroupName, sDayOfWeek, sTime, sDate, sDiscipline,
+						sLessonType, sClassRoom, sBuilding, sPosition, sProfessor,
+						sDepartment);	
+			}
+			
 			added++;
 		}
+		
 		logger.debug(String.format(
 				"Расписание прочитано, добавлено %d элементов", elements.size()));
 	}
@@ -306,6 +315,34 @@ public class FirstLevelCache {
 		return elements;
 	}
 
+	public Set<String> getUniqueSetByName(String name) {
+		if(Constants.Schedule.GROUP.equals(name)) {
+			return getGroupNames();
+		} else if(Constants.Schedule.DAY_OF_WEEK.equals(name)) {
+			return getDaysOfWeek();
+		} else if(Constants.Schedule.TIME.equals(name)) {
+			return getTimes();
+		} else if(Constants.Schedule.DATE.equals(name)) {
+			return getDates();
+		} else if(Constants.Schedule.DISCIPLINE.equals(name)) {
+			return getDisciplines();
+		} else if(Constants.Schedule.LESSON_TYPE.equals(name)) {
+			return getLessonTypes();
+		} else if(Constants.Schedule.CLASSROOM.equals(name)) {
+			return getClassRooms();
+		} else if(Constants.Schedule.BUILDING.equals(name)) {
+			return getBuildings();
+		} else if(Constants.Schedule.POSITION.equals(name)) {
+			return getPositions();
+		} else if(Constants.Schedule.PROFESSOR.equals(name)) {
+			return getProfessors();
+		} else if(Constants.Schedule.DEPARTMENT.equals(name)) {
+			return getDepartments();
+		} else {
+			return new HashSet<String>();
+		}
+	}
+	
 	public Set<String> getGroupNames() {
 		return groupNames;
 	}

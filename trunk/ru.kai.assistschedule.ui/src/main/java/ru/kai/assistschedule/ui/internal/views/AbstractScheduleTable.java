@@ -6,8 +6,10 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.core.runtime.FileLocator;
@@ -44,6 +46,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.ls.LSInput;
 
 import ru.kai.assistschedule.core.IScheduleTable;
 import ru.kai.assistschedule.core.cache.Constants;
@@ -64,15 +67,25 @@ public abstract class AbstractScheduleTable implements IScheduleTable {
 		Constants.Schedule.BUILDING, Constants.Schedule.POSITION,
 		Constants.Schedule.PROFESSOR, Constants.Schedule.DEPARTMENT };
 	
-	private GridTableViewer v;
+	protected GridTableViewer v;
 
 	private Composite composite;
 
 	/**
 	 * Сохраняемые настройки окна фильтра
 	 */
-	private Map<String, List<Object>> excelFilterPreferences = 
-			new HashMap<String, List<Object>>();
+	private Map<String, Set<String>> excelFilterSelected = 
+			new HashMap<String, Set<String>>();
+	
+	/**
+	 * Храним ссылки на окошки с фильтрами
+	 */
+	private Map<String, ExcelFilter> excelFilres = new HashMap<String, ExcelFilter>();
+	
+	/**
+	 * Храним ссылки на колонки таблицы
+	 */
+	private Map<String, GridColumn> columns = new HashMap<String, GridColumn>();
 
 	public AbstractScheduleTable(Composite parent) {
 		parent.setLayout(new FillLayout());
@@ -121,185 +134,23 @@ public abstract class AbstractScheduleTable implements IScheduleTable {
 						| ColumnViewerEditor.TABBING_MOVE_TO_ROW_NEIGHBOR
 						| ColumnViewerEditor.TABBING_VERTICAL
 						| ColumnViewerEditor.KEYBOARD_ACTIVATION);
+		
+		for(final String columnTitle: PROPS) {
+			final GridColumn column = new GridColumn(v.getGrid(), SWT.NONE);
+			column.setWidth(100);
+			column.setText(columnTitle);
+			columns.put(columnTitle, column);
+			column.addSelectionListener(new SelectionAdapter() {
 
-		final GridColumn groupColumn = new GridColumn(v.getGrid(), SWT.NONE);
-		groupColumn.setWidth(100);
-		groupColumn.setText(Constants.Schedule.GROUP);
-		groupColumn.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					
+					excelFilres.get(columnTitle).show();
+//					makeExcelFilter(column, firstLevelCache.getUniqueSetByName(columnTitle)).show();
+				}
 
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
-				super.widgetSelected(e);
-				makeExcelFilter(groupColumn,
-						new ArrayList<String>(firstLevelCache.getGroupNames()))
-						.show();
-			}
-
-		});
-
-		final GridColumn dayColumn = new GridColumn(v.getGrid(), SWT.NONE);
-		dayColumn.setWidth(100);
-		dayColumn.setText(Constants.Schedule.DAY_OF_WEEK);
-		dayColumn.addSelectionListener(new SelectionAdapter() {
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
-				super.widgetSelected(e);
-				makeExcelFilter(dayColumn,
-						new ArrayList<String>(firstLevelCache.getDaysOfWeek()))
-						.show();
-			}
-
-		});
-
-		final GridColumn timeColumn = new GridColumn(v.getGrid(), SWT.NONE);
-		timeColumn.setWidth(100);
-		timeColumn.setText(Constants.Schedule.TIME);
-		timeColumn.addSelectionListener(new SelectionAdapter() {
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
-				super.widgetSelected(e);
-				makeExcelFilter(timeColumn,
-						new ArrayList<String>(firstLevelCache.getTimes()))
-						.show();
-			}
-
-		});
-
-		final GridColumn dateColumn = new GridColumn(v.getGrid(), SWT.NONE);
-		dateColumn.setWidth(100);
-		dateColumn.setText(Constants.Schedule.DATE);
-		dateColumn.addSelectionListener(new SelectionAdapter() {
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
-				super.widgetSelected(e);
-				makeExcelFilter(dateColumn,
-						new ArrayList<String>(firstLevelCache.getDates()))
-						.show();
-			}
-
-		});
-
-		final GridColumn disciplineColumn = new GridColumn(v.getGrid(),
-				SWT.NONE);
-		disciplineColumn.setWidth(100);
-		disciplineColumn.setText(Constants.Schedule.DISCIPLINE);
-		disciplineColumn.addSelectionListener(new SelectionAdapter() {
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
-				super.widgetSelected(e);
-				makeExcelFilter(disciplineColumn,
-						new ArrayList<String>(firstLevelCache.getDisciplines()))
-						.show();
-			}
-
-		});
-
-		final GridColumn lessonTypeColumn = new GridColumn(v.getGrid(),
-				SWT.NONE);
-		lessonTypeColumn.setWidth(100);
-		lessonTypeColumn.setText(Constants.Schedule.LESSON_TYPE);
-		lessonTypeColumn.addSelectionListener(new SelectionAdapter() {
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
-				super.widgetSelected(e);
-				makeExcelFilter(lessonTypeColumn,
-						new ArrayList<String>(firstLevelCache.getLessonTypes()))
-						.show();
-			}
-
-		});
-
-		final GridColumn classRoomColumn = new GridColumn(v.getGrid(), SWT.NONE);
-		classRoomColumn.setWidth(100);
-		classRoomColumn.setText(Constants.Schedule.CLASSROOM);
-		classRoomColumn.addSelectionListener(new SelectionAdapter() {
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
-				super.widgetSelected(e);
-				makeExcelFilter(classRoomColumn,
-						new ArrayList<String>(firstLevelCache.getClassRooms()))
-						.show();
-			}
-
-		});
-
-		final GridColumn buildingColumn = new GridColumn(v.getGrid(), SWT.NONE);
-		buildingColumn.setWidth(100);
-		buildingColumn.setText(Constants.Schedule.BUILDING);
-		buildingColumn.addSelectionListener(new SelectionAdapter() {
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
-				super.widgetSelected(e);
-				makeExcelFilter(buildingColumn,
-						new ArrayList<String>(firstLevelCache.getBuildings()))
-						.show();
-			}
-
-		});
-
-		final GridColumn positionColumn = new GridColumn(v.getGrid(), SWT.NONE);
-		positionColumn.setWidth(100);
-		positionColumn.setText(Constants.Schedule.POSITION);
-		positionColumn.addSelectionListener(new SelectionAdapter() {
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
-				super.widgetSelected(e);
-				makeExcelFilter(positionColumn,
-						new ArrayList<String>(firstLevelCache.getPositions()))
-						.show();
-			}
-
-		});
-
-		final GridColumn professorColumn = new GridColumn(v.getGrid(), SWT.NONE);
-		professorColumn.setWidth(100);
-		professorColumn.setText(Constants.Schedule.PROFESSOR);
-		professorColumn.addSelectionListener(new SelectionAdapter() {
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
-				super.widgetSelected(e);
-				makeExcelFilter(professorColumn,
-						new ArrayList<String>(firstLevelCache.getProfessors()))
-						.show();
-			}
-
-		});
-
-		final GridColumn departmentColumn = new GridColumn(v.getGrid(),
-				SWT.NONE);
-		departmentColumn.setWidth(100);
-		departmentColumn.setText(Constants.Schedule.DEPARTMENT);
-		departmentColumn.addSelectionListener(new SelectionAdapter() {
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
-				super.widgetSelected(e);
-				makeExcelFilter(departmentColumn,
-						new ArrayList<String>(firstLevelCache.getDepartments()))
-						.show();
-			}
-
-		});
+			});
+		}
 
 		// v.setInput(getInput());
 		v.getGrid().setLinesVisible(true);
@@ -327,17 +178,9 @@ public abstract class AbstractScheduleTable implements IScheduleTable {
 		listeners();
 	}
 
-	private ExcelFilter makeExcelFilter(GridColumn column, List<String> list) {
-		return new ExcelFilter(column, v, list);
-	}
-
-	/**
-	 * Ссылка на настройки фильтра по названию колонки
-	 * @param columnName
-	 * @return
-	 */
-	private List<Object> getExcelFilter(String columnName) {
-		return excelFilterPreferences.get(columnName);
+	private ExcelFilter makeExcelFilter(GridColumn column, Set<String> unique) {
+		return new ExcelFilter(column, v, 
+				unique, excelFilterSelected.get(column.getText()));
 	}
 
 	protected abstract void listeners();
@@ -357,7 +200,19 @@ public abstract class AbstractScheduleTable implements IScheduleTable {
 		}
 
 		v.setInput(elem);
-
+		for(final String colTitle: PROPS) {
+			Set<String> uniqueElementsSet = 
+					firstLevelCache.getUniqueSetByName(colTitle);
+			if(excelFilterSelected.get(colTitle) == null) {
+				excelFilterSelected.put(colTitle, new HashSet<String>(uniqueElementsSet));
+			}
+			if(excelFilres.get(colTitle) == null) {
+				excelFilres.put(colTitle, 
+						new ExcelFilter(columns.get(colTitle), v, 
+								uniqueElementsSet, excelFilterSelected.get(colTitle)));
+			}
+		}
+		
 		Popup.make(v.getGrid().getParent(), "Расписание загружено!", 3000,
 				SWT.COLOR_GREEN).show();
 	}

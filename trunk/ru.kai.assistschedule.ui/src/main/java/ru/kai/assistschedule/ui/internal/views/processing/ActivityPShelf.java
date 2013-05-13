@@ -209,6 +209,13 @@ public class ActivityPShelf {
 			box.open();
 			return;
 		}
+		if (!ExcelWorker.isLoadOpened()) {
+			MessageBox box = new MessageBox(_shelf.getShell(),
+					SWT.ICON_INFORMATION);
+			box.setMessage("Необходимо загрузить нагрузку!");
+			box.open();
+			return;
+		}
 
 		LOG.debug("Началась 1 - я проверка!");
 		GlobalStorage.matrix = ExcelWorker.searchEmptyCellsOfPMI();
@@ -226,7 +233,7 @@ public class ActivityPShelf {
 //		status.setFont(new Font(_shelf.getDisplay(), new FontData("Courier",
 //				10, SWT.NORMAL)));
 		
-		List<String> links = new ArrayList<String>(GlobalStorage.matrix.length);
+		
 		for (int i = 0; i < GlobalStorage.matrix.length; i++) {
 			status.append(i == 0 ? "" : "\n");
 //			for (str = ""; (GlobalStorage.matrix[i][2].length() / 8 + str
@@ -234,12 +241,8 @@ public class ActivityPShelf {
 //			}
 			status.append(String.format("%-15s %-15s %-30.30s %15s", GlobalStorage.matrix[i][0], GlobalStorage.matrix[i][1],
 					GlobalStorage.matrix[i][2], GlobalStorage.matrix[i][3]));
-
-			String link = "link_" + i;
-			links.add(link);
-			status.append(" "+link+" ");
 		}
-		status.appendLinks(links);
+		
 		String foundRecords = String.format("\nНайдено записей: %d",
 				GlobalStorage.matrix.length);
 		printStatus(foundRecords);
@@ -272,8 +275,11 @@ public class ActivityPShelf {
 
 			for (str = ""; str.length() != (maxLength / 8); str += "\t") {
 			}
-			status.append("Строка: Группа: Предмет:" + str + "Форма:  Найдено:"
-					+ "\n");
+//			status.append("Строка: Группа: Предмет:" + str + "Форма:  Найдено:"
+//					+ "\n");
+			status.append(String.format("%-15s %-15s %-"+maxLength+"s %15s %15s\n", 
+					"Строка:", "Группа:", "Предмет:", "Форма:", "Найдено:"));
+			List<String> links = new ArrayList<String>(GlobalStorage.matrix.length);
 			for (int i = 0; i < GlobalStorage.matrix.length; i++) {
 				if (GlobalStorage.matrix[i][4] != null)
 					suc++;
@@ -281,14 +287,21 @@ public class ActivityPShelf {
 				for (str = ""; (GlobalStorage.matrix[i][2].length() / 8 + str
 						.length()) != (maxLength / 8 + 1); str += "\t") {
 				}
-				status.append(GlobalStorage.matrix[i][0] + "\t"
-						+ GlobalStorage.matrix[i][1] + "\t"
-						+ GlobalStorage.matrix[i][2] + str
-						+ GlobalStorage.matrix[i][3] + "\t"
-						+ GlobalStorage.matrix[i][4]);
+//				status.append(GlobalStorage.matrix[i][0] + "\t"
+//						+ GlobalStorage.matrix[i][1] + "\t"
+//						+ GlobalStorage.matrix[i][2] + str
+//						+ GlobalStorage.matrix[i][3] + "\t"
+//						+ GlobalStorage.matrix[i][4]);
+				status.append(String.format("%-15s %-15s %-"+maxLength+"s %15s %15s", 
+						GlobalStorage.matrix[i][0], GlobalStorage.matrix[i][1],
+						GlobalStorage.matrix[i][2], GlobalStorage.matrix[i][3],
+						GlobalStorage.matrix[i][4]));
 				LOG.debug("link_" + i);
-//				status.appendLink("link_" + i);
+				String link = "link_" + i;
+				links.add(link);
+				status.append(" "+link+" ");
 			}
+			status.appendLinks(links);
 			foundRecords = String.format(
 					"\nНайдено записей: %d, из них Успешно найдено: %d",
 					GlobalStorage.matrix.length, suc);

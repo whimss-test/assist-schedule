@@ -15,7 +15,6 @@ import org.eclipse.swt.widgets.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ru.kai.assistschedule.ui.internal.views.status.IStatus;
 import ru.kai.assistschedule.ui.internal.views.status.StatusImpl;
 
 public class ActivityPShelf {

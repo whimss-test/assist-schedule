@@ -15,7 +15,7 @@ import org.eclipse.swt.widgets.*;
 import ru.kai.assistschedule.core.ExcelWorker;
 import ru.kai.assistschedule.core.GlobalStorage;
 import ru.kai.assistschedule.core.calendar.SemestrBuilder;
-import ru.kai.assistschedule.ui.internal.views.status.IStatus;
+import ru.kai.assistschedule.core.external.interfaces.IStatus;
 import ru.kai.assistschedule.ui.internal.views.status.StatusImpl;
 
 import java.util.GregorianCalendar;

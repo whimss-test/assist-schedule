@@ -6,7 +6,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
+import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.nebula.jface.gridviewer.GridTableViewer;
@@ -133,7 +135,7 @@ public class ExcelFilter {
 		shell.setVisible(true);
 		if(isNotOpened) {
 			shell.open();
-			treeViewerFilteredData.setCheckedElements(selected.toArray());
+			treeViewerFilteredData.setCheckedElements(uniqueScheduleElements.toArray());
 			isNotOpened = false;
 		}
 		column.getDisplay().asyncExec(new Runnable() {
@@ -263,6 +265,26 @@ public class ExcelFilter {
 				column.setSort(SWT.UP);
 			}
 
+		});
+		
+		treeViewerFilteredData.addCheckStateListener(new ICheckStateListener() {
+			
+			@Override
+			public void checkStateChanged(CheckStateChangedEvent event) {
+				// TODO Auto-generated method stub
+				if("(Выделить все)".equals(String.valueOf(event.getElement()))) {
+					if(event.getChecked()) {
+						for (String element: uniqueScheduleElements) {
+							treeViewerFilteredData.setChecked(element, true);
+						}
+					} else {
+						for (String element: uniqueScheduleElements) {
+							treeViewerFilteredData.setChecked(element, false);
+						}
+					}
+				}
+				
+			}
 		});
 
 		/**

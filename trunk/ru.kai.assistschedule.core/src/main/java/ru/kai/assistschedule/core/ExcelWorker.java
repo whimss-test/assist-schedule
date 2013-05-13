@@ -43,13 +43,21 @@ public class ExcelWorker {
 
     private static Workbook workbookSchedule, workbookLoad;
     
-    private static WritableWorkbook writableSchedule;
+    public static WritableWorkbook writableSchedule;
     
-    private static WritableSheet writableSheet;
+    public static WritableSheet writableSheet;
 
     private static Sheet sheetOfSchedule, sheetOfLoad;
 
     private static Range[] range;
+    
+	public static Workbook getSchedule(){
+		return workbookSchedule;
+	}
+	
+	public static Workbook getLoad(){
+		return workbookLoad;
+	}
 
     // ****************************//
     // ========================== //

@@ -22,7 +22,7 @@ import ru.kai.assistschedule.core.ExcelWorker;
 import ru.kai.assistschedule.core.GlobalStorage;
 import ru.kai.assistschedule.core.MainCommand;
 import ru.kai.assistschedule.core.cache.FirstLevelCache;
-import ru.kai.assistschedule.ui.internal.views.status.IStatus;
+import ru.kai.assistschedule.core.external.interfaces.IStatus;
 import ru.kai.assistschedule.ui.internal.views.status.StatusImpl;
 import ru.kai.assistschedule.ui.internal.widgets.LectureRoomsSetting;
 import ru.kai.assistschedule.ui.internal.widgets.ProgressBarModalWindow;

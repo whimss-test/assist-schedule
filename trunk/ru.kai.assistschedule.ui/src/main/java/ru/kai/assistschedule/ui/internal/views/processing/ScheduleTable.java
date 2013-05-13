@@ -16,7 +16,10 @@ import ru.kai.assistschedule.core.cache.Time;
 import ru.kai.assistschedule.core.calendar.Class;
 import ru.kai.assistschedule.ui.model.schedule.ScheduleContentProvider;
 import ru.kai.assistschedule.ui.model.schedule.ScheduleLabelProvider;
+import ru.kai.assistschedule.ui.observer.IViewModel;
+import ru.kai.assistschedule.ui.observer.NotificationCenter;
 import ru.kai.assistschedule.ui.internal.views.AbstractScheduleTable;
+import ru.kai.assistschedule.ui.internal.views.status.StatusImpl;
 
 public class ScheduleTable extends AbstractScheduleTable {
 
@@ -24,8 +27,16 @@ public class ScheduleTable extends AbstractScheduleTable {
 	    .getLogger(ScheduleTable.class);
 
     public ScheduleTable(Composite parent) {
-	super(parent);
-	MainCommand.setScheduleTableProcessing(this);
+		super(parent);
+		for(IViewModel model: NotificationCenter.getDefaultCenter().getModels()) {
+			if(model instanceof ActivityPShelf) {
+				addModel(model);
+			}
+			if(model instanceof StatusImpl) {
+				addModel(model);
+			}
+		}
+		MainCommand.setScheduleTableProcessing(this);
     }
 
     @Override

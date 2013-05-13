@@ -12,6 +12,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
+import ru.kai.assistschedule.core.external.interfaces.IStatus;
 import ru.kai.assistschedule.ui.internal.views.status.StatusView;
 import ru.kai.assistschedule.ui.observer.IViewModel;
 import ru.kai.assistschedule.ui.observer.LinkToScheduleEntry;
@@ -33,6 +34,8 @@ public class StatusImpl implements IStatus, IViewModel {
     
     private StatusImpl() {
     	_notificationCenter = NotificationCenter.getDefaultCenter();
+    	_notificationCenter.addModel(this);
+    	
     	linkStyle = new StyleRange();
     	linkStyle.underline = true;
     	linkStyle.underlineStyle = SWT.UNDERLINE_LINK;
@@ -49,19 +52,20 @@ public class StatusImpl implements IStatus, IViewModel {
                     StyleRange style = StatusView.t2.getStyleRangeAtOffset(offset);
                     if (style != null && style.underline && style.underlineStyle == SWT.UNDERLINE_LINK) {
                         System.out.println("Click on a Link");
-                    }
+                    
                     int start = 0, i = 0, end = 0;
                     while(!StatusView.t2.getTextRange((start = offset-(i++)), 1).equals(" ")) {}
                     end = start;
                     i=1;
                     while(!StatusView.t2.getTextRange((end = start+(i++)), 1).equals(" ")) {}
                     end--;
-                    System.out.println(String.format("start %d, end %d", start, end));
+//                    System.out.println(String.format("start %d, end %d", start, end));
                     String link = StatusView.t2.getText(start, end);
                     link = link.replace(" ", "");
                     link = link.substring(9, link.length());
-                    System.out.println("Click on a Link - " + link + " Cell number: " + link);
+//                    System.out.println("Click on a Link - " + link + " Cell number: " + link);
                     _notificationCenter.postNotification(StatusImpl.this, new LinkToScheduleEntry(link));
+                    }
                 } catch (IllegalArgumentException e) {
                     // no character under event.x, event.y
                 }

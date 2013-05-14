@@ -715,7 +715,7 @@ public class ExcelWorker {
 	/**
 	 * Функция проверяет совпадения и добавляет в каждую неделю
 	 */
-	public static void AddInEveryWeek(IStatus console, SemestrBuilder SB) throws SheduleIsNotOpenedException{
+	public static void AddInEveryWeek(IStatus console, SemestrBuilder SB, List<String> links) throws SheduleIsNotOpenedException{
 		if (!isScheduleOpened()) // Если не открыто расписание
 			throw new SheduleIsNotOpenedException();
 		selectSheetInSchedule(0); // Открываем лист с расписанием(обычно это первый лист)
@@ -738,7 +738,8 @@ public class ExcelWorker {
 					Time time = convertToEnumTime(splitStr(currentEntry[2].getContents())); // конвертируем вермя
 					LessonType FoC = convertToEnumFormOfClass(splitStr(currentEntry[5].getContents())); // --//-- форму занятий
 					Class newClass = new Class(time, splitStr(currentEntry[6].getContents()), splitStr(currentEntry[4].getContents()), FoC, splitStr(currentEntry[0].getContents()), splitStr(currentEntry[9].getContents()), splitStr(currentEntry[10].getContents()));
-
+					newClass.id = (i + 1);
+					
 					if(SB.contains(day, newClass)){
 						if(SB.isStreamClass(day, newClass)){
 							SB.addGroupToStream(day, newClass);//Занятие в потоке, добавить группу к занятию
@@ -747,7 +748,7 @@ public class ExcelWorker {
 						} else {
 							Class entry = SB.getClassByTimeAndClassroom(day, newClass);
 							console.append(deleteSpaces(splitStr(currentEntry[1].getContents())) + " " + deleteSpaces(splitStr(currentEntry[2].getContents())) + " Аудитория: " + newClass.lectureRoom);//Ошибка. Вывести общие данные
-							errorAnalysis(entry, newClass, console);	//Вывод подробных данных
+							errorAnalysis(entry, newClass, console, links);	//Вывод подробных данных
 							errors++;
 						}
 					} else {
@@ -785,7 +786,7 @@ public class ExcelWorker {
 				} else {
 					newClass.lectureRoom = emptyClassrooms.get(0);
 					console.append("\nНазначена аудитория: " + newClass.lectureRoom + " из возможных: ");
-					for (int k = 0; k < emptyClassrooms.size(); k++){
+					for (int k = 0; k < emptyClassrooms.size(); k++) {
 						console.append( (k==0?"":", ") + emptyClassrooms.get(k) + (k==(emptyClassrooms.size()-1)?"\n\n":""));
 					}
 					SB.addToAllSemestr(day, newClass);
@@ -802,7 +803,7 @@ public class ExcelWorker {
 		console.append("Не добавлено занятий на кафедре ПМИ: " + (kafPMIclasses.size() - AddedInPMI) + "\n");
 	}
 	
-	public static void AddInEvenWeek(IStatus console, SemestrBuilder SB) throws SheduleIsNotOpenedException{
+	public static void AddInEvenWeek(IStatus console, SemestrBuilder SB, List<String> links) throws SheduleIsNotOpenedException{
 		if (!isScheduleOpened()) // Если не открыто расписание
 			throw new SheduleIsNotOpenedException();
 		selectSheetInSchedule(0); // Открываем лист с расписанием(обычно это первый лист)
@@ -825,7 +826,8 @@ public class ExcelWorker {
 					Time time = convertToEnumTime(splitStr(currentEntry[2].getContents())); // конвертируем вермя
 					LessonType FoC = convertToEnumFormOfClass(splitStr(currentEntry[5].getContents())); // --//-- форму занятий
 					Class newClass = new Class(time, splitStr(currentEntry[6].getContents()), splitStr(currentEntry[4].getContents()), FoC, splitStr(currentEntry[0].getContents()), splitStr(currentEntry[9].getContents()), splitStr(currentEntry[10].getContents()));
-
+					newClass.id = (i + 1);
+					
 					if(SB.containsInEvenWeek(day, newClass)){
 						if(SB.isStreamClassInEvenWeek(day, newClass)){
 							SB.addGroupToStreamInEvenWeek(day, newClass);//Занятие в потоке, добавить группу к занятию
@@ -834,7 +836,7 @@ public class ExcelWorker {
 						} else {
 							Class entry = SB.getClassByTimeAndClassroomInEvenWeek(day, newClass);
 							console.append(deleteSpaces(splitStr(currentEntry[1].getContents())) + " " + deleteSpaces(splitStr(currentEntry[2].getContents())) + " Аудитория: " + newClass.lectureRoom);//Ошибка. Вывести общие данные
-							errorAnalysis(entry, newClass, console);	//Вывод подробных данных
+							errorAnalysis(entry, newClass, console, links);	//Вывод подробных данных
 							errors++;
 						}
 					} else {
@@ -888,7 +890,7 @@ public class ExcelWorker {
 		console.append("Не добавлено занятий на кафедре ПМИ: " + (kafPMIclasses.size()-AddedInPMI) + "\n");
 	}
 	
-	public static void AddInUnevenWeek(IStatus console, SemestrBuilder SB) throws SheduleIsNotOpenedException{
+	public static void AddInUnevenWeek(IStatus console, SemestrBuilder SB, List<String> links) throws SheduleIsNotOpenedException{
 		if (!isScheduleOpened()) // Если не открыто расписание
 			throw new SheduleIsNotOpenedException();
 		selectSheetInSchedule(0); // Открываем лист с расписанием(обычно это первый лист)
@@ -911,7 +913,8 @@ public class ExcelWorker {
 					Time time = convertToEnumTime(splitStr(currentEntry[2].getContents())); // конвертируем вермя
 					LessonType FoC = convertToEnumFormOfClass(splitStr(currentEntry[5].getContents())); // --//-- форму занятий
 					Class newClass = new Class(time, splitStr(currentEntry[6].getContents()), splitStr(currentEntry[4].getContents()), FoC, splitStr(currentEntry[0].getContents()), splitStr(currentEntry[9].getContents()), splitStr(currentEntry[10].getContents()));
-
+					newClass.id = (i + 1);
+					
 					if(SB.containsInUnevenWeek(day, newClass)){
 						if(SB.isStreamClassInUnevenWeek(day, newClass)){
 							SB.addGroupToStreamInUnevenWeek(day, newClass);//Занятие в потоке, добавить группу к занятию
@@ -920,7 +923,7 @@ public class ExcelWorker {
 						} else {
 							Class entry = SB.getClassByTimeAndClassroomInUnevenWeek(day, newClass);
 							console.append(deleteSpaces(splitStr(currentEntry[1].getContents())) + " " + deleteSpaces(splitStr(currentEntry[2].getContents())) + " Аудитория: " + newClass.lectureRoom);//Ошибка. Вывести общие данные
-							errorAnalysis(entry, newClass, console);	//Вывод подробных данных
+							errorAnalysis(entry, newClass, console, links);	//Вывод подробных данных
 							errors++;
 						}
 					} else {
@@ -974,7 +977,7 @@ public class ExcelWorker {
 		console.append("Не добавлено занятий на кафедре ПМИ: " + (kafPMIclasses.size()-AddedInPMI) + "\n");
 	}
 
-	public static void AddBefore(IStatus console, SemestrBuilder SB) throws SheduleIsNotOpenedException{
+	public static void AddBefore(IStatus console, SemestrBuilder SB, List<String> links) throws SheduleIsNotOpenedException{
 		if (!isScheduleOpened()) // Если не открыто расписание
 			throw new SheduleIsNotOpenedException();
 		selectSheetInSchedule(0); // Открываем лист с расписанием(обычно это первый лист)
@@ -1007,7 +1010,8 @@ public class ExcelWorker {
 					Time time = convertToEnumTime(splitStr(currentEntry[2].getContents())); // конвертируем вермя
 					LessonType FoC = convertToEnumFormOfClass(splitStr(currentEntry[5].getContents())); // --//-- форму занятий
 					Class newClass = new Class(time, splitStr(currentEntry[6].getContents()), splitStr(currentEntry[4].getContents()), FoC, splitStr(currentEntry[0].getContents()), splitStr(currentEntry[9].getContents()), splitStr(currentEntry[10].getContents()));
-
+					newClass.id = (i + 1);
+					
 					if(SB.containsBeforeTheDate(dateOfTheDay, day, newClass)){
 						if(SB.isStreamClassBeforeTheDate(dateOfTheDay, day, newClass)){
 							SB.addGroupToStreamBeforeTheDate(dateOfTheDay, day, newClass);//Занятие в потоке, добавить группу к занятию
@@ -1016,7 +1020,7 @@ public class ExcelWorker {
 						} else {
 							Class entry = SB.getClassByTimeAndClassroomBeforeTheDate(dateOfTheDay, day, newClass);
 							console.append(deleteSpaces(splitStr(currentEntry[1].getContents())) + " " + deleteSpaces(splitStr(currentEntry[2].getContents())) + " Аудитория: " + newClass.lectureRoom);//Ошибка. Вывести общие данные
-							errorAnalysis(entry, newClass, console);	//Вывод подробных данных
+							errorAnalysis(entry, newClass, console, links);	//Вывод подробных данных
 							errors++;
 						}
 					} else {
@@ -1084,7 +1088,7 @@ public class ExcelWorker {
 		console.append("Не добавлено занятий на кафедре ПМИ: " + (kafPMIclasses.size()-AddedInPMI) + "\n");
 	}
 
-	public static void AddAfter(IStatus console, SemestrBuilder SB) throws SheduleIsNotOpenedException{
+	public static void AddAfter(IStatus console, SemestrBuilder SB, List<String> links) throws SheduleIsNotOpenedException{
 		if (!isScheduleOpened()) // Если не открыто расписание
 			throw new SheduleIsNotOpenedException();
 		selectSheetInSchedule(0); // Открываем лист с расписанием(обычно это первый лист)
@@ -1116,7 +1120,8 @@ public class ExcelWorker {
 					Time time = convertToEnumTime(splitStr(currentEntry[2].getContents())); // конвертируем вермя
 					LessonType FoC = convertToEnumFormOfClass(splitStr(currentEntry[5].getContents())); // --//-- форму занятий
 					Class newClass = new Class(time, splitStr(currentEntry[6].getContents()), splitStr(currentEntry[4].getContents()), FoC, splitStr(currentEntry[0].getContents()), splitStr(currentEntry[9].getContents()), splitStr(currentEntry[10].getContents()));
-
+					newClass.id = (i + 1);
+					
 					if(SB.containsAfterTheDate(dateOfTheDay, day, newClass)){
 						if(SB.isStreamClassAfterTheDate(dateOfTheDay, day, newClass)){
 							if (SB.isDatesAreEqual(dateOfTheDay, day, newClass)){
@@ -1135,7 +1140,7 @@ public class ExcelWorker {
 						} else {
 							Class entry = SB.getClassByTimeAndClassroomAfterTheDate(dateOfTheDay, day, newClass);
 							console.append(deleteSpaces(splitStr(currentEntry[1].getContents())) + " " + deleteSpaces(splitStr(currentEntry[2].getContents())) + " Аудитория: " + newClass.lectureRoom);//Ошибка. Вывести общие данные
-							errorAnalysis(entry, newClass, console);	//Вывод подробных данных
+							errorAnalysis(entry, newClass, console, links);	//Вывод подробных данных
 							errors++;
 						}
 					} else {
@@ -1576,22 +1581,52 @@ public class ExcelWorker {
 	 * @param newEntry
 	 * @param console
 	 */
-	private static void errorAnalysis(Class AddedEntry, Class newEntry, IStatus console){
+	private static void errorAnalysis(Class AddedEntry, Class newEntry, IStatus console, List<String> links){
 		String errorMsg = " Группы: " + AddedEntry.group + " и " + newEntry.group;
 		if( !AddedEntry.discipline.equals(newEntry.discipline) ){
 			errorMsg += " Не совпадение дисциплин!\n";
-			errorMsg += "Существующая запись: " + AddedEntry.discipline + "\n";
-			errorMsg += "Добавляемая  запись: " + newEntry.discipline + "\n\n";
+			errorMsg += "Существующая запись: " + AddedEntry.discipline + " с id = "+ AddedEntry.id +"\n";
+			
+			String link = "Показать_" + AddedEntry.id;
+			links.add(link);
+			console.append(" "+link+" ");
+			
+			errorMsg += "Добавляемая  запись: " + newEntry.discipline + " с id = "+ newEntry.id +"\n\n";
+			
+			link = "Показать_" + newEntry.id;
+			links.add(link);
+			console.append(" "+link+" ");
+
 		} else if( !AddedEntry.professor.equals(newEntry.professor) ){
 			errorMsg += " Не совпадение преподавателя!\n";
-			errorMsg += "Существующая запись: " + AddedEntry.professor + "\n";
-			errorMsg += "Добавляемая  запись: " + newEntry.professor + "\n\n";
+			errorMsg += "Существующая запись: " + AddedEntry.professor + " с id = "+ AddedEntry.id +"\n";
+			
+			String link = "Показать_" + AddedEntry.id;
+			links.add(link);
+			console.append(" "+link+" ");
+			
+			errorMsg += "Добавляемая  запись: " + newEntry.professor + " с id = "+ newEntry.id +"\n\n";
+			
+			link = "Показать_" + newEntry.id;
+			links.add(link);
+			console.append(" "+link+" ");
+
 		} else if( !AddedEntry.lessonType.equals(newEntry.lessonType) ){
 			errorMsg += " Не совпадает форма занятий!\n\n";
 		} else if( !AddedEntry.department.equals(newEntry.department) ){
 			errorMsg += " Не совпадает кафедра!\n";
-			errorMsg += "Существующая запись: " + AddedEntry.department + "\n";
-			errorMsg += "Добавляемая  запись: " + newEntry.department + "\n\n";
+			errorMsg += "Существующая запись: " + AddedEntry.department + " с id = "+ AddedEntry.id +"\n";
+			
+			String link = "Показать_" + AddedEntry.id;
+			links.add(link);
+			console.append(" "+link+" ");
+			
+			errorMsg += "Добавляемая  запись: " + newEntry.department + " с id = "+ newEntry.id +"\n\n";
+			
+			link = "Показать_" + newEntry.id;
+			links.add(link);
+			console.append(" "+link+" ");
+
 		}
 		console.append(errorMsg);
 	}

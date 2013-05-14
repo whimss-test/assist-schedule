@@ -26,7 +26,7 @@ public class Day {
 		dateStr = tmp[0]+" "+tmp[2]+" "+" "+tmp[1]+" "+tmp[5]+" "+tmp[3];
 	}
 
-	public String getDate(){
+	public String getDate() {
 		return dateOfTheDay.getTime().toString();
 	}
 

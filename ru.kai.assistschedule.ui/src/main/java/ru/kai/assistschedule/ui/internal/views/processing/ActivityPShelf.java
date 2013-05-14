@@ -226,7 +226,7 @@ public class ActivityPShelf implements IViewModel {
 					ExcelWorker.AddAfter(status, SB, links);
 					allLinks.addAll(links);
 					
-//					status.appendLinks(allLinks);
+					status.appendLinks(allLinks);
 				} catch (SheduleIsNotOpenedException e) {
 					status.setText("Расписание не открыто! Обработка отменена...");
 				}

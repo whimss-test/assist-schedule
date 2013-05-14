@@ -3,7 +3,9 @@
  */
 package ru.kai.assistschedule.ui.internal.views.status;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
@@ -99,16 +101,75 @@ public class StatusImpl implements IStatus, IViewModel {
 
     @Override
 	public void appendLinks(List<String> links) {
+    	repeats.clear();
     	int[] ranges = new int[2*links.size()];
     	StyleRange[] styles = new StyleRange[links.size()];
     	for(int i = 0; i < links.size(); i++) {
     		int n = i*2; 
-    		ranges[n] = StatusView.t2.getText().indexOf(links.get(i));
+    		ranges[n] = getRealIndex(links.get(i));
     		ranges[n+1] = links.get(i).length();
     		styles[i] = linkStyle;
     	}
         StatusView.t2.setStyleRanges(ranges, styles);
 	}
 
+    private Map<RepeatLink, Integer> repeats = new HashMap<RepeatLink, Integer>();
     
+    private int getRealIndex(String s) {
+    	RepeatLink repeatLink = new RepeatLink(s);
+    	if(!repeats.containsKey(repeatLink)) {
+    		repeats.put(repeatLink, 1);
+    		return StatusView.t2.getText().indexOf(s);
+    	}
+    	int count = repeats.get(repeatLink);
+    	int index = 0;
+    	for(int i = 0; i <= count; i++) {
+    		index = StatusView.t2.getText().indexOf(s, (index + 1));
+    	}
+    	repeats.put(repeatLink, ++count);
+    	return index;
+    }
+    
+    private class RepeatLink{
+    	String link;
+
+    	
+		public RepeatLink(String link) {
+			super();
+			this.link = link;
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + getOuterType().hashCode();
+			result = prime * result + ((link == null) ? 0 : link.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			RepeatLink other = (RepeatLink) obj;
+			if (!getOuterType().equals(other.getOuterType()))
+				return false;
+			if (link == null) {
+				if (other.link != null)
+					return false;
+			} else if (!link.equals(other.link))
+				return false;
+			return true;
+		}
+
+		private StatusImpl getOuterType() {
+			return StatusImpl.this;
+		}
+    	
+    }
 }

@@ -1261,7 +1261,7 @@ public class ExcelWorker {
 	public static void generateProffessorSchedule(String name){
 		
 		try {
-			writableSchedule = Workbook.createWorkbook(new File("C:" + File.separatorChar + name + ".xls"));
+			writableSchedule = Workbook.createWorkbook(new File("D:" + File.separatorChar + name + ".xls"));
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
@@ -1311,7 +1311,7 @@ public class ExcelWorker {
 		 */
 		List<String> tmp = new ArrayList<String>();
 		tmp.add( (String) GlobalStorage.get("excelPath") );
-		tmp.add( "C:" + File.separatorChar + name + ".xls" );
+		tmp.add( "D:" + File.separatorChar + name + ".xls" );
 		try {
 			new ProcessBuilder(tmp).start();
 		} catch (IOException e) {
@@ -1585,48 +1585,33 @@ public class ExcelWorker {
 		String errorMsg = " Группы: " + AddedEntry.group + " и " + newEntry.group;
 		if( !AddedEntry.discipline.equals(newEntry.discipline) ){
 			errorMsg += " Не совпадение дисциплин!\n";
-			errorMsg += "Существующая запись: " + AddedEntry.discipline + " с id = "+ AddedEntry.id +"\n";
-			
 			String link = "Показать_" + AddedEntry.id;
 			links.add(link);
-			console.append(" "+link+" ");
-			
-			errorMsg += "Добавляемая  запись: " + newEntry.discipline + " с id = "+ newEntry.id +"\n\n";
+			errorMsg += "Существующая запись: " + AddedEntry.discipline + " "+link+" \n";
 			
 			link = "Показать_" + newEntry.id;
 			links.add(link);
-			console.append(" "+link+" ");
-
+			errorMsg += "Добавляемая  запись: " + newEntry.discipline + " "+link+" \n\n";
 		} else if( !AddedEntry.professor.equals(newEntry.professor) ){
 			errorMsg += " Не совпадение преподавателя!\n";
-			errorMsg += "Существующая запись: " + AddedEntry.professor + " с id = "+ AddedEntry.id +"\n";
-			
 			String link = "Показать_" + AddedEntry.id;
 			links.add(link);
-			console.append(" "+link+" ");
-			
-			errorMsg += "Добавляемая  запись: " + newEntry.professor + " с id = "+ newEntry.id +"\n\n";
+			errorMsg += "Существующая запись: " + AddedEntry.professor + " "+link+" \n";
 			
 			link = "Показать_" + newEntry.id;
 			links.add(link);
-			console.append(" "+link+" ");
-
+			errorMsg += "Добавляемая  запись: " + newEntry.professor + " "+link+" \n\n";
 		} else if( !AddedEntry.lessonType.equals(newEntry.lessonType) ){
 			errorMsg += " Не совпадает форма занятий!\n\n";
 		} else if( !AddedEntry.department.equals(newEntry.department) ){
 			errorMsg += " Не совпадает кафедра!\n";
-			errorMsg += "Существующая запись: " + AddedEntry.department + " с id = "+ AddedEntry.id +"\n";
-			
 			String link = "Показать_" + AddedEntry.id;
 			links.add(link);
-			console.append(" "+link+" ");
-			
-			errorMsg += "Добавляемая  запись: " + newEntry.department + " с id = "+ newEntry.id +"\n\n";
+			errorMsg += "Существующая запись: " + AddedEntry.department + " "+link+" \n";
 			
 			link = "Показать_" + newEntry.id;
 			links.add(link);
-			console.append(" "+link+" ");
-
+			errorMsg += "Добавляемая  запись: " + newEntry.department + " "+link+" \n\n";
 		}
 		console.append(errorMsg);
 	}

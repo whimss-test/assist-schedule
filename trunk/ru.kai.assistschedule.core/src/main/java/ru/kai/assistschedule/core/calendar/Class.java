@@ -4,6 +4,9 @@ import ru.kai.assistschedule.core.cache.LessonType;
 import ru.kai.assistschedule.core.cache.Time;
 
 public class Class {
+	
+	public int id;
+	
 	public Class(Time t, String lectureRoom, String disc, LessonType lessonType, String group, String prep, String kafedra){
 		this.time = t;
 		this.lectureRoom = lectureRoom;

@@ -200,16 +200,33 @@ public class ActivityPShelf implements IViewModel {
 				status.setText("");
 				SemestrBuilder SB = new SemestrBuilder(GlobalStorage.beginingOfSemestr, GlobalStorage.endOfSemestr);
 				try {
+					List<String> allLinks = new ArrayList<String>();
+					List<String> links = new ArrayList<String>();
 					status.append("========== ВЫВОД ОШИБОК ПО ВСЕМ НЕДЕЛЯМ ==========\n\n");
-					ExcelWorker.AddInEveryWeek(status, SB);
+					ExcelWorker.AddInEveryWeek(status, SB, links);
+					allLinks.addAll(links);
+					
+					links = new ArrayList<String>();
 					status.append("\n========== ВЫВОД ОШИБОК ПО ЧЕТ. НЕДЕЛЯМ ==========\n\n");
-					ExcelWorker.AddInEvenWeek(status, SB);
+					ExcelWorker.AddInEvenWeek(status, SB, links);
+					allLinks.addAll(links);
+					
+					links = new ArrayList<String>();
 					status.append("\n========== ВЫВОД ОШИБОК ПО НЕЧЕТ. НЕДЕЛЯМ ==========\n\n");
-					ExcelWorker.AddInUnevenWeek(status, SB);
+					ExcelWorker.AddInUnevenWeek(status, SB, links);
+					allLinks.addAll(links);
+					
+					links = new ArrayList<String>();
 					status.append("\n========== ВЫВОД ОШИБОК ДО ЗАДАННОЙ ДАТЫ ==========\n\n");
-					ExcelWorker.AddBefore(status, SB);
+					ExcelWorker.AddBefore(status, SB, links);
+					allLinks.addAll(links);
+					
+					links = new ArrayList<String>();
 					status.append("\n========== ВЫВОД ОШИБОК ПОСЛЕ ЗАДАННОЙ ДАТЫ ==========\n\n");
-					ExcelWorker.AddAfter(status, SB);
+					ExcelWorker.AddAfter(status, SB, links);
+					allLinks.addAll(links);
+					
+//					status.appendLinks(allLinks);
 				} catch (SheduleIsNotOpenedException e) {
 					status.setText("Расписание не открыто! Обработка отменена...");
 				}

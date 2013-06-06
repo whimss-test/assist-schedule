@@ -1,5 +1,11 @@
 package ru.kai.assistschedule.ui.internal.views.setting;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
+
 import org.eclipse.nebula.widgets.pshelf.PShelf;
 import org.eclipse.nebula.widgets.pshelf.PShelfItem;
 import org.eclipse.swt.SWT;
@@ -83,9 +89,36 @@ public class ActivityPShelf {
 
 		Button downloadScheduleBtn = new Button(download.getBody(), SWT.FLAT);
 		downloadScheduleBtn.setText("Расписание");
-		downloadScheduleBtn
-				.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-
+		downloadScheduleBtn.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		downloadScheduleBtn.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent evt) {
+				LOG.info("downloadScheduleBtn: " + evt);
+				/**
+				 * Копирование файла
+				 */
+				String newFile = (String) GlobalStorage.get("selectedSchedule");
+				String oldFile = newFile.substring(0, newFile.length()-4) + "_NEW.xls";
+				FileChannel src = null, dest = null;
+				try {
+					src = new FileInputStream(newFile).getChannel();
+					dest = new FileOutputStream(oldFile).getChannel();
+					src.transferTo(0, src.size(), dest);
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				} finally{
+					try {
+						src.close();
+						dest.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		});
+		
 		PShelfItem lectureRooms = new PShelfItem(_shelf, SWT.NONE);
 		lectureRooms.setText("Аудитории");
 		lectureRooms.getBody().setLayout(getGridLayout());

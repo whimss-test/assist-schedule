@@ -31,12 +31,12 @@ public class ScheduleView extends ViewPart {
 
     @Override
     public void dispose() {
-    	List<ScheduleEntry> entries = FirstLevelCache.getInstance().getEntries();
-    	int i = 0;
-    	for(ScheduleEntry entry: entries) {
-    		System.out.println(entry);
-    		if(i++ >100) break;
-    	}
+//    	List<ScheduleEntry> entries = FirstLevelCache.getInstance().getEntries();
+//    	int i = 0;
+//    	for(ScheduleEntry entry: entries) {
+//    		System.out.println(entry);
+//    		if(i++ >100) break;
+//    	}
         // TODO Auto-generated method stub
         scheduleTable.dispose();
         super.dispose();

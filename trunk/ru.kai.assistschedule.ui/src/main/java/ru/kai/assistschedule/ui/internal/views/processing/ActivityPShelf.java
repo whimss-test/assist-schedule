@@ -423,12 +423,11 @@ public class ActivityPShelf implements IViewModel {
 			ExcelWorker.writableSheet = ExcelWorker.writableSchedule.getSheet(0);
 
 			String str;
-			for (str = ""; str.length() != (maxLength / 8); str += "\t") {
-			}
+			for (str = ""; str.length() != (maxLength / 8); str += "\t") { }
 			status.append("Строка: Группа: Предмет:" + str + "Форма:  Найдено:" + "\n");
 			List<String> links = new ArrayList<String>(GlobalStorage.matrix.length);
 			for (int i = 0; i < GlobalStorage.matrix.length; i++) {
-				if (GlobalStorage.matrix[i][4] != null){
+				if (GlobalStorage.matrix[i][4] != null) {
 					suc++;
 					Label label = new Label( 9, (new Integer(GlobalStorage.matrix[i][0])-1), GlobalStorage.matrix[i][4]);
 					try {

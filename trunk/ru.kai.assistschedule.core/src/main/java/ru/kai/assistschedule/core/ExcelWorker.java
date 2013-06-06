@@ -12,6 +12,9 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.kai.assistschedule.core.calendar.Class;
@@ -23,6 +26,7 @@ import ru.kai.assistschedule.core.calendar.SemestrBuilder;
 import ru.kai.assistschedule.core.exceptions.ExcelFileIsNotOpenedException;
 import ru.kai.assistschedule.core.exceptions.SheduleIsNotOpenedException;
 import ru.kai.assistschedule.core.external.interfaces.IStatus;
+import ru.kai.assistschedule.core.utils.FileFinder;
 
 import jxl.Cell;
 import jxl.Range;
@@ -303,9 +307,6 @@ public class ExcelWorker {
         if (matrix == null) {
             LOGGER.info("Нет данных для поиска. "
                     + "Сначала необходимо сделать проверку №1!");
-            // MessageBox msgBox = new MessageBox(new Shell());
-            // msgBox.setMessage("Нет данных для поиска. Сначала необходимо сделать проверку №1!");
-            // msgBox.open();
             return matrix;
         }
 
@@ -766,14 +767,14 @@ public class ExcelWorker {
 		 * Теперь по заполненному списку ссылок на строчки с занятиями на кафедре ПМИ
 		 * добавляем эти занятия и назначаем им свободные аудитории
 		 */
-		for (int i = 0; i < kafPMIclasses.size(); i++){
+		for (int i = 0; i < kafPMIclasses.size(); i++) {
 			Cell[] currentEntry = sheetOfSchedule.getRow(kafPMIclasses.get(i));
 			int day = convetToDayOfWeek(splitStr(currentEntry[1].getContents())); // конвертируем день
 			Time time = convertToEnumTime(splitStr(currentEntry[2].getContents())); // конвертируем вермя
 			LessonType FoC = convertToEnumFormOfClass(splitStr(currentEntry[5].getContents())); // --//-- форму занятий
 			Class newClass = new Class(time, splitStr(currentEntry[6].getContents()), splitStr(currentEntry[4].getContents()), FoC, splitStr(currentEntry[0].getContents()), splitStr(currentEntry[9].getContents()), splitStr(currentEntry[10].getContents()));
 
-			if (SB.maybeStreamClass(day, newClass)){
+			if (SB.maybeStreamClass(day, newClass)) {
 				Class entry = SB.getMaybeStreamClass(day, newClass);
 				console.append(deleteSpaces(splitStr(currentEntry[1].getContents())) + " " + deleteSpaces(splitStr(currentEntry[2].getContents())) + " Возможно занятие в потоке! Отредактируйте вручную!\n");
 				console.append("Группа: "+entry.group + " " + entry.lessonType + " Дисциплиа: " + entry.discipline +" Аудитория: "+ entry.lectureRoom + " Преподаватель: " + entry.professor + "\n");
@@ -1309,17 +1310,93 @@ public class ExcelWorker {
 		/**
 		 * Запуск файла
 		 */
-		List<String> tmp = new ArrayList<String>();
-		tmp.add( (String) GlobalStorage.get("excelPath") );
-		tmp.add( "D:" + File.separatorChar + name + ".xls" );
-		try {
-			new ProcessBuilder(tmp).start();
-		} catch (IOException e) {
-			e.printStackTrace();
+		String excelPath = "";
+		String pathToFile = "D:" + File.separatorChar + name + ".xls";
+		boolean isException = false;
+		for(int n = 0; n < 2; n++) {
+			List<String> tmp = new ArrayList<String>();
+			excelPath = (String) GlobalStorage.get("excelPath");
+			if(excelPath == null || excelPath.isEmpty()) {
+				excelPath = ExcelWorker.getExcelPath();
+				GlobalStorage.put("excelPath", excelPath);
+			}
+			tmp.add(excelPath);
+			tmp.add(pathToFile);
+			LOGGER.info(tmp.toString());
+			try {
+				new ProcessBuilder(tmp).start();
+				isException = false;
+				break;
+			} catch (IOException e) {
+				excelPath = ExcelWorker.getExcelPath();
+				GlobalStorage.put("excelPath", excelPath);
+				e.printStackTrace();
+				isException = true;
+			}
 		}
-		
+		if(isException) {
+			MessageBox msgBox = new MessageBox(new Shell());
+            msgBox.setMessage(String.format("На вашем компьютере не найдена программа Microsoft Excel!" + System.getProperty("line.separator") +
+            		"Созданный файл расписания преподователя находиться в директории: [%s]", pathToFile));
+            msgBox.open();
+		}
 	}
 
+	private static String getExcelPath() {
+		File file = new File("C:/");
+        String list[] = file.list();
+        if (null == list) {
+            throw new IllegalArgumentException("Нет такой директории или файла!");
+        }
+        List<String> programmFilePaths = new ArrayList<String>();
+        for (String aList : list) {
+            if(aList.startsWith("Program Files")) {
+                programmFilePaths.add(file.getPath() + aList);
+            }
+        }
+        for(int i = 0; i < programmFilePaths.size(); i++) {
+            file = new File(programmFilePaths.get(i));
+            list = file.list();
+            for (String aList : list) {
+                if(aList.startsWith("Microsoft Office")) {
+                    programmFilePaths.set(i, file.getPath() + System.getProperty("file.separator") + aList);
+                }
+            }
+        }
+        FileFinder finder = new FileFinder();
+        try {
+            List searchRes = null;
+            //если задано регулярное выражение...
+            List<String> parentDirs = programmFilePaths;
+            for(String parent: parentDirs) {
+//                System.out.println("parent : " + parent);
+                if (null == searchRes) {
+                    searchRes = finder.findAll(parent, "EXCEL.EXE");
+                } else {
+                    searchRes.addAll(finder.findAll(parent, "EXCEL.EXE"));
+                }
+            }
+            //выводим результаты
+            for(int i = 0; i < searchRes.size(); i++) {
+                File curObject = (File)searchRes.get(i);
+                if(curObject.isDirectory()) {
+                    System.out.println(
+                            curObject.getName() + " (папка)");
+                }
+                else {
+                    System.out.println(curObject.getName() + ": FullPath: " + curObject.getAbsolutePath()
+                            + " (" + curObject.length() + " байт)");
+                    return curObject.getAbsolutePath();
+                }
+            }
+            System.out.println("Найдено " + finder.getFilesNumber() +
+                    " файлов и " + finder.getDirectoriesNumber() +
+                    " папок.");
+        } catch(Exception err) {
+            System.out.println(err.getMessage());
+        }
+        return "";
+	}
 
     // ****************************//
     // ========================== //

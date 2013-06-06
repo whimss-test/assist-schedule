@@ -142,8 +142,8 @@ public class ActivityPShelf {
 			fd.setFilterExtensions(filterExt);
 			if ((GlobalStorage.selectedSchedule = fd.open()) != null) {
 				// schedullePathText.setText(GlobalStorage.selectedSchedule);
-				// ProgressBarModalWindow barModalWindow = new
-				// ProgressBarModalWindow(_shelf);
+				 ProgressBarModalWindow barModalWindow = new
+				 ProgressBarModalWindow(_shelf);
 				GlobalStorage.put("selectedSchedule",
 						GlobalStorage.selectedSchedule);
 				try {

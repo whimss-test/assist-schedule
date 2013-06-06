@@ -163,4 +163,15 @@ public class ScheduleEntry {
 		return true;
 	}
 
+
+	@Override
+	public String toString() {
+		return "ScheduleEntry [id=" + id + ", groupName=" + groupName
+				+ ", day=" + day + ", time=" + time + ", date=" + date
+				+ ", discipline=" + discipline + ", lessonType=" + lessonType
+				+ ", classRoom=" + classRoom + ", building=" + building
+				+ ", doljnost=" + doljnost + ", prepodavatel=" + prepodavatel
+				+ ", kafedra=" + kafedra + "]";
+	}
+
 }

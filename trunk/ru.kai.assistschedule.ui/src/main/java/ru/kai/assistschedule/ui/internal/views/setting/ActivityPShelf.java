@@ -29,6 +29,7 @@ import ru.kai.assistschedule.core.GlobalStorage;
 import ru.kai.assistschedule.core.MainCommand;
 import ru.kai.assistschedule.core.cache.FirstLevelCache;
 import ru.kai.assistschedule.core.external.interfaces.IStatus;
+import ru.kai.assistschedule.core.utils.ExcelUtils;
 import ru.kai.assistschedule.ui.internal.views.status.StatusImpl;
 import ru.kai.assistschedule.ui.internal.widgets.LectureRoomsSetting;
 import ru.kai.assistschedule.ui.internal.widgets.ProgressBarModalWindow;
@@ -94,28 +95,31 @@ public class ActivityPShelf {
 			@Override
 			public void widgetSelected(SelectionEvent evt) {
 				LOG.info("downloadScheduleBtn: " + evt);
-				/**
-				 * Копирование файла
-				 */
-				String newFile = (String) GlobalStorage.get("selectedSchedule");
-				String oldFile = newFile.substring(0, newFile.length()-4) + "_NEW.xls";
-				FileChannel src = null, dest = null;
-				try {
-					src = new FileInputStream(newFile).getChannel();
-					dest = new FileOutputStream(oldFile).getChannel();
-					src.transferTo(0, src.size(), dest);
-				} catch (FileNotFoundException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
-				} finally{
-					try {
-						src.close();
-						dest.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
+				String newSheetFilePath = (String) GlobalStorage.get("selectedSchedule");
+				ExcelUtils.clearSheet(newSheetFilePath, 0);
+				ExcelUtils.fillSheet(newSheetFilePath, 0, FirstLevelCache.getInstance().getEntries());
+				//				/**
+//				 * Копирование файла
+//				 */
+//				String newFile = (String) GlobalStorage.get("selectedSchedule");
+//				String oldFile = newFile.substring(0, newFile.length()-4) + "_NEW.xls";
+//				FileChannel src = null, dest = null;
+//				try {
+//					src = new FileInputStream(newFile).getChannel();
+//					dest = new FileOutputStream(oldFile).getChannel();
+//					src.transferTo(0, src.size(), dest);
+//				} catch (FileNotFoundException e) {
+//					e.printStackTrace();
+//				} catch (IOException e) {
+//					e.printStackTrace();
+//				} finally{
+//					try {
+//						src.close();
+//						dest.close();
+//					} catch (IOException e) {
+//						e.printStackTrace();
+//					}
+//				}
 			}
 		});
 		

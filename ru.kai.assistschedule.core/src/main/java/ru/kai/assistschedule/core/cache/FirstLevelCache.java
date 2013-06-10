@@ -22,7 +22,7 @@ public class FirstLevelCache {
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
 	private static FirstLevelCache instance = new FirstLevelCache();
-
+	
 	private FirstLevelCache() {
 	}
 

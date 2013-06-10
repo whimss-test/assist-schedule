@@ -716,7 +716,7 @@ public class ExcelWorker {
 	/**
 	 * Функция проверяет совпадения и добавляет в каждую неделю
 	 */
-	public static void AddInEveryWeek(IStatus console, SemestrBuilder SB, List<String> links) throws SheduleIsNotOpenedException{
+	public static void AddInEveryWeek(IStatus console, SemestrBuilder SB, List<String> links) throws SheduleIsNotOpenedException {
 		if (!isScheduleOpened()) // Если не открыто расписание
 			throw new SheduleIsNotOpenedException();
 		selectSheetInSchedule(0); // Открываем лист с расписанием(обычно это первый лист)

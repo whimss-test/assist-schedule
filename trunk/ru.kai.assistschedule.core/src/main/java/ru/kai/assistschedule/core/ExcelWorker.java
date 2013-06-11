@@ -782,7 +782,7 @@ public class ExcelWorker {
 			} else {
 				List<String> emptyClassrooms = SB.findEmptyClassRoom(day, newClass);
 				console.append(deleteSpaces(splitStr(currentEntry[1].getContents())) + " " + deleteSpaces(splitStr(currentEntry[2].getContents())) + " Группа(ы): " + newClass.group + " Дисциплина: " + newClass.discipline);
-				if (emptyClassrooms.isEmpty()){
+				if (emptyClassrooms.isEmpty()) {
 					console.append("\nСвободных аудиторий нет!\n\n");
 				} else {
 					newClass.lectureRoom = emptyClassrooms.get(0);
@@ -790,6 +790,7 @@ public class ExcelWorker {
 					for (int k = 0; k < emptyClassrooms.size(); k++) {
 						console.append( (k==0?"":", ") + emptyClassrooms.get(k) + (k==(emptyClassrooms.size()-1)?"\n\n":""));
 					}
+					LOGGER.debug("addInEveryWeek: " + newClass);
 					SB.addToAllSemestr(day, newClass);
 					AddedInPMI++;
 					added++;
@@ -1658,7 +1659,7 @@ public class ExcelWorker {
 	 * @param newEntry
 	 * @param console
 	 */
-	private static void errorAnalysis(Class AddedEntry, Class newEntry, IStatus console, List<String> links){
+	public static void errorAnalysis(Class AddedEntry, Class newEntry, IStatus console, List<String> links){
 		String errorMsg = " Группы: " + AddedEntry.group + " и " + newEntry.group;
 		if( !AddedEntry.discipline.equals(newEntry.discipline) ){
 			errorMsg += " Не совпадение дисциплин!\n";

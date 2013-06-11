@@ -210,5 +210,13 @@ public class Class {
 			return null;
 		}
 	}
+
+	@Override
+	public String toString() {
+		return "Class [id=" + id + ", time=" + time + ", lessonType="
+				+ lessonType + ", discipline=" + discipline + ", group="
+				+ group + ", professor=" + professor + ", lectureRoom="
+				+ lectureRoom + ", department=" + department + "]";
+	}
 	
 }

@@ -47,9 +47,12 @@ import ru.kai.assistschedule.core.GlobalStorage;
 import ru.kai.assistschedule.core.calendar.SemestrBuilder;
 import ru.kai.assistschedule.core.exceptions.SheduleIsNotOpenedException;
 import ru.kai.assistschedule.core.external.interfaces.IStatus;
+import ru.kai.assistschedule.core.utils.ScheduleChecker;
 import ru.kai.assistschedule.ui.internal.views.status.StatusImpl;
 import ru.kai.assistschedule.ui.observer.AddProfessorInScheduleEntry;
 import ru.kai.assistschedule.ui.observer.IViewModel;
+import ru.kai.assistschedule.ui.observer.LinkToScheduleEntry;
+import ru.kai.assistschedule.ui.observer.MessageNotification;
 import ru.kai.assistschedule.ui.observer.ModelObserver;
 import ru.kai.assistschedule.ui.observer.NotificationCenter;
 
@@ -199,37 +202,44 @@ public class ActivityPShelf implements IViewModel {
 			public void widgetSelected(SelectionEvent arg0) {
 				status.setText("");
 				SemestrBuilder SB = new SemestrBuilder(GlobalStorage.beginingOfSemestr, GlobalStorage.endOfSemestr);
-				try {
+				ScheduleChecker checker = ScheduleChecker.getInstance();
+//				try {
 					List<String> allLinks = new ArrayList<String>();
 					List<String> links = new ArrayList<String>();
 					status.append("========== ВЫВОД ОШИБОК ПО ВСЕМ НЕДЕЛЯМ ==========\n\n");
-					ExcelWorker.AddInEveryWeek(status, SB, links);
+					checker.checkEveryWeek(status, SB, links);
+//					ExcelWorker.AddInEveryWeek(status, SB, links);
 					allLinks.addAll(links);
 					
 					links = new ArrayList<String>();
 					status.append("\n========== ВЫВОД ОШИБОК ПО ЧЕТ. НЕДЕЛЯМ ==========\n\n");
-					ExcelWorker.AddInEvenWeek(status, SB, links);
+					checker.checkEvenWeek(status, SB, links);
+//					ExcelWorker.AddInEvenWeek(status, SB, links);
 					allLinks.addAll(links);
 					
 					links = new ArrayList<String>();
 					status.append("\n========== ВЫВОД ОШИБОК ПО НЕЧЕТ. НЕДЕЛЯМ ==========\n\n");
-					ExcelWorker.AddInUnevenWeek(status, SB, links);
+					checker.checkUnevenWeek(status, SB, links);
+//					ExcelWorker.AddInUnevenWeek(status, SB, links);
 					allLinks.addAll(links);
 					
 					links = new ArrayList<String>();
 					status.append("\n========== ВЫВОД ОШИБОК ДО ЗАДАННОЙ ДАТЫ ==========\n\n");
-					ExcelWorker.AddBefore(status, SB, links);
+					checker.checkBefore(status, SB, links);
+//					ExcelWorker.AddBefore(status, SB, links);
 					allLinks.addAll(links);
 					
 					links = new ArrayList<String>();
 					status.append("\n========== ВЫВОД ОШИБОК ПОСЛЕ ЗАДАННОЙ ДАТЫ ==========\n\n");
-					ExcelWorker.AddAfter(status, SB, links);
+					checker.checkAfter(status, SB, links);
+//					ExcelWorker.AddAfter(status, SB, links);
 					allLinks.addAll(links);
 					
 					status.appendLinks(allLinks);
-				} catch (SheduleIsNotOpenedException e) {
-					status.setText("Расписание не открыто! Обработка отменена...");
-				}
+//				} catch (SheduleIsNotOpenedException e) {
+//					status.setText("Расписание не открыто! Обработка отменена...");
+//				}
+					_notificationCenter.postNotification(ActivityPShelf.this, new MessageNotification("refresh"));
 			}
 		});
 

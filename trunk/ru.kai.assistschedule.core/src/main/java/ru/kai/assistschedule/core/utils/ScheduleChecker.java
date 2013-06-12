@@ -122,6 +122,7 @@ public class ScheduleChecker {
 					console.append("\nСвободных аудиторий нет!\n\n");
 				} else {
 					newClass.lectureRoom = emptyClassrooms.get(0);
+					currentEntry.classRoom = emptyClassrooms.get(0);
 					console.append("\nНазначена аудитория: " + newClass.lectureRoom + " из возможных: ");
 					for (int k = 0; k < emptyClassrooms.size(); k++) {
 						console.append( (k==0?"":", ") + emptyClassrooms.get(k) + (k==(emptyClassrooms.size()-1)?"\n\n":""));
@@ -220,6 +221,7 @@ public class ScheduleChecker {
 					console.append("\nСвободных аудиторий нет!\n\n");
 				} else {
 					newClass.lectureRoom = emptyClassrooms.get(0);
+					currentEntry.classRoom = emptyClassrooms.get(0);
 					console.append("\nНазначена аудитория: " + newClass.lectureRoom + " из возможных: ");
 					for (int k = 0; k < emptyClassrooms.size(); k++){
 						console.append( (k==0?"":", ") + emptyClassrooms.get(k) + (k==(emptyClassrooms.size()-1)?"\n\n":""));
@@ -251,18 +253,22 @@ public class ScheduleChecker {
 			if (!isValidEntry(currentEntry) || !"7".equals(currentEntry.building))
 				continue;
 			
-			if (Pattern.matches( "[н][е]?[ч]?", splitStr(currentEntry[3].getContents()).toLowerCase() )){
+			if (Pattern.matches( "[н][е]?[ч]?", currentEntry.date.toLowerCase())) {
 
-				String str = splitStr(currentEntry[6].getContents());
-				if (Pattern.matches("[Кк][Аа]?[Фф]?", str) || Pattern.matches("[Кк][Аа].", str) || Pattern.matches("[Кк]..", str)) {
-					if (Pattern.matches("пми", deleteSpaces(splitStr(currentEntry[10].getContents().toLowerCase())))){
-						kafPMIclasses.add(new Integer(i));
+				String str = currentEntry.classRoom;
+				if (Pattern.matches("[Кк][Аа]?[Фф]?", str) 
+						|| Pattern.matches("[Кк][Аа].", str) 
+							|| Pattern.matches("[Кк]..", str)) {
+					if (Pattern.matches("пми", deleteSpaces(currentEntry.kafedra.toLowerCase()))) {
+						kafPMIclasses.add(currentEntry);
 					}
 				} else if (Pattern.matches("[0-9]{3}[А-Яа-я]?", str)) {
-					int day = convetToDayOfWeek(splitStr(currentEntry[1].getContents())); // конвертируем день
-					Time time = convertToEnumTime(splitStr(currentEntry[2].getContents())); // конвертируем вермя
-					LessonType FoC = convertToEnumFormOfClass(splitStr(currentEntry[5].getContents())); // --//-- форму занятий
-					Class newClass = new Class(time, splitStr(currentEntry[6].getContents()), splitStr(currentEntry[4].getContents()), FoC, splitStr(currentEntry[0].getContents()), splitStr(currentEntry[9].getContents()), splitStr(currentEntry[10].getContents()));
+					int day = ExcelWorker.convetToDayOfWeek(ExcelUtils.getDay(currentEntry.day)); // конвертируем день
+					Time time = currentEntry.time; // конвертируем вермя
+					LessonType FoC = currentEntry.lessonType; // --//-- форму занятий
+					Class newClass = new Class(time, currentEntry.classRoom, 
+							currentEntry.discipline, FoC, currentEntry.groupName, 
+							currentEntry.prepodavatel, currentEntry.kafedra);
 					newClass.id = (i + 1);
 					
 					if(SB.containsInUnevenWeek(day, newClass)){
@@ -272,8 +278,10 @@ public class ScheduleChecker {
 							doubleAdded++;
 						} else {
 							Class entry = SB.getClassByTimeAndClassroomInUnevenWeek(day, newClass);
-							console.append(deleteSpaces(splitStr(currentEntry[1].getContents())) + " " + deleteSpaces(splitStr(currentEntry[2].getContents())) + " Аудитория: " + newClass.lectureRoom);//Ошибка. Вывести общие данные
-							errorAnalysis(entry, newClass, console, links);	//Вывод подробных данных
+							console.append(deleteSpaces(ExcelUtils.getDay(currentEntry.day)) + " " + 
+									deleteSpaces(ExcelUtils.getTime(currentEntry.time)) + " Аудитория: " + 
+									newClass.lectureRoom);//Ошибка. Вывести общие данные
+							ExcelWorker.errorAnalysis(entry, newClass, console, links);	//Вывод подробных данных
 							errors++;
 						}
 					} else {
@@ -291,24 +299,29 @@ public class ScheduleChecker {
 		 * добавляем эти занятия и назначаем им свободные аудитории
 		 */
 		for (int i = 0; i < kafPMIclasses.size(); i++){
-			Cell[] currentEntry = sheetOfSchedule.getRow(kafPMIclasses.get(i));
-			int day = convetToDayOfWeek(splitStr(currentEntry[1].getContents())); // конвертируем день
-			Time time = convertToEnumTime(splitStr(currentEntry[2].getContents())); // конвертируем вермя
-			LessonType FoC = convertToEnumFormOfClass(splitStr(currentEntry[5].getContents())); // --//-- форму занятий
-			Class newClass = new Class(time, splitStr(currentEntry[6].getContents()), splitStr(currentEntry[4].getContents()), FoC, splitStr(currentEntry[0].getContents()), splitStr(currentEntry[9].getContents()), splitStr(currentEntry[10].getContents()));
-
+			currentEntry = kafPMIclasses.get(i);
+			int day = ExcelWorker.convetToDayOfWeek(ExcelUtils.getDay(currentEntry.day)); // конвертируем день
+			Time time = currentEntry.time; // конвертируем вермя
+			LessonType FoC = currentEntry.lessonType; // --//-- форму занятий
+			Class newClass = new Class(time, currentEntry.classRoom, 
+					currentEntry.discipline, FoC, currentEntry.groupName, 
+					currentEntry.prepodavatel, currentEntry.kafedra);
+			
 			if (SB.maybeStreamClassInUnevenWeek(day, newClass)){
 				Class entry = SB.getMaybeStreamClassInUnevenWeek(day, newClass);
-				console.append(deleteSpaces(splitStr(currentEntry[1].getContents())) + " " + deleteSpaces(splitStr(currentEntry[2].getContents())) + " Возможно занятие в потоке! Отредактируйте вручную!\n");
+				console.append(deleteSpaces(ExcelUtils.getDay(currentEntry.day)) + " " + 
+						deleteSpaces(ExcelUtils.getTime(currentEntry.time)) + " Возможно занятие в потоке! Отредактируйте вручную!\n");
 				console.append("Группа: "+entry.group + " " + entry.lessonType + " Дисциплиа: " + entry.discipline +" Аудитория: "+ entry.lectureRoom + " Преподаватель: " + entry.professor + "\n");
 				console.append("Группа: "+newClass.group + " " + newClass.lessonType + " Дисциплиа: " + newClass.discipline +" Аудитория: "+ newClass.lectureRoom + " Преподаватель: " + newClass.professor + "\n\n");
 			} else {
 				List<String> emptyClassrooms = SB.findEmptyClassRoomInUnevenWeek(day, newClass);
-				console.append(deleteSpaces(splitStr(currentEntry[1].getContents())) + " " + deleteSpaces(splitStr(currentEntry[2].getContents())) + " Группа(ы): " + newClass.group + " Дисциплина: " + newClass.discipline);
+				console.append(deleteSpaces(ExcelUtils.getDay(currentEntry.day)) + " " + 
+						deleteSpaces(ExcelUtils.getTime(currentEntry.time)) + " Группа(ы): " + newClass.group + " Дисциплина: " + newClass.discipline);
 				if (emptyClassrooms.isEmpty()){
 					console.append("\nСвободных аудиторий нет!\n\n");
 				} else {
 					newClass.lectureRoom = emptyClassrooms.get(0);
+					currentEntry.classRoom = emptyClassrooms.get(0);
 					console.append("\nНазначена аудитория: " + newClass.lectureRoom + " из возможных: ");
 					for (int k = 0; k < emptyClassrooms.size(); k++){
 						console.append( (k==0?"":", ") + emptyClassrooms.get(k) + (k==(emptyClassrooms.size()-1)?"\n\n":""));
@@ -340,7 +353,7 @@ public class ScheduleChecker {
 			if (!isValidEntry(currentEntry) || !"7".equals(currentEntry.building))
 				continue;
 			
-			String date = deleteSpaces(splitStr(currentEntry[3].getContents()).toLowerCase());
+			String date = deleteSpaces(currentEntry.date.toLowerCase());
 			if (Pattern.matches( "^[дп]о[0-9]{1,2}[.,/][0-9]{2}.*", date)){
 				int day, month, year;
 				try{
@@ -352,16 +365,18 @@ public class ScheduleChecker {
 				Calendar dateOfTheDay = new GregorianCalendar(year, month, day);
 
 				
-				String str = splitStr(currentEntry[6].getContents());
+				String str = currentEntry.classRoom;
 				if (Pattern.matches("[Кк][Аа]?[Фф]?", str) || Pattern.matches("[Кк][Аа].", str) || Pattern.matches("[Кк]..", str)) {
-					if (Pattern.matches("пми", deleteSpaces(splitStr(currentEntry[10].getContents().toLowerCase())))){
-						kafPMIclasses.add(new Integer(i));
+					if (Pattern.matches("пми", deleteSpaces(currentEntry.kafedra.toLowerCase()))) {
+						kafPMIclasses.add(currentEntry);
 					}
 				} else if (Pattern.matches("[0-9]{3}[А-Яа-я]?", str)) {
-					day = convetToDayOfWeek(splitStr(currentEntry[1].getContents())); // конвертируем день
-					Time time = convertToEnumTime(splitStr(currentEntry[2].getContents())); // конвертируем вермя
-					LessonType FoC = convertToEnumFormOfClass(splitStr(currentEntry[5].getContents())); // --//-- форму занятий
-					Class newClass = new Class(time, splitStr(currentEntry[6].getContents()), splitStr(currentEntry[4].getContents()), FoC, splitStr(currentEntry[0].getContents()), splitStr(currentEntry[9].getContents()), splitStr(currentEntry[10].getContents()));
+					day = ExcelWorker.convetToDayOfWeek(ExcelUtils.getDay(currentEntry.day)); // конвертируем день
+					Time time = currentEntry.time; // конвертируем вермя
+					LessonType FoC = currentEntry.lessonType; // --//-- форму занятий
+					Class newClass = new Class(time, currentEntry.classRoom, 
+							currentEntry.discipline, FoC, currentEntry.groupName, 
+							currentEntry.prepodavatel, currentEntry.kafedra);
 					newClass.id = (i + 1);
 					
 					if(SB.containsBeforeTheDate(dateOfTheDay, day, newClass)){
@@ -371,8 +386,10 @@ public class ScheduleChecker {
 							doubleAdded++;
 						} else {
 							Class entry = SB.getClassByTimeAndClassroomBeforeTheDate(dateOfTheDay, day, newClass);
-							console.append(deleteSpaces(splitStr(currentEntry[1].getContents())) + " " + deleteSpaces(splitStr(currentEntry[2].getContents())) + " Аудитория: " + newClass.lectureRoom);//Ошибка. Вывести общие данные
-							errorAnalysis(entry, newClass, console, links);	//Вывод подробных данных
+							console.append(deleteSpaces(ExcelUtils.getDay(currentEntry.day)) + " " + 
+									deleteSpaces(ExcelUtils.getTime(currentEntry.time)) + " Аудитория: " + 
+									newClass.lectureRoom);//Ошибка. Вывести общие данные
+							ExcelWorker.errorAnalysis(entry, newClass, console, links);	//Вывод подробных данных
 							errors++;
 						}
 					} else {
@@ -392,9 +409,9 @@ public class ScheduleChecker {
 		 * добавляем эти занятия и назначаем им свободные аудитории
 		 */
 		for (int i = 0; i < kafPMIclasses.size(); i++){
-			Cell[] currentEntry = sheetOfSchedule.getRow(kafPMIclasses.get(i));
+			currentEntry = kafPMIclasses.get(i);
 
-			String date = deleteSpaces(splitStr(currentEntry[3].getContents()).toLowerCase());
+			String date = currentEntry.date.toLowerCase();
 			int day, month, year;
 			try{
 				day = (Pattern.matches( "^[дп]о[0-9]{1}[.,/][0-9]{2}.*", date))? new Integer(date.substring(2, 3)): new Integer(date.substring(2, 4));
@@ -404,23 +421,28 @@ public class ScheduleChecker {
 				
 			Calendar dateOfTheDay = new GregorianCalendar(year, month, day);
 			
-			day = convetToDayOfWeek(splitStr(currentEntry[1].getContents())); // конвертируем день
-			Time time = convertToEnumTime(splitStr(currentEntry[2].getContents())); // конвертируем вермя
-			LessonType FoC = convertToEnumFormOfClass(splitStr(currentEntry[5].getContents())); // --//-- форму занятий
-			Class newClass = new Class(time, splitStr(currentEntry[6].getContents()), splitStr(currentEntry[4].getContents()), FoC, splitStr(currentEntry[0].getContents()), splitStr(currentEntry[9].getContents()), splitStr(currentEntry[10].getContents()));
+			day = ExcelWorker.convetToDayOfWeek(ExcelUtils.getDay(currentEntry.day)); // конвертируем день
+			Time time = currentEntry.time; // конвертируем вермя
+			LessonType FoC = currentEntry.lessonType; // --//-- форму занятий
+			Class newClass = new Class(time, currentEntry.classRoom, 
+					currentEntry.discipline, FoC, currentEntry.groupName, 
+					currentEntry.prepodavatel, currentEntry.kafedra);
 			
 			if (SB.maybeStreamClassBeforeTheDate(dateOfTheDay, day, newClass)){
 				Class entry = SB.getMaybeStreamClassBeforeTheDate(dateOfTheDay, day, newClass);
-				console.append(deleteSpaces(splitStr(currentEntry[1].getContents())) + " " + deleteSpaces(splitStr(currentEntry[2].getContents())) + " Возможно занятие в потоке! Отредактируйте вручную!\n");
+				console.append(deleteSpaces(ExcelUtils.getDay(currentEntry.day)) + " " + 
+						deleteSpaces(ExcelUtils.getTime(currentEntry.time)) + " Возможно занятие в потоке! Отредактируйте вручную!\n");
 				console.append("Группа: "+entry.group + " " + entry.lessonType + " Дисциплиа: " + entry.discipline +" Аудитория: "+ entry.lectureRoom + " Преподаватель: " + entry.professor + "\n");
 				console.append("Группа: "+newClass.group + " " + newClass.lessonType + " Дисциплиа: " + newClass.discipline +" Аудитория: "+ newClass.lectureRoom + " Преподаватель: " + newClass.professor + "\n\n");
 			} else {
 				List<String> emptyClassrooms = SB.findEmptyClassRoomBeforeTheDate(dateOfTheDay, day, newClass);
-				console.append(deleteSpaces(splitStr(currentEntry[1].getContents())) + " " + deleteSpaces(splitStr(currentEntry[2].getContents())) + " Группа(ы): " + newClass.group + " Дисциплина: " + newClass.discipline);
+				console.append(deleteSpaces(ExcelUtils.getDay(currentEntry.day)) + " " + 
+						deleteSpaces(ExcelUtils.getTime(currentEntry.time)) + " Группа(ы): " + newClass.group + " Дисциплина: " + newClass.discipline);
 				if (emptyClassrooms.isEmpty()){
 					console.append("\nСвободных аудиторий нет!\n\n");
 				} else {
 					newClass.lectureRoom = emptyClassrooms.get(0);
+					currentEntry.classRoom = emptyClassrooms.get(0);
 					console.append("\nНазначена аудитория: " + newClass.lectureRoom + " из возможных: ");
 					for (int k = 0; k < emptyClassrooms.size(); k++){
 						console.append( (k==0?"":", ") + emptyClassrooms.get(k) + (k==(emptyClassrooms.size()-1)?"\n\n":""));
@@ -453,7 +475,7 @@ public class ScheduleChecker {
 			if (!isValidEntry(currentEntry) || !"7".equals(currentEntry.building))
 				continue;
 			
-			String date = deleteSpaces(splitStr(currentEntry[3].getContents()).toLowerCase());
+			String date = deleteSpaces(currentEntry.date.toLowerCase());
 			if (Pattern.matches( "^с[0-9]{1,2}[.,/][0-9]{2}.*", date)){
 				int day, month, year;
 				try{
@@ -464,16 +486,18 @@ public class ScheduleChecker {
 				
 				Calendar dateOfTheDay = new GregorianCalendar(year, month, day);
 				
-				String str = splitStr(currentEntry[6].getContents());
+				String str = currentEntry.classRoom;
 				if (Pattern.matches("[Кк][Аа]?[Фф]?", str) || Pattern.matches("[Кк][Аа].", str) || Pattern.matches("[Кк]..", str)) {
-					if (Pattern.matches("пми", deleteSpaces(splitStr(currentEntry[10].getContents().toLowerCase())))){
-						kafPMIclasses.add(new Integer(i));
+					if (Pattern.matches("пми", deleteSpaces(currentEntry.kafedra.toLowerCase()))) {
+						kafPMIclasses.add(currentEntry);
 					}
 				} else if (Pattern.matches("[0-9]{3}[А-Яа-я]?", str)) {
-					day = convetToDayOfWeek(splitStr(currentEntry[1].getContents())); // конвертируем день
-					Time time = convertToEnumTime(splitStr(currentEntry[2].getContents())); // конвертируем вермя
-					LessonType FoC = convertToEnumFormOfClass(splitStr(currentEntry[5].getContents())); // --//-- форму занятий
-					Class newClass = new Class(time, splitStr(currentEntry[6].getContents()), splitStr(currentEntry[4].getContents()), FoC, splitStr(currentEntry[0].getContents()), splitStr(currentEntry[9].getContents()), splitStr(currentEntry[10].getContents()));
+					day = ExcelWorker.convetToDayOfWeek(ExcelUtils.getDay(currentEntry.day)); // конвертируем день
+					Time time = currentEntry.time; // конвертируем вермя
+					LessonType FoC = currentEntry.lessonType; // --//-- форму занятий
+					Class newClass = new Class(time, currentEntry.classRoom, 
+							currentEntry.discipline, FoC, currentEntry.groupName, 
+							currentEntry.prepodavatel, currentEntry.kafedra);
 					newClass.id = (i + 1);
 					
 					if(SB.containsAfterTheDate(dateOfTheDay, day, newClass)){
@@ -485,7 +509,9 @@ public class ScheduleChecker {
 							} else {
 								Calendar excistingDate = SB.getDateOfClassBegining(dateOfTheDay, day, newClass);
 								Class excistingEntry = SB.getClassByTimeAndClassroomAfterTheDate(dateOfTheDay, day, newClass);
-								console.append(deleteSpaces(splitStr(currentEntry[1].getContents())) + " " + deleteSpaces(splitStr(currentEntry[2].getContents())) + " Аудитория: " + newClass.lectureRoom);//Ошибка. Вывести общие данные
+								console.append(deleteSpaces(ExcelUtils.getDay(currentEntry.day)) + " " + 
+										deleteSpaces(ExcelUtils.getTime(currentEntry.time)) + " Аудитория: " + 
+										newClass.lectureRoom);//Ошибка. Вывести общие данные
 								console.append(" Группы: " + excistingEntry.group + " и " + newClass.group + "Не совпадает дата начала занятий!\n");
 								console.append("Существующая запись: " + DateFormat.getDateInstance(DateFormat.MEDIUM).format(excistingDate.getTime()) + "\n");
 								console.append("Добавляемая  запись: " + DateFormat.getDateInstance(DateFormat.MEDIUM).format(dateOfTheDay.getTime()) + "\n");
@@ -493,8 +519,9 @@ public class ScheduleChecker {
 							}
 						} else {
 							Class entry = SB.getClassByTimeAndClassroomAfterTheDate(dateOfTheDay, day, newClass);
-							console.append(deleteSpaces(splitStr(currentEntry[1].getContents())) + " " + deleteSpaces(splitStr(currentEntry[2].getContents())) + " Аудитория: " + newClass.lectureRoom);//Ошибка. Вывести общие данные
-							errorAnalysis(entry, newClass, console, links);	//Вывод подробных данных
+							console.append(deleteSpaces(ExcelUtils.getDay(currentEntry.day)) + " " + 
+									deleteSpaces(ExcelUtils.getTime(currentEntry.time)) + " Аудитория: " + newClass.lectureRoom);//Ошибка. Вывести общие данные
+							ExcelWorker.errorAnalysis(entry, newClass, console, links);	//Вывод подробных данных
 							errors++;
 						}
 					} else {
@@ -512,9 +539,9 @@ public class ScheduleChecker {
 		 * добавляем эти занятия и назначаем им свободные аудитории
 		 */
 		for (int i = 0; i < kafPMIclasses.size(); i++){
-			Cell[] currentEntry = sheetOfSchedule.getRow(kafPMIclasses.get(i));
+			currentEntry = kafPMIclasses.get(i);
 
-			String date = deleteSpaces(splitStr(currentEntry[3].getContents()).toLowerCase());
+			String date = deleteSpaces(currentEntry.date.toLowerCase());
 			int day, month, year;
 			try{
 				day = (Pattern.matches( "^с[0-9]{1}[.,/][0-9]{2}.*", date))? new Integer(date.substring(1, 2)).intValue(): new Integer(date.substring(1, 3)).intValue();
@@ -524,25 +551,30 @@ public class ScheduleChecker {
 				
 			Calendar dateOfTheDay = new GregorianCalendar(year, month, day);
 			
-			day = convetToDayOfWeek(splitStr(currentEntry[1].getContents())); // конвертируем день
-			Time time = convertToEnumTime(splitStr(currentEntry[2].getContents())); // конвертируем вермя
-			LessonType FoC = convertToEnumFormOfClass(splitStr(currentEntry[5].getContents())); // --//-- форму занятий
-			Class newClass = new Class(time, splitStr(currentEntry[6].getContents()), splitStr(currentEntry[4].getContents()), FoC, splitStr(currentEntry[0].getContents()), splitStr(currentEntry[9].getContents()), splitStr(currentEntry[10].getContents()));
+			day = ExcelWorker.convetToDayOfWeek(ExcelUtils.getDay(currentEntry.day)); // конвертируем день
+			Time time = currentEntry.time; // конвертируем вермя
+			LessonType FoC = currentEntry.lessonType; // --//-- форму занятий
+			Class newClass = new Class(time, currentEntry.classRoom, 
+					currentEntry.discipline, FoC, currentEntry.groupName, 
+					currentEntry.prepodavatel, currentEntry.kafedra);
 			
 			if (SB.maybeStreamClassAfterTheDate(dateOfTheDay, day, newClass)){
 				Class entry = SB.getMaybeStreamClassAfterTheDate(dateOfTheDay, day, newClass);
-				console.append(deleteSpaces(splitStr(currentEntry[1].getContents())) + " " + deleteSpaces(splitStr(currentEntry[2].getContents())) + " Возможно занятие в потоке! Отредактируйте вручную!\n");
+				console.append(deleteSpaces(ExcelUtils.getDay(currentEntry.day)) + " " + 
+						deleteSpaces(ExcelUtils.getTime(currentEntry.time)) + " Возможно занятие в потоке! Отредактируйте вручную!\n");
 				console.append("Группа: "+entry.group + " " + entry.lessonType + " Дисциплиа: " + entry.discipline +" Аудитория: "+ entry.lectureRoom + " Преподаватель: " + entry.professor + "\n");
 				console.append("Группа: "+newClass.group + " " + newClass.lessonType + " Дисциплиа: " + newClass.discipline +" Аудитория: "+ newClass.lectureRoom + " Преподаватель: " + newClass.professor + "\n\n");
 			} else {
 				List<String> emptyClassrooms = SB.findEmptyClassRoomAfterTheDate(dateOfTheDay, day, newClass);
-				console.append(deleteSpaces(splitStr(currentEntry[1].getContents())) + " " + deleteSpaces(splitStr(currentEntry[2].getContents())) + " Группа(ы): " + newClass.group + " Дисциплина: " + newClass.discipline);
+				console.append(deleteSpaces(ExcelUtils.getDay(currentEntry.day)) + " " + 
+						deleteSpaces(ExcelUtils.getTime(currentEntry.time)) + " Группа(ы): " + newClass.group + " Дисциплина: " + newClass.discipline);
 				if (emptyClassrooms.isEmpty()){
 					console.append("\nСвободных аудиторий нет!\n\n");
 				} else {
 					newClass.lectureRoom = emptyClassrooms.get(0);
+					currentEntry.classRoom = emptyClassrooms.get(0);
 					console.append("\nНазначена аудитория: " + newClass.lectureRoom + " из возможных: ");
-					for (int k = 0; k < emptyClassrooms.size(); k++){
+					for (int k = 0; k < emptyClassrooms.size(); k++) {
 						console.append( (k==0?"":", ") + emptyClassrooms.get(k) + (k==(emptyClassrooms.size()-1)?"\n\n":""));
 					}
 					SB.addAfterTheDate(dateOfTheDay, day, newClass);

@@ -62,6 +62,7 @@ import ru.kai.assistschedule.ui.model.ScheduleEntryCellModifier;
 import ru.kai.assistschedule.ui.observer.AddProfessorInScheduleEntry;
 import ru.kai.assistschedule.ui.observer.IViewModel;
 import ru.kai.assistschedule.ui.observer.LinkToScheduleEntry;
+import ru.kai.assistschedule.ui.observer.MessageNotification;
 import ru.kai.assistschedule.ui.observer.ModelObserver;
 import ru.kai.assistschedule.ui.observer.Notification;
 import ru.kai.assistschedule.ui.observer.NotificationCenter;
@@ -114,8 +115,7 @@ public abstract class AbstractScheduleTable implements IScheduleTable, ModelObse
 					break;
 				}
 			}
-		}
-		if(notice instanceof AddProfessorInScheduleEntry) {
+		} else if(notice instanceof AddProfessorInScheduleEntry) {
 			List<ScheduleEntry> list = firstLevelCache.getEntries();
 			
 			IStructuredSelection selection;
@@ -126,6 +126,18 @@ public abstract class AbstractScheduleTable implements IScheduleTable, ModelObse
 					v.update(entry, null);
 					break;
 				}
+			}
+		} else if(notice instanceof MessageNotification) {
+			String msg = ((MessageNotification) notice).msg;
+			if("refresh".equalsIgnoreCase(msg)) {
+				v.refresh();
+				List<ScheduleEntry> entries = FirstLevelCache.getInstance().getEntries();
+				for(ScheduleEntry entry: entries) {
+					if("4202".equals(entry.groupName)) {
+						logger.info(entry.toString());
+					}
+				}
+				logger.info("======================= refresh ====================");
 			}
 		}
 	}
